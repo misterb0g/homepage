@@ -19,28 +19,28 @@
       <!-- Horloge -->
       <div id="clock" aria-label="Heure actuelle"></div>
 
-      <!-- Météo (Open-Meteo, pas de clé, HTTPS) -->
-      <div class="weather-container" aria-live="polite">
+      <!-- Carte météo (Open-Meteo, pas de clé, HTTPS) -->
+      <section class="card glass weather-container" aria-live="polite">
         <div class="row">
           <div id="weather-description" class="inline"></div>
-          <div class="inline">-</div>
+          <div class="inline">•</div>
           <div id="temp" class="inline"></div>
         </div>
-      </div>
+      </section>
 
-      <!-- Recherche Google (form natif, iOS-friendly) -->
+      <!-- ===== Spotlight pur (barre seule, centrée) ===== -->
       <form
-        class="quick-search"
+        class="spotlight glass"
         action="https://www.google.com/search"
         method="GET"
         target="_self"
         role="search"
-        aria-label="Recherche Google"
+        aria-label="Recherche"
       >
         <input
           type="search"
           name="q"
-          placeholder="Rechercher sur Google…"
+          placeholder="Rechercher…"
           inputmode="search"
           autocapitalize="off"
           autocorrect="off"
@@ -48,7 +48,8 @@
           required
           aria-label="Votre recherche"
         />
-        <button type="submit" aria-label="Lancer la recherche">Rechercher</button>
+        <!-- Bouton “visuellement caché” pour accessibilité / iOS -->
+        <button type="submit" class="visually-hidden">Rechercher</button>
       </form>
 
       <!-- Favoris -->
@@ -74,7 +75,7 @@
           .then((data) => {
             const t = Math.round(data.current.temperature_2m);
             const wcode = data.current.weather_code;
-            document.getElementById("temp").textContent = `${t} °c`;
+            document.getElementById("temp").textContent = `${t} °C`;
             document.getElementById("weather-description").textContent = weatherCodeToFr(wcode);
           })
           .catch((err) => console.error("Météo erreur:", err));
@@ -100,7 +101,7 @@
         const el = document.getElementById("bookmark-container");
         el.innerHTML = bookmarks
           .map((b) => {
-            const html = ["<div class='bookmark-set'>"];
+            const html = ["<section class='bookmark-set card glass'>"];
             html.push(`<div class="bookmark-title">${b.title}</div>`);
             html.push('<div class="bookmark-inner-container">');
             html.push(
@@ -109,7 +110,7 @@
                   `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`
               )
             );
-            html.push("</div></div>");
+            html.push("</div></section>");
             return html.join("");
           })
           .join("");
@@ -119,13 +120,12 @@
       (function () {
         const root = document.documentElement;
         const toggle = document.getElementById("theme-toggle");
-        const saved = localStorage.getItem("theme"); // "light" | "dark" | null
+        const saved = localStorage.getItem("theme");
 
         if (saved === "light" || saved === "dark") {
           root.setAttribute("data-theme", saved);
           toggle.checked = saved === "light";
         } else {
-          // Pas de forçage → suit la préférence système
           toggle.checked = !matchMedia("(prefers-color-scheme: dark)").matches;
         }
 
@@ -135,6 +135,29 @@
           localStorage.setItem("theme", next);
         });
       })();
+
+      // Raccourcis clavier Spotlight
+      window.addEventListener("keydown", (e) => {
+        const spotlight = document.querySelector(".spotlight input[type='search']");
+        if (!spotlight) return;
+
+        // ignorer si on est déjà en train de taper dans un champ texte
+        const activeTag = document.activeElement.tagName.toLowerCase();
+        if (activeTag === "input" || activeTag === "textarea") return;
+
+        // "/" : focus direct
+        if (e.key === "/" && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          spotlight.focus();
+          return;
+        }
+
+        // Cmd+K (Mac) ou Ctrl+K (PC) : focus
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          spotlight.focus();
+        }
+      });
 
       // Init
       window.addEventListener("load", () => {
