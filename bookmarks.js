@@ -63,7 +63,7 @@ const bookmarks = [
   {
     title: "Web",
     links: [
-      { name: "Silex", url: "http://lesilex.be/admin/login.php" },
+      { name: "Bog", url: "http://bogarts.be/wp-admin" },
       { name: "Fleur d'Ô", url: "https://fleurdo.be/wp-login.php?redirect_to=https%3A%2F%2Ffleurdo.be%2Fwp-admin%2F&reauth=1" },
       { name: "Molinaux", url: "https://molineaux-flowers.be/wp-admin/" },
     ],
