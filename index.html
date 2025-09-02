@@ -2,123 +2,103 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-
     <title>Homepage</title>
     <link rel="stylesheet" href="styles.css" />
-    <link href="favicon.png" rel="shortcut icon" type="image/x-icon" />
+    <link href="favicon.png" rel="icon" />
   </head>
   <body>
-    <!-- Switch clair/sombre -->
-    <label class="switch">
-      <input type="checkbox" id="theme-toggle">
+    <!-- Switch clair/sombre (mini) -->
+    <label class="switch" aria-label="Basculer le thème clair/sombre">
+      <input type="checkbox" id="theme-toggle" />
       <span class="slider"></span>
     </label>
 
-    <div id="search">
-      <input
-        id="search-field"
-        type="text"
-        name="search-field"
-        onkeypress="return search(event)"
-      />
-    </div>
     <div class="container">
-      <div id="clock"></div>
-      <div class="weather-container">
+      <!-- Horloge -->
+      <div id="clock" aria-label="Heure actuelle"></div>
+
+      <!-- Météo (Open-Meteo, pas de clé, HTTPS) -->
+      <div class="weather-container" aria-live="polite">
         <div class="row">
           <div id="weather-description" class="inline"></div>
           <div class="inline">-</div>
           <div id="temp" class="inline"></div>
         </div>
       </div>
+
+      <!-- Recherche Google (form natif, iOS-friendly) -->
+      <form
+        class="quick-search"
+        action="https://www.google.com/search"
+        method="GET"
+        target="_self"
+        role="search"
+        aria-label="Recherche Google"
+      >
+        <input
+          type="search"
+          name="q"
+          placeholder="Rechercher sur Google…"
+          inputmode="search"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          required
+          aria-label="Votre recherche"
+        />
+        <button type="submit" aria-label="Lancer la recherche">Rechercher</button>
+      </form>
+
+      <!-- Favoris -->
       <div id="bookmark-container"></div>
     </div>
 
     <script src="bookmarks.js"></script>
     <script>
-      const searchUrl = "https://google.com/search?q=";
-      // Search on enter key event
-      function search(e) {
-        if (e.keyCode == 13) {
-          var val = document.getElementById("search-field").value;
-          window.open(searchUrl + val);
-        }
-      }
-
-      // Get current time and format
+      // Horloge
       function getTime() {
-        let date = new Date(),
-          min = date.getMinutes(),
-          sec = date.getSeconds(),
-          hour = date.getHours();
-
-        return (
-          "" +
-          (hour < 10 ? "0" + hour : hour) +
-          ":" +
-          (min < 10 ? "0" + min : min) +
-          ":" +
-          (sec < 10 ? "0" + sec : sec)
-        );
+        const d = new Date();
+        const pad = (n) => (n < 10 ? "0" + n : n);
+        return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
       }
 
-      // ==== Nouvelle météo via Open-Meteo ====
+      // Météo via Open-Meteo (Bruxelles)
       function getWeather() {
-        const lat = 50.8503; // Bruxelles
-        const lon = 4.3517;
+        const lat = 50.8503, lon = 4.3517;
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=Europe%2FBrussels`;
 
         fetch(url)
-          .then(r => r.json())
-          .then(data => {
+          .then((r) => r.json())
+          .then((data) => {
             const t = Math.round(data.current.temperature_2m);
             const wcode = data.current.weather_code;
-            const desc = weatherCodeToFr(wcode);
-
             document.getElementById("temp").textContent = `${t} °c`;
-            document.getElementById("weather-description").textContent = desc;
+            document.getElementById("weather-description").textContent = weatherCodeToFr(wcode);
           })
-          .catch(err => console.error("Météo erreur:", err));
+          .catch((err) => console.error("Météo erreur:", err));
       }
 
       function weatherCodeToFr(code) {
         const map = {
-          0: "Ciel dégagé",
-          1: "Plutôt dégagé",
-          2: "Partiellement nuageux",
-          3: "Couvert",
-          45: "Brouillard",
-          48: "Brouillard givrant",
-          51: "Bruine légère",
-          53: "Bruine",
-          55: "Bruine forte",
-          61: "Pluie légère",
-          63: "Pluie",
-          65: "Pluie forte",
-          66: "Pluie verglaçante légère",
-          67: "Pluie verglaçante forte",
-          71: "Neige légère",
-          73: "Neige",
-          75: "Neige forte",
-          77: "Grains de neige",
-          80: "Averses faibles",
-          81: "Averses",
-          82: "Averses fortes",
-          85: "Averses de neige faibles",
-          86: "Averses de neige fortes",
-          95: "Orages",
-          96: "Orages (grésil)",
-          99: "Orages (grêle)"
+          0: "Ciel dégagé", 1: "Plutôt dégagé", 2: "Partiellement nuageux", 3: "Couvert",
+          45: "Brouillard", 48: "Brouillard givrant",
+          51: "Bruine légère", 53: "Bruine", 55: "Bruine forte",
+          61: "Pluie légère", 63: "Pluie", 65: "Pluie forte",
+          66: "Pluie verglaçante légère", 67: "Pluie verglaçante forte",
+          71: "Neige légère", 73: "Neige", 75: "Neige forte", 77: "Grains de neige",
+          80: "Averses faibles", 81: "Averses", 82: "Averses fortes",
+          85: "Averses de neige faibles", 86: "Averses de neige fortes",
+          95: "Orages", 96: "Orages (grésil)", 99: "Orages (grêle)"
         };
         return map[code] ?? "Météo";
       }
 
-      // Handle writing out Bookmarks
+      // Rendu des favoris
       function setupBookmarks() {
-        const bookmarkContainer = document.getElementById("bookmark-container");
-        bookmarkContainer.innerHTML = bookmarks
+        const el = document.getElementById("bookmark-container");
+        el.innerHTML = bookmarks
           .map((b) => {
             const html = ["<div class='bookmark-set'>"];
             html.push(`<div class="bookmark-title">${b.title}</div>`);
@@ -126,7 +106,7 @@
             html.push(
               ...b.links.map(
                 (l) =>
-                  `<a class="bookmark" href="${l.url}" target="_blank">${l.name}</a>`
+                  `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`
               )
             );
             html.push("</div></div>");
@@ -135,45 +115,34 @@
           .join("");
       }
 
-      // === Switch clair/sombre manuel (avec persistance) ===
+      // Switch clair/sombre (persistance localStorage)
       (function () {
         const root = document.documentElement;
-        const toggle = document.getElementById('theme-toggle');
+        const toggle = document.getElementById("theme-toggle");
+        const saved = localStorage.getItem("theme"); // "light" | "dark" | null
 
-        const saved = localStorage.getItem('theme');
-        if (saved === 'light' || saved === 'dark') {
-          root.setAttribute('data-theme', saved);
-          toggle.checked = (saved === 'light');
+        if (saved === "light" || saved === "dark") {
+          root.setAttribute("data-theme", saved);
+          toggle.checked = saved === "light";
         } else {
-          toggle.checked = !matchMedia('(prefers-color-scheme: dark)').matches;
+          // Pas de forçage → suit la préférence système
+          toggle.checked = !matchMedia("(prefers-color-scheme: dark)").matches;
         }
 
-        toggle.addEventListener('change', () => {
-          const next = toggle.checked ? 'light' : 'dark';
-          root.setAttribute('data-theme', next);
-          localStorage.setItem('theme', next);
+        toggle.addEventListener("change", () => {
+          const next = toggle.checked ? "light" : "dark";
+          root.setAttribute("data-theme", next);
+          localStorage.setItem("theme", next);
         });
       })();
 
       // Init
-      window.onload = () => {
+      window.addEventListener("load", () => {
         setupBookmarks();
         getWeather();
-        document.getElementById("clock").innerHTML = getTime();
-        setInterval(() => {
-          document.getElementById("clock").innerHTML = getTime();
-        }, 1000);
-      };
-
-      document.addEventListener("keyup", (event) => {
-        if (event.keyCode == 32) {
-          document.getElementById("search").style.display = "flex";
-          document.getElementById("search-field").focus();
-        } else if (event.keyCode == 27) {
-          document.getElementById("search-field").value = "";
-          document.getElementById("search-field").blur();
-          document.getElementById("search").style.display = "none";
-        }
+        const clock = document.getElementById("clock");
+        clock.textContent = getTime();
+        setInterval(() => (clock.textContent = getTime()), 1000);
       });
     </script>
   </body>
