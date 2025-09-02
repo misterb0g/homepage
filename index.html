@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Homepage</title>
+
+    <!-- Google Font: Inter (proche de SF Pro) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="styles.css" />
     <link href="favicon.png" rel="icon" />
   </head>
@@ -48,7 +52,6 @@
           required
           aria-label="Votre recherche"
         />
-        <!-- Bouton “visuellement caché” pour accessibilité / iOS -->
         <button type="submit" class="visually-hidden">Rechercher</button>
       </form>
 
@@ -141,18 +144,15 @@
         const spotlight = document.querySelector(".spotlight input[type='search']");
         if (!spotlight) return;
 
-        // ignorer si on est déjà en train de taper dans un champ texte
         const activeTag = document.activeElement.tagName.toLowerCase();
         if (activeTag === "input" || activeTag === "textarea") return;
 
-        // "/" : focus direct
         if (e.key === "/" && !e.metaKey && !e.ctrlKey) {
           e.preventDefault();
           spotlight.focus();
           return;
         }
 
-        // Cmd+K (Mac) ou Ctrl+K (PC) : focus
         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
           e.preventDefault();
           spotlight.focus();
