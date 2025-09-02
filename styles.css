@@ -51,6 +51,9 @@
 /* =========================
    Layout général
    ========================= */
+html, body {
+  height: 100%;
+}
 body {
   background-color: var(--bg);
   margin: 0;
@@ -58,60 +61,79 @@ body {
 
 .container {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 2em 0;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 #clock {
   font-family: var(--fontFamily);
-  font-size: 3.5rem;
+  font-size: 3.2rem;
   font-weight: 600;
   color: var(--fg);
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
 }
 
-#search {
-  width: 100%;
-  height: 100vh;
-  background-color: var(--searchBg);
-  display: none;
-  position: absolute;
-  box-sizing: border-box;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-#search-field {
-  width: 90%;
-  padding: 0.75em 1em;
-  box-sizing: border-box;
-  background-color: var(--searchBg);
-  border: solid 0 var(--searchBg);
-  font-family: var(--fontFamily);
-  font-size: 4rem;
-  color: var(--fg);
-  outline: none;
-  border-radius: 3px;
-  margin-bottom: 1em;
-  text-align: center;
-}
-
+/* =========================
+   Météo
+   ========================= */
 .weather-container {
-  width: 30%;
+  width: min(600px, 90%);
   background-color: var(--containerBg);
   padding: 1em;
-  border-radius: 3px;
+  border-radius: 10px;
   font-family: var(--fontFamily);
   color: var(--fg);
   text-align: center;
+  box-sizing: border-box;
+}
+.inline { display: inline-block; }
+
+/* =========================
+   Barre de recherche (compatible iOS)
+   ========================= */
+.quick-search {
+  margin: 1em auto 1.5em;
+  width: min(600px, 90%);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5em;
+  box-sizing: border-box;
 }
 
-.inline {
-  display: inline-block;
+.quick-search input[type="search"] {
+  padding: 0.7em 0.9em;
+  border: none;
+  border-radius: 10px;
+  background: var(--containerBg);
+  color: var(--fg);
+  font-family: var(--fontFamily);
+  font-size: 1rem; /* >=16px pour éviter le zoom iOS */
+  outline: none;
+}
+
+.quick-search button {
+  padding: 0.7em 1em;
+  border: none;
+  border-radius: 10px;
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--fontFamily);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: filter .2s ease, transform .05s ease;
+}
+.quick-search button:hover { filter: brightness(0.9); }
+.quick-search button:active { transform: translateY(1px); }
+
+@media (max-width: 600px) {
+  .quick-search {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* =========================
@@ -122,8 +144,8 @@ body {
   grid-template-columns: repeat(4, minmax(180px, 1fr));
   gap: 1em;
   justify-content: center;
-  width: auto;
-  margin: 1em auto;
+  width: min(1400px, 92%);
+  margin: 0 auto 2em;
   box-sizing: border-box;
   align-items: stretch;
 }
@@ -131,9 +153,9 @@ body {
 .bookmark-set {
   padding: 1em;
   background-color: var(--containerBg);
-  border-radius: 3px;
+  border-radius: 10px;
   font-family: var(--fontFamily);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   height: 12em;
   box-sizing: border-box;
 }
@@ -157,7 +179,7 @@ body {
 
 .bookmark-title {
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--fg);
   margin: 0 0 0.35em 0;
 }
@@ -169,9 +191,7 @@ body {
 }
 .bookmark:hover { color: var(--fg); }
 
-/* =========================
-   Placeholders pour compléter les rangées
-   ========================= */
+/* Rangées complètes visuelles (placeholders) */
 #bookmark-container::after {
   content: "";
   display: block;
@@ -182,72 +202,62 @@ body {
 #bookmark-container:has(> :last-child:nth-child(4n+2))::after { grid-column: span 2; }
 #bookmark-container:has(> :last-child:nth-child(4n+3))::after { grid-column: span 1; }
 
-/* =========================
-   Responsive
-   ========================= */
-@media only screen and (max-width: 1280px) {
+/* Responsive */
+@media (max-width: 1280px) {
   #bookmark-container {
     grid-template-columns: repeat(3, minmax(180px, 1fr));
-    width: 85%;
+    width: min(1200px, 92%);
   }
   #bookmark-container::after { grid-column: auto; }
   #bookmark-container:has(> :last-child:nth-child(3n+1))::after { grid-column: span 2; }
   #bookmark-container:has(> :last-child:nth-child(3n+2))::after { grid-column: span 1; }
 }
-
-@media only screen and (max-width: 960px) {
-  .container { height: auto; }
-  #clock { margin-top: 1em; }
-
+@media (max-width: 960px) {
   #bookmark-container {
     grid-template-columns: repeat(2, minmax(180px, 1fr));
-    width: 90%;
+    width: 92%;
   }
-
   #bookmark-container::after { grid-column: auto; }
   #bookmark-container:has(> :last-child:nth-child(2n+1))::after { grid-column: span 1; }
-
   .bookmark-set { height: auto; }
 }
-
-@media only screen and (max-width: 600px) {
+@media (max-width: 600px) {
   #bookmark-container {
     grid-template-columns: 1fr;
-    width: 95%;
+    width: 94%;
   }
   #bookmark-container::after { display: none; }
 }
 
-/* ===== Switch clair/sombre (version mini) ===== */
+/* =========================
+   Switch clair/sombre (mini)
+   ========================= */
 .switch {
   position: fixed;
   top: 1em;
   right: 1em;
   display: inline-block;
-  width: 40px;   /* largeur réduite */
-  height: 20px;  /* hauteur réduite */
+  width: 40px;   /* mini */
+  height: 20px;  /* mini */
   z-index: 1000;
 }
-
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
-
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: 0;
   background-color: var(--secondaryFg);
   transition: 0.3s;
   border-radius: 20px;
 }
-
 .slider:before {
   position: absolute;
   content: "";
-  height: 14px;   /* plus petit rond */
+  height: 14px;
   width: 14px;
   left: 3px;
   bottom: 3px;
@@ -255,11 +265,5 @@ body {
   transition: 0.3s;
   border-radius: 50%;
 }
-
-/* Quand le switch est activé */
-input:checked + .slider {
-  background-color: var(--fg);
-}
-input:checked + .slider:before {
-  transform: translateX(20px); /* déplacement ajusté pour la nouvelle taille */
-}
+input:checked + .slider { background-color: var(--fg); }
+input:checked + .slider:before { transform: translateX(20px); }
