@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Homepage</title>
 
-    <!-- Google Font: Roboto (très large support) -->
+    <!-- Google Font: Roboto -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css" />
@@ -23,7 +23,7 @@
       <!-- Horloge -->
       <div id="clock" aria-label="Heure actuelle"></div>
 
-      <!-- Carte météo (Open-Meteo, pas de clé, HTTPS) -->
+      <!-- Carte météo -->
       <section class="card glass weather-container" aria-live="polite">
         <div class="row">
           <div id="weather-description" class="inline"></div>
@@ -32,7 +32,7 @@
         </div>
       </section>
 
-      <!-- ===== Spotlight pur (barre seule, centrée) ===== -->
+      <!-- Recherche Google Spotlight -->
       <form
         class="spotlight glass"
         action="https://www.google.com/search"
@@ -58,12 +58,10 @@
       <!-- Favoris -->
       <div id="bookmark-container"></div>
 
-      <!-- ===== ChatGPT (via endpoint serveur) ===== -->
+      <!-- ===== ChatGPT ===== -->
       <section id="gpt-chat" class="card glass">
         <h2>ChatGPT</h2>
-
         <div id="gpt-messages" aria-live="polite" aria-busy="false"></div>
-
         <form id="gpt-form" autocomplete="off">
           <input
             id="gpt-input"
@@ -76,7 +74,7 @@
           />
           <button type="submit">Envoyer</button>
         </form>
-        <p class="hint">Ta requête passe par ton endpoint sécurisé (clé protégée côté serveur).</p>
+        <p class="hint">Debug activé : si erreur, tu verras le status + message exact.</p>
       </section>
     </div>
 
@@ -89,11 +87,10 @@
         return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
       }
 
-      // Météo via Open-Meteo (Bruxelles)
+      // Météo
       function getWeather() {
         const lat = 50.8503, lon = 4.3517;
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=Europe%2FBrussels`;
-
         fetch(url)
           .then((r) => r.json())
           .then((data) => {
@@ -104,7 +101,6 @@
           })
           .catch((err) => console.error("Météo erreur:", err));
       }
-
       function weatherCodeToFr(code) {
         const map = {
           0: "Ciel dégagé", 1: "Plutôt dégagé", 2: "Partiellement nuageux", 3: "Couvert",
@@ -120,7 +116,7 @@
         return map[code] ?? "Météo";
       }
 
-      // Rendu des favoris
+      // Favoris
       function setupBookmarks() {
         const el = document.getElementById("bookmark-container");
         el.innerHTML = bookmarks
@@ -140,19 +136,17 @@
           .join("");
       }
 
-      // Switch clair/sombre (persistance localStorage)
+      // Switch clair/sombre
       (function () {
         const root = document.documentElement;
         const toggle = document.getElementById("theme-toggle");
         const saved = localStorage.getItem("theme");
-
         if (saved === "light" || saved === "dark") {
           root.setAttribute("data-theme", saved);
           toggle.checked = saved === "light";
         } else {
           toggle.checked = !matchMedia("(prefers-color-scheme: dark)").matches;
         }
-
         toggle.addEventListener("change", () => {
           const next = toggle.checked ? "light" : "dark";
           root.setAttribute("data-theme", next);
@@ -160,26 +154,7 @@
         });
       })();
 
-      // Raccourcis clavier Spotlight
-      window.addEventListener("keydown", (e) => {
-        const spotlight = document.querySelector(".spotlight input[type='search']");
-        if (!spotlight) return;
-
-        const activeTag = document.activeElement.tagName.toLowerCase();
-        if (activeTag === "input" || activeTag === "textarea") return;
-
-        if (e.key === "/" && !e.metaKey && !e.ctrlKey) {
-          e.preventDefault();
-          spotlight.focus();
-          return;
-        }
-        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-          e.preventDefault();
-          spotlight.focus();
-        }
-      });
-
-      // ChatGPT frontend minimal (stream lecture)
+      // ChatGPT debug
       (function () {
         const form = document.getElementById('gpt-form');
         const input = document.getElementById('gpt-input');
@@ -202,29 +177,28 @@
           addBubble(prompt, 'you');
           input.value = '';
 
-          const bot = addBubble('', 'bot', true);
+          const bot = addBubble('...', 'bot', true);
           try {
-            const res = await fetch('https://homepage-beta-black.vercel.app/api/chat', {
+            const API_URL = '/api/chat'; // ⚠️ si ta page n'est PAS sur Vercel, mets l'URL complète
+            const res = await fetch(API_URL, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ prompt }),
             });
-            if (!res.ok || !res.body) throw new Error('API error');
 
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let acc = '';
-            for (;;) {
-              const { value, done } = await reader.read();
-              if (done) break;
-              acc += decoder.decode(value, { stream: true });
-              bot.textContent = acc;
-              messages.scrollTop = messages.scrollHeight;
+            if (!res.ok) {
+              const errText = await res.text();
+              bot.classList.remove('pending');
+              bot.textContent = `Erreur API (${res.status}) : ${errText}`;
+              return;
             }
+
+            const data = await res.json();
             bot.classList.remove('pending');
+            bot.textContent = data.reply || "Réponse vide.";
           } catch (err) {
             bot.classList.remove('pending');
-            bot.textContent = "Oups, impossible d'obtenir une réponse.";
+            bot.textContent = "Erreur réseau/JS. Voir console.";
             console.error(err);
           }
         });
