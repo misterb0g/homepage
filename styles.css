@@ -24,7 +24,7 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 
   --pad-card: 1rem;
   --gap-grid: 1rem;
-  --spot-h: 60px;
+  --spot-h: 60px;     /* hauteur de la barre Spotlight ET de la barre ChatGPT */
   --radius: 16px;
   --bk-font: 1rem;
 }
@@ -100,7 +100,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Barre top (switch + densité + réseau) */
+/* Barre top (switch + densité) */
 .top-controls {
   position: fixed; top: 1rem; right: 1rem; z-index: 1000;
   display: flex; align-items: center; gap: .6rem;
@@ -116,7 +116,7 @@ body {
 .btn-icon:active { transform: translateY(1px); }
 .btn-icon svg { width: 20px; height: 20px; fill: currentColor; }
 
-/* Badge réseau */
+/* Badge réseau (générique) */
 .chip {
   display: inline-flex; align-items: center; gap: .4ch;
   font-size: .9rem; color: var(--fg);
@@ -124,6 +124,14 @@ body {
   border-radius: 999px; padding: .35rem .6rem;
   -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px);
   box-shadow: var(--glass-shadow);
+}
+
+/* Footer réseau (sous ChatGPT, centré) */
+.footer-net {
+  width: min(920px, 94%);
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: center; /* centrage */
 }
 
 /* Cartes & verre dépoli */
@@ -157,7 +165,9 @@ body {
   font-weight: 700; color: var(--fg); letter-spacing: .2px;
 }
 
-/* Météo */
+/* =========================
+   Météo
+   ========================= */
 .weather-container { width: min(640px, 92%); padding: var(--pad-card); text-align: center; color: var(--fg); cursor: pointer; }
 .inline { display: inline-block; margin: 0 .5ch; }
 .weather-details { width: min(820px, 94%); padding: calc(var(--pad-card) + .2rem); }
@@ -168,35 +178,72 @@ body {
 .wd-temps .max { font-weight: 700; }
 .wd-temps .min { color: var(--secondaryFg); }
 
-/* Spotlight */
+/* =========================
+   Spotlight (recherche Google)
+   ========================= */
 .spotlight {
-  width: min(920px, 94%); height: var(--spot-h); margin: 0.6rem auto 2.2rem;
-  display: flex; align-items: center; border-radius: var(--radius); border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow); padding: 0 .9rem; background: var(--glass-bg);
-  -webkit-backdrop-filter: saturate(160%) blur(18px); backdrop-filter: saturate(160%) blur(18px);
+  width: min(920px, 94%);
+  height: var(--spot-h);
+  margin: 0.6rem auto 2.2rem;
+  display: flex; align-items: center;
+  border-radius: var(--radius);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  padding: 0 .9rem;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  backdrop-filter: saturate(160%) blur(18px);
   transition: outline-color .25s ease, box-shadow .25s ease, background .3s ease, border-color .3s ease;
 }
-.spotlight:focus-within { outline: 2px solid color-mix(in srgb, var(--mac-brand) 36%, transparent); outline-offset: 2px;
-  box-shadow: var(--glass-shadow), 0 0 0 6px color-mix(in srgb, var(--mac-brand) 16%, transparent); }
-.spotlight input[type="search"] { appearance: none; width: 100%; height: 100%; border: none; background: transparent; color: var(--fg); font-size: 1.1rem; padding: 0 .3rem; outline: none; }
+.spotlight:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--mac-brand) 36%, transparent);
+  outline-offset: 2px;
+  box-shadow: var(--glass-shadow), 0 0 0 6px color-mix(in srgb, var(--mac-brand) 16%, transparent);
+}
+.spotlight input[type="search"] {
+  appearance: none; -webkit-appearance: none;
+  width: 100%; height: 100%;
+  border: none; background: transparent; color: var(--fg);
+  font-size: 1.1rem; padding: 0 .3rem; outline: none;
+}
 
-/* Visually hidden */
-.visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; border: 0; padding: 0; margin: -1px; }
+/* Bouton “visuellement caché” */
+.visually-hidden {
+  position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px);
+  white-space: nowrap; border: 0; padding: 0; margin: -1px;
+}
 
-/* Bookmarks */
+/* =========================
+   Bookmarks : grille 4 → 3 → 2 → 1
+   ========================= */
 #bookmark-container {
-  display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: var(--gap-grid);
-  justify-content: center; width: min(1400px, 94%); margin: 0 auto 2.2rem; box-sizing: border-box; align-items: stretch;
+  display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: var(--gap-grid); justify-content: center;
+  width: min(1400px, 94%); margin: 0 auto 2.2rem;
+  box-sizing: border-box; align-items: stretch;
   transition: gap .25s ease;
 }
 .bookmark-set { padding: var(--pad-card); border-radius: var(--radius); }
-.bookmark-inner-container { overflow-y: auto; max-height: 60vh; padding-right: 6px; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--scrollbarColor) transparent; }
+.bookmark-inner-container {
+  overflow-y: auto; max-height: 60vh; padding-right: 6px; box-sizing: border-box;
+  scrollbar-width: thin; scrollbar-color: var(--scrollbarColor) transparent;
+}
 .bookmark-inner-container::-webkit-scrollbar { width: 6px; }
 .bookmark-inner-container::-webkit-scrollbar-track { background: transparent; }
 .bookmark-inner-container::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
-.bookmark-title { font-size: 1.05rem; font-weight: 600; color: var(--fg); margin: 0 0 .5rem 0; letter-spacing: .2px; }
-.bookmark { display: block; text-decoration: none; color: var(--secondaryFg); margin: .45rem 0; font-size: var(--bk-font);
-  transition: color .2s ease, transform .12s ease, background .2s ease, border-color .2s ease; padding: .25rem .3rem; border-radius: 8px; }
+
+.bookmark-title {
+  font-size: 1.05rem; font-weight: 600; color: var(--fg);
+  margin: 0 0 .5rem 0; letter-spacing: .2px;
+  transition: color .25s ease;
+}
+.bookmark {
+  display: block;
+  text-decoration: none; color: var(--secondaryFg);
+  margin: .45rem 0; font-size: var(--bk-font);
+  transition: color .2s ease, transform .12s ease, background .2s ease, border-color .2s ease;
+  padding: .25rem .3rem; border-radius: 8px;
+}
 .bookmark:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 7%, transparent); transform: translateX(1px); }
 
 /* Responsive */
@@ -209,13 +256,87 @@ body {
 @media (max-width: 600px) {
   #bookmark-container { grid-template-columns: 1fr; width: 94%; }
 }
-/* Footer réseau (sous ChatGPT) */
-.footer-net {
+
+/* =========================
+   Switch clair/sombre (mini)
+   ========================= */
+.switch { display: inline-block; width: 40px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: relative; display: block; width: 100%; height: 100%; cursor: pointer;
+  background-color: color-mix(in srgb, var(--secondaryFg) 70%, transparent);
+  transition: 0.3s; border-radius: 20px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.15);
+}
+.slider:before {
+  content: ""; position: absolute;
+  height: 14px; width: 14px; left: 3px; top: 3px;
+  background-color: var(--containerBg);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%; transition: 0.3s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+input:checked + .slider { background-color: color-mix(in srgb, var(--fg) 65%, transparent); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* =========================
+   ChatGPT bloc (largeur & hauteur = Spotlight)
+   ========================= */
+#gpt-chat {
   width: min(920px, 94%);
-  margin: 0 auto 2rem;
-  display: flex;
-  justify-content: flex-end; /* badge aligné à droite */
+  margin: 1rem auto 0.8rem;
+  padding: var(--pad-card);
+  color: var(--fg);
+}
+#gpt-chat h2 { margin: 0 0 .8rem 0; font-size: 1.05rem; font-weight: 600; letter-spacing: .2px; }
+
+#gpt-messages {
+  max-height: 320px; overflow-y: auto; padding-right: 6px; margin-bottom: .8rem;
+  display: flex; flex-direction: column; gap: .5rem; scrollbar-width: thin; scrollbar-color: var(--scrollbarColor) transparent;
+}
+#gpt-messages::-webkit-scrollbar { width: 6px; }
+#gpt-messages::-webkit-scrollbar-track { background: transparent; }
+#gpt-messages::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
+.msg { padding: .6rem .8rem; border-radius: 12px; line-height: 1.45; white-space: pre-wrap; }
+.msg.you { align-self: flex-end; background: color-mix(in srgb, var(--fg) 12%, transparent); }
+.msg.bot { align-self: flex-start; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.msg.pending { opacity: .85; }
+
+/* Formulaire : même gabarit que Spotlight */
+#gpt-form {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .6rem;
+}
+#gpt-form input[type="text"] {
+  height: var(--spot-h);                          /* même hauteur que Spotlight */
+  border-radius: var(--radius);                   /* même arrondi */
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--fg);
+  padding: 0 .9rem;
+  outline: none;
+  font-size: 1.1rem;                              /* même taille de police que Spotlight */
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  backdrop-filter: saturate(160%) blur(18px);
+}
+#gpt-form input[type="text"]:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mac-brand) 18%, transparent);
 }
 
-/* Option : le rendre “collant” en bas de l’écran quand la page est courte */
-/* .footer-net { position: sticky; bottom: 1rem; z-index: 5; } */
+/* Bouton aligné à la hauteur de la barre (var(--spot-h)) */
+#gpt-form button {
+  height: var(--spot-h);
+  min-width: 120px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: var(--fg);
+  color: var(--bg);
+  padding: 0 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter .2s ease, transform .05s ease, background .3s ease, border-color .3s ease;
+}
+#gpt-form button:hover { filter: brightness(.92); }
+#gpt-form button:active { transform: translateY(1px); }
