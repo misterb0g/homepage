@@ -209,3 +209,13 @@ body {
 @media (max-width: 600px) {
   #bookmark-container { grid-template-columns: 1fr; width: 94%; }
 }
+/* Footer réseau (sous ChatGPT) */
+.footer-net {
+  width: min(920px, 94%);
+  margin: 0 auto 2rem;
+  display: flex;
+  justify-content: flex-end; /* badge aligné à droite */
+}
+
+/* Option : le rendre “collant” en bas de l’écran quand la page est courte */
+/* .footer-net { position: sticky; bottom: 1rem; z-index: 5; } */
