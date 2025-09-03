@@ -204,7 +204,7 @@
 
           const bot = addBubble('', 'bot', true);
           try {
-            const res = await fetch('https://homepage-beta-black.vercel.app/api/chat', {
+            const res = await fetch('https://homepage-beta-black.vercel.app/api/chat.js', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ prompt }),
