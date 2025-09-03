@@ -1,7 +1,7 @@
 /* =========================
-   Typo : Roboto (Google Fonts)
+   Typo : Inter (proche macOS SF)
    ========================= */
-:root { --fontFamily: 'Roboto', 'Noto Sans', 'Segoe UI', Helvetica, Arial, sans-serif; }
+:root { --fontFamily: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; }
 html, body, input, button, a, textarea, select { font-family: var(--fontFamily); }
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
@@ -247,7 +247,7 @@ body {
 .bookmark-inner-container::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
 
 .bookmark-title {
-  font-size: 1.05rem; font-weight: 700; color: var(--fg);
+  font-size: 1.05rem; font-weight: 600; color: var(--fg);
   margin: 0 0 .5rem 0; letter-spacing: .2px;
   transition: color .25s ease;
 }
@@ -287,9 +287,7 @@ body {
 /* =========================
    Switch clair/sombre (mini)
    ========================= */
-.switch {
-  display: inline-block; width: 40px; height: 20px;
-}
+.switch { display: inline-block; width: 40px; height: 20px; }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {
   position: relative; display: block; width: 100%; height: 100%; cursor: pointer;
@@ -312,7 +310,7 @@ input:checked + .slider:before { transform: translateX(20px); }
    ChatGPT bloc
    ========================= */
 #gpt-chat { width: min(920px, 94%); margin: 1rem auto 2.4rem; padding: var(--pad-card); color: var(--fg); }
-#gpt-chat h2 { margin: 0 0 .8rem 0; font-size: 1.1rem; font-weight: 700; letter-spacing: .2px; }
+#gpt-chat h2 { margin: 0 0 .8rem 0; font-size: 1.05rem; font-weight: 600; letter-spacing: .2px; }
 #gpt-messages {
   max-height: 320px; overflow-y: auto; padding-right: 6px; margin-bottom: .8rem;
   display: flex; flex-direction: column; gap: .5rem; scrollbar-width: thin; scrollbar-color: var(--scrollbarColor) transparent;
@@ -320,10 +318,10 @@ input:checked + .slider:before { transform: translateX(20px); }
 #gpt-messages::-webkit-scrollbar { width: 6px; }
 #gpt-messages::-webkit-scrollbar-track { background: transparent; }
 #gpt-messages::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
-.msg { padding: .6rem .8rem; border-radius: 12px; line-height: 1.4; white-space: pre-wrap; }
+.msg { padding: .6rem .8rem; border-radius: 12px; line-height: 1.45; white-space: pre-wrap; }
 .msg.you { align-self: flex-end; background: color-mix(in srgb, var(--fg) 12%, transparent); }
 .msg.bot { align-self: flex-start; background: color-mix(in srgb, var(--fg) 6%, transparent); }
-.msg.pending { opacity: .8; }
+.msg.pending { opacity: .85; }
 #gpt-form { display: grid; grid-template-columns: 1fr auto; gap: .6rem; }
 #gpt-form input[type="text"] {
   height: 48px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--fg);
@@ -341,6 +339,6 @@ input:checked + .slider:before { transform: translateX(20px); }
    Stats locale
    ========================= */
 #local-stats { width: min(920px, 94%); padding: var(--pad-card); }
-#local-stats h2 { margin: 0 0 .8rem 0; font-size: 1.1rem; font-weight: 700; }
+#local-stats h2 { margin: 0 0 .8rem 0; font-size: 1.05rem; font-weight: 600; }
 .stats-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
 #local-stats .hint { margin-top: .6rem; color: var(--secondaryFg); font-size: .85rem; }
