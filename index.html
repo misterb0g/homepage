@@ -13,26 +13,40 @@
     <link rel="icon" href="favicon.png" />
   </head>
   <body>
-    <!-- Switch clair/sombre (mini) -->
-    <label class="switch" aria-label="Basculer le thème clair/sombre">
-      <input type="checkbox" id="theme-toggle" />
-      <span class="slider"></span>
-    </label>
+    <!-- Barre fixe : switch thème + densité -->
+    <div class="top-controls">
+      <label class="switch" aria-label="Basculer le thème clair/sombre">
+        <input type="checkbox" id="theme-toggle" />
+        <span class="slider"></span>
+      </label>
+
+      <!-- Toggle densité (icône “police”) -->
+<button id="density-toggle" class="btn-icon" aria-pressed="false" title="Basculer densité (compacte/spacieuse)" aria-label="Basculer la densité">
+  <!-- Icône A avec flèche verticale -->
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <!-- Lettre A -->
+    <path d="M8.2 16h1.9l.6-1.7h2.7l.6 1.7h1.9L12.9 8h-1.8L8.2 16zm3.1-3.3l1-2.7 1 2.7h-2z" />
+    <!-- Flèche haut/bas au centre droit -->
+    <path d="M17 6.5l1.4 1.4-.9.9V9h-1V8.8l-.9-.9L17 6.5zm0 11l-1.4-1.4.9-.9V15h1v.2l.9.9L17 17.5zM16.5 9v6h1V9h-1z"/>
+  </svg>
+</button>
+    </div>
 
     <div class="container">
       <!-- Horloge -->
       <div id="clock" aria-label="Heure actuelle"></div>
 
-      <!-- Carte météo (Open-Meteo, Bruxelles) -->
-      <section class="card glass weather-container" aria-live="polite">
+      <!-- Météo : résumé (clic pour détails 5 jours) -->
+      <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" aria-controls="weather-details" title="Cliquer pour afficher les prévisions 5 jours">
         <div class="row">
           <div id="weather-description" class="inline"></div>
           <div class="inline">•</div>
           <div id="temp" class="inline"></div>
         </div>
       </section>
+      <section id="weather-details" class="card glass weather-details" hidden></section>
 
-      <!-- Spotlight : barre de recherche Google (centrée) -->
+      <!-- Spotlight : barre de recherche Google -->
       <form
         class="spotlight glass"
         action="https://www.google.com/search"
@@ -58,7 +72,7 @@
       <!-- Favoris -->
       <div id="bookmark-container"></div>
 
-      <!-- ===== ChatGPT (via /api/chat en streaming) ===== -->
+      <!-- ChatGPT (via /api/chat en streaming) -->
       <section id="gpt-chat" class="card glass">
         <h2>ChatGPT</h2>
         <div id="gpt-messages" aria-live="polite" aria-busy="false"></div>
@@ -74,14 +88,28 @@
           />
           <button type="submit">Envoyer</button>
         </form>
-        <p class="hint">Astuce : / ou ⌘K / Ctrl+K → focus sur la barre de recherche.</p>
+        <p class="hint">Astuce : / ou ⌘K / Ctrl+K → focus barre Google • Densité via l’icône “Aa” en haut à droite.</p>
+      </section>
+
+      <!-- Stats machine locale -->
+      <section id="local-stats" class="card glass" aria-live="polite">
+        <h2>Statut appareil</h2>
+        <ul id="stats-list" class="stats-list">
+          <li id="row-battery"><strong>Batterie :</strong> <span id="stat-battery">—</span></li>
+          <li id="row-network"><strong>Réseau :</strong> <span id="stat-network">—</span></li>
+          <li id="row-memory"><strong>Mémoire :</strong> <span id="stat-memory">—</span></li>
+        </ul>
+        <p class="hint">Certaines infos dépendent du navigateur (Safari iOS limite plusieurs APIs).</p>
       </section>
     </div>
 
-    <!-- Tes favoris -->
+    <!-- Favoris (données) -->
     <script src="bookmarks.js"></script>
 
     <script>
+      /* ========= Utilitaires ========= */
+      const $ = (sel, root = document) => root.querySelector(sel);
+
       /* ========= Horloge ========= */
       function getTime() {
         const d = new Date();
@@ -90,18 +118,24 @@
       }
 
       /* ========= Météo (Open-Meteo) ========= */
+      const BRU = { lat: 50.8503, lon: 4.3517, tz: 'Europe/Brussels' };
+
       function getWeather() {
-        const lat = 50.8503, lon = 4.3517; // Bruxelles
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=Europe%2FBrussels`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&current=temperature_2m,weather_code&timezone=${encodeURIComponent(BRU.tz)}`;
         fetch(url)
           .then((r) => r.json())
           .then((data) => {
             const t = Math.round(data.current.temperature_2m);
             const wcode = data.current.weather_code;
-            document.getElementById("temp").textContent = `${t} °C`;
-            document.getElementById("weather-description").textContent = weatherCodeToFr(wcode);
+            $("#temp").textContent = `${t} °C`;
+            $("#weather-description").textContent = weatherCodeToFr(wcode);
           })
           .catch((err) => console.error("Météo erreur:", err));
+      }
+
+      function getWeather5d() {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=5`;
+        return fetch(url).then((r) => r.json());
       }
 
       function weatherCodeToFr(code) {
@@ -119,7 +153,31 @@
         return map[code] ?? "Météo";
       }
 
-      /* ========= Favoris ========= */
+      function renderWeather5d(data) {
+        const days = data.daily.time.map((d, i) => ({
+          date: d,
+          code: data.daily.weather_code[i],
+          tmax: Math.round(data.daily.temperature_2m_max[i]),
+          tmin: Math.round(data.daily.temperature_2m_min[i]),
+        }));
+
+        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
+        const html = [
+          "<div class='weather5d'>",
+          ...days.map((day) => `
+            <div class="weather-day">
+              <div class="wd-date">${df.format(new Date(day.date))}</div>
+              <div class="wd-desc">${weatherCodeToFr(day.code)}</div>
+              <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
+            </div>
+          `),
+          "</div>"
+        ].join("");
+        const panel = $("#weather-details");
+        panel.innerHTML = html;
+      }
+
+      /* ========= Favoris (sans icônes) ========= */
       function setupBookmarks() {
         const el = document.getElementById("bookmark-container");
         el.innerHTML = bookmarks
@@ -128,9 +186,8 @@
             html.push(`<div class="bookmark-title">${b.title}</div>`);
             html.push('<div class="bookmark-inner-container">');
             html.push(
-              ...b.links.map(
-                (l) =>
-                  `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`
+              ...b.links.map((l) =>
+                `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`
               )
             );
             html.push("</div></section>");
@@ -157,6 +214,22 @@
         });
       })();
 
+      /* ========= Toggle densité (aligné au switch) ========= */
+      (function () {
+        const root = document.documentElement;
+        const btn = document.getElementById("density-toggle");
+        const saved = localStorage.getItem("density") || "cozy";
+        root.setAttribute("data-density", saved);
+        btn.setAttribute("aria-pressed", saved === "compact" ? "true" : "false");
+
+        btn.addEventListener("click", () => {
+          const current = root.getAttribute("data-density") === "compact" ? "cozy" : "compact";
+          root.setAttribute("data-density", current);
+          btn.setAttribute("aria-pressed", current === "compact" ? "true" : "false");
+          localStorage.setItem("density", current);
+        });
+      })();
+
       /* ========= Raccourcis type Spotlight ========= */
       window.addEventListener("keydown", (e) => {
         const spotlight = document.querySelector(".spotlight input[type='search']");
@@ -176,7 +249,7 @@
         }
       });
 
-      /* ========= ChatGPT (front streaming) ========= */
+      /* ========= ChatGPT (front streaming texte) ========= */
       (function () {
         const form = document.getElementById('gpt-form');
         const input = document.getElementById('gpt-input');
@@ -201,10 +274,7 @@
 
           const bot = addBubble('', 'bot', true);
           try {
-            // Si ta page n'est PAS servie par Vercel, remplace par l'URL complète :
-            // const API_URL = 'https://<ton-projet>.vercel.app/api/chat';
-            const API_URL = '/api/chat';
-
+            const API_URL = '/api/chat'; // ou l'URL complète si la page n'est pas servie par Vercel
             const res = await fetch(API_URL, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -228,7 +298,7 @@
               const { value, done } = await reader.read();
               if (done) break;
               acc += decoder.decode(value, { stream: true });
-              bot.textContent = acc;               // mise à jour incrémentale
+              bot.textContent = acc;
               messages.scrollTop = messages.scrollHeight;
             }
             bot.classList.remove('pending');
@@ -240,13 +310,109 @@
         });
       })();
 
+      /* ========= Stats machine locale (masque si non supporté) ========= */
+      async function setupLocalStats() {
+        const batteryRow = $("#row-battery");
+        const memoryRow  = $("#row-memory");
+        const batteryEl  = $("#stat-battery");
+        const netEl      = $("#stat-network");
+        const memEl      = $("#stat-memory");
+
+        // Batterie
+        let hasBattery = false;
+        if (navigator.getBattery) {
+          try {
+            const b = await navigator.getBattery();
+            const render = () => {
+              const pct = Math.round(b.level * 100) + "%";
+              batteryEl.textContent = (b.charging ? "⚡ " : "") + pct;
+            };
+            render();
+            b.addEventListener('levelchange', render);
+            b.addEventListener('chargingchange', render);
+            hasBattery = true;
+          } catch { /* ignore */ }
+        }
+        if (!hasBattery) batteryRow.style.display = "none";
+
+        // Réseau (toujours affiché, avec fallbacks)
+        const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (c) {
+          const renderNet = () => {
+            const eff = c.effectiveType || "n/a";
+            const down = c.downlink ? `${c.downlink} Mb/s` : "—";
+            netEl.textContent = `${eff} • ${down}`;
+          };
+          renderNet();
+          c.addEventListener('change', renderNet);
+        } else {
+          netEl.textContent = navigator.onLine ? "En ligne" : "Hors-ligne";
+          window.addEventListener('online', () => netEl.textContent = "En ligne");
+          window.addEventListener('offline', () => netEl.textContent = "Hors-ligne");
+        }
+
+        // Mémoire
+        let hasMemory = false;
+        const dm = navigator.deviceMemory;
+        const pm = performance && performance.memory ? performance.memory : null;
+        if (pm && pm.totalJSHeapSize) {
+          const mb = (pm.totalJSHeapSize / (1024 * 1024)).toFixed(0);
+          memEl.textContent = `JS Heap ~ ${mb} Mo${dm ? ` • RAM ~ ${dm} Go` : ""}`;
+          hasMemory = true;
+        } else if (dm) {
+          memEl.textContent = `RAM estimée ~ ${dm} Go`;
+          hasMemory = true;
+        }
+        if (!hasMemory) memoryRow.style.display = "none";
+
+        // Si rien d’utile, on peut masquer tout le bloc
+        if (!hasBattery && !hasMemory && !navigator.onLine && !c) {
+          document.getElementById("local-stats").style.display = "none";
+        }
+      }
+
+      /* ========= Interactions météo ========= */
+      (function () {
+        const weatherCard = $("#weather");
+        const details = $("#weather-details");
+        let loaded = false;
+
+        async function toggleDetails() {
+          const isHidden = details.hasAttribute("hidden");
+          if (isHidden && !loaded) {
+            try {
+              const data = await getWeather5d();
+              renderWeather5d(data);
+              loaded = true;
+            } catch (e) {
+              details.innerHTML = "<div class='wd-error'>Impossible de charger les prévisions.</div>";
+            }
+          }
+          details.toggleAttribute("hidden");
+          const expanded = !details.hasAttribute("hidden");
+          weatherCard.setAttribute("aria-expanded", expanded ? "true" : "false");
+        }
+
+        weatherCard.addEventListener("click", toggleDetails);
+        weatherCard.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleDetails();
+          }
+        });
+      })();
+
       /* ========= Init ========= */
       window.addEventListener("load", () => {
-        setupBookmarks();
-        getWeather();
+        // Horloge
         const clock = document.getElementById("clock");
         clock.textContent = getTime();
         setInterval(() => (clock.textContent = getTime()), 1000);
+
+        // Données
+        setupBookmarks();
+        getWeather();
+        setupLocalStats();
       });
     </script>
   </body>
