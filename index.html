@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css" />
-    <link href="favicon.png" rel="icon" />
+    <link rel="icon" href="favicon.png" />
   </head>
   <body>
     <!-- Switch clair/sombre (mini) -->
@@ -57,6 +57,27 @@
 
       <!-- Favoris -->
       <div id="bookmark-container"></div>
+
+      <!-- ===== ChatGPT (via endpoint serveur) ===== -->
+      <section id="gpt-chat" class="card glass">
+        <h2>ChatGPT</h2>
+
+        <div id="gpt-messages" aria-live="polite" aria-busy="false"></div>
+
+        <form id="gpt-form" autocomplete="off">
+          <input
+            id="gpt-input"
+            type="text"
+            name="prompt"
+            placeholder="Pose ta question…"
+            inputmode="text"
+            required
+            aria-label="Message pour ChatGPT"
+          />
+          <button type="submit">Envoyer</button>
+        </form>
+        <p class="hint">Ta requête passe par ton endpoint sécurisé (clé protégée côté serveur).</p>
+      </section>
     </div>
 
     <script src="bookmarks.js"></script>
@@ -152,12 +173,62 @@
           spotlight.focus();
           return;
         }
-
         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
           e.preventDefault();
           spotlight.focus();
         }
       });
+
+      // ChatGPT frontend minimal (stream lecture)
+      (function () {
+        const form = document.getElementById('gpt-form');
+        const input = document.getElementById('gpt-input');
+        const messages = document.getElementById('gpt-messages');
+
+        function addBubble(text, who = 'you', pending = false) {
+          const div = document.createElement('div');
+          div.className = `msg ${who}` + (pending ? ' pending' : '');
+          div.textContent = text;
+          messages.appendChild(div);
+          messages.scrollTop = messages.scrollHeight;
+          return div;
+        }
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const prompt = input.value.trim();
+          if (!prompt) return;
+
+          addBubble(prompt, 'you');
+          input.value = '';
+
+          const bot = addBubble('', 'bot', true);
+          try {
+            const res = await fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt }),
+            });
+            if (!res.ok || !res.body) throw new Error('API error');
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let acc = '';
+            for (;;) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              acc += decoder.decode(value, { stream: true });
+              bot.textContent = acc;
+              messages.scrollTop = messages.scrollHeight;
+            }
+            bot.classList.remove('pending');
+          } catch (err) {
+            bot.classList.remove('pending');
+            bot.textContent = "Oups, impossible d'obtenir une réponse.";
+            console.error(err);
+          }
+        });
+      })();
 
       // Init
       window.addEventListener("load", () => {
