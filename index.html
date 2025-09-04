@@ -375,31 +375,35 @@
         })();
 
         // Événements à venir (via /api/calendar)
-        (async function setupEvents() {
-          const el = $("#cc-events");
-          try {
-            const r = await fetch('/api/calendar');
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            const { events } = await r.json();
-            if (!events || !events.length) { el.textContent = "Aucun événement à venir."; return; }
-            const fmtDate = new Intl.DateTimeFormat('fr-BE', { weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-            el.innerHTML = events.map(ev => {
-              const when = ev.start ? fmtDate.format(new Date(ev.start)) : '';
-              const loc = ev.location ? `<div class="evt-loc">${ev.location}</div>` : '';
-              return `<div class="evt">
-                <div class="evt-when">${when}</div>
-                <div class="evt-title">${escapeHTML(ev.summary)}</div>
-                ${loc}
-              </div>`;
-            }).join("");
-          } catch (e) {
-            el.textContent = "Impossible de charger les événements.";
-            console.error(e);
-          }
-          function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-        })();
+(async function setupEvents() {
+  const el = document.getElementById('cc-events');
+  try {
+    const r = await fetch('/api/calendar');
+    const text = await r.text(); // lis d’abord le texte
+    if (!r.ok) {
+      el.textContent = `Erreur API (${r.status}) : ${text}`;
+      return;
+    }
+    const data = JSON.parse(text);
+    const events = data.events || [];
+    if (!events.length) { el.textContent = "Aucun événement à venir."; return; }
 
-        // Notes
+    const fmtDate = new Intl.DateTimeFormat('fr-BE', { weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    el.innerHTML = events.map(ev => {
+      const when = ev.start ? fmtDate.format(new Date(ev.start)) : '';
+      const loc = ev.location ? `<div class="evt-loc">${escapeHTML(ev.location)}</div>` : '';
+      return `<div class="evt">
+        <div class="evt-when">${when}</div>
+        <div class="evt-title">${escapeHTML(ev.summary)}</div>
+        ${loc}
+      </div>`;
+    }).join("");
+  } catch (e) {
+    el.textContent = `Impossible de charger les événements : ${String(e)}`;
+    console.error(e);
+  }
+  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+})();        // Notes
         (function setupNotes() {
           const ta = $("#cc-notes");
           const KEY = "cc_notes_v1";
