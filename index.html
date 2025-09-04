@@ -29,6 +29,9 @@
       </form>
       <div id="chat-output" aria-live="polite"></div>
     </section>
+
+    <!-- === MODULES / COLONNES DE FAVORIS === -->
+    <section id="boards" class="boards" aria-label="Favoris"></section>
   </main>
 
   <!-- Control Center -->
@@ -54,8 +57,11 @@
     </div>
   </aside>
 
+  <!-- Ton fichier de données -->
+  <script src="bookmarks.js"></script>
+
   <script>
-  // ============ Météo (Open-Meteo, Bruxelles) ============
+  /* ============ MÉTÉO (Open-Meteo, Bruxelles) ============ */
   (async function setupWeather() {
     const el = document.getElementById('weather');
     try {
@@ -70,7 +76,7 @@
     }
   })();
 
-  // ============ ChatGPT (frontend minimal) ============
+  /* ============ CHATGPT ============ */
   const chatForm = document.getElementById('chat-form');
   const chatInput = document.getElementById('chat-input');
   const chatOutput = document.getElementById('chat-output');
@@ -95,11 +101,63 @@
     }
   });
 
-  // ============ Événements (Aujourd’hui / Demain / Plus tard) ============
+  /* ============ MODULES / COLONNES (rendu tolérant) ============ */
+  (function renderBoards() {
+    const root = document.getElementById('boards');
+
+    // essaie plusieurs conventions possibles
+    const picks = [
+      window.BOOKMARKS?.sections,
+      window.BOOKMARKS?.cols,
+      window.BOOKMARKS,
+      window.SECTIONS,
+      window.COLUMNS
+    ].filter(Boolean);
+
+    let sections = [];
+    for (const c of picks) {
+      if (Array.isArray(c)) { sections = c; break; }
+      if (typeof c === 'object') { sections = Object.values(c); break; }
+    }
+    if (!Array.isArray(sections) || !sections.length) {
+      root.innerHTML = '<div class="boards-empty">Aucun module trouvé (bookmarks.js).</div>';
+      return;
+    }
+
+    const normLinks = (linksLike) => {
+      if (!linksLike) return [];
+      // Accepte items|links|entries
+      const arr = linksLike.items || linksLike.links || linksLike.entries || linksLike;
+      if (!Array.isArray(arr)) return [];
+      return arr.map(x => {
+        if (typeof x === 'string') return { label: x, url: x };
+        return {
+          label: x.label || x.name || x.title || x.text || 'Lien',
+          url:   x.url   || x.href || '#'
+        };
+      });
+    };
+
+    const html = sections.map((s) => {
+      const title = s.title || s.name || s.header || 'Section';
+      const links = normLinks(s);
+      const items = links.map(l => `<li><a href="${escapeAttr(l.url)}" target="_blank" rel="noopener">${escapeHTML(l.label)}</a></li>`).join('');
+      return `<article class="board">
+        <h3 class="board-title">${escapeHTML(title)}</h3>
+        <ul class="board-list">${items}</ul>
+      </article>`;
+    }).join('');
+
+    root.innerHTML = html;
+  })();
+
+  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function escapeAttr(s){ return String(s||'').replace(/"/g,'&quot;'); }
+
+  /* ============ ÉVÉNEMENTS (Aujourd’hui / Demain / Plus tard) ============ */
   (async function setupEvents() {
     const el = document.getElementById('cc-events');
     try {
-      // Ajuste à 14/30/60 jours si besoin
       const r = await fetch('/api/calendar?days=30', { cache: 'no-store' });
       const text = await r.text();
       if (!r.ok) { el.textContent = `Erreur API (${r.status}) : ${text}`; return; }
@@ -155,11 +213,9 @@
       el.textContent = "Impossible de charger les événements.";
       console.error('Events:', e);
     }
-
-    function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
   })();
 
-  // ============ Réseau & Batterie & Notes (facultatif léger) ============
+  /* ============ Réseau, Batterie, Notes ============ */
   (function setupNetwork() {
     const el = document.getElementById('cc-network');
     const update = () => el.textContent = navigator.onLine ? 'En ligne' : 'Hors ligne';
@@ -172,10 +228,7 @@
     try {
       if (!navigator.getBattery) { el.textContent = 'Non disponible'; return; }
       const b = await navigator.getBattery();
-      const render = () => {
-        const pct = Math.round(b.level * 100);
-        el.textContent = `${pct}% ${b.charging ? '⚡︎' : ''}`;
-      };
+      const render = () => { const pct = Math.round(b.level * 100); el.textContent = `${pct}% ${b.charging ? '⚡︎' : ''}`; };
       ['levelchange','chargingchange'].forEach(ev => b.addEventListener(ev, render));
       render();
     } catch { el.textContent = 'Non disponible'; }
