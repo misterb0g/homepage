@@ -109,69 +109,106 @@ async function fetchICS(url, { timeoutMs = 12000 } = {}) {
 }
 
 export default async function handler(req, res) {
-  setCors(res, req.headers.origin || '');
+  // CORS (garde ton setCors existant si tu l'as déjà)
+  const ALLOWED_ORIGINS = new Set(['https://start.bogarts.be']);
+  const allow = ALLOWED_ORIGINS.has(req.headers.origin || '') ? req.headers.origin : 'https://start.bogarts.be';
+  res.setHeader('content-type', 'application/json; charset=utf-8');
+  res.setHeader('access-control-allow-origin', allow);
+  res.setHeader('access-control-allow-methods', 'GET, OPTIONS');
+  res.setHeader('access-control-allow-headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
-  }
-  if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method Not Allowed' });
-    return;
-  }
+  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+  if (req.method !== 'GET') { res.status(405).json({ error: 'Method Not Allowed' }); return; }
+
+  const debug = (req.query && (req.query.debug === '1' || req.query.debug === 'true'));
 
   try {
-const envUrls = [
-  process.env.CAL1_ICS_URL,
-  process.env.CAL2_ICS_URL,
-  process.env.CAL3_ICS_URL,
-  process.env.CAL4_ICS_URL,
-  process.env.CAL5_ICS_URL,
-  process.env.CAL6_ICS_URL,
-  process.env.CAL7_ICS_URL,
-  process.env.CAL8_ICS_URL,
-].filter(Boolean);    // @ts-ignore
-    const fallbackUrls = typeof FALLBACK_ICS_URLS !== 'undefined' ? FALLBACK_ICS_URLS : [];
-    const urls = envUrls.length ? envUrls : fallbackUrls;
+    // === LECTURE DES URLS ICS ===
+    // Option A : plusieurs variables fixes
+    const fixedEnvUrls = [
+      process.env.CAL1_ICS_URL,
+      process.env.CAL2_ICS_URL,
+      process.env.CAL3_ICS_URL,
+      process.env.CAL4_ICS_URL,
+      process.env.CAL5_ICS_URL,
+    ].filter(Boolean);
+
+    // Option B : une seule variable "CAL_ICS_URLS" séparée par des virgules
+    const listEnvUrls = (process.env.CAL_ICS_URLS || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const envUrls = (listEnvUrls.length ? listEnvUrls : fixedEnvUrls);
+
+    // (Facultatif) Fallback local commenté
+    // const FALLBACK_ICS_URLS = [...];
+
+    const urls = envUrls /* .concat(FALLBACK_ICS_URLS || []) */;
 
     if (!urls.length) {
-      res.status(200).json({
-        events: [],
-        error: 'No ICS URLs configured',
-        hint: 'Ajoute CAL1_ICS_URL / CAL2_ICS_URL (Vercel) ou dé-commente FALLBACK_ICS_URLS pour tester.',
-      });
-      return;
+      const body = { events: [], error: 'No ICS URLs configured', hint: 'Ajoute CAL1_ICS_URL/CAL2_ICS_URL ou CAL_ICS_URLS en Production et redeploy.' };
+      return res.status(200).json(debug ? { ...body, debug: { envUrls } } : body);
     }
 
-    // Récupère toutes les sources ICS en parallèle (avec timeouts)
-    const arrays = await Promise.all(urls.map(u => fetchICS(u).catch(err => {
-      // On loggue l’erreur d’une source mais on n’empêche pas les autres
-      return { __ics_error: String(err) };
-    })));
+    // === FETCH AVEC TIMEOUT + USER-AGENT ===
+    const fetchICS = async (url, { timeoutMs = 12000 } = {}) => {
+      const ctrl = new AbortController();
+      const to = setTimeout(() => ctrl.abort('timeout'), timeoutMs);
+      try {
+        const r = await fetch(url, {
+          redirect: 'follow',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; HomepageICS/1.0; +https://start.bogarts.be)',
+            'Accept': 'text/calendar, text/plain, */*',
+            'Cache-Control': 'no-cache',
+          },
+          signal: ctrl.signal,
+        });
+        if (!r.ok) throw new Error(`ICS HTTP ${r.status}`);
+        const text = await r.text();
+        return { url, events: parseICS(text) };
+      } finally {
+        clearTimeout(to);
+      }
+    };
 
-    // Aplatis + filtre erreurs
-    const all = arrays.flat().filter(e => !e.__ics_error);
+    // === RÉCUPÈRE CHAQUE SOURCE ET COMPTE ===
+    const results = await Promise.all(urls.map(u =>
+      fetchICS(u).catch(err => ({ url: u, error: String(err && err.message ? err.message : err) }))
+    ));
 
+    const perUrl = results.map(r => ({
+      url: r.url,
+      count: Array.isArray(r.events) ? r.events.length : 0,
+      error: r.error || null,
+    }));
+
+    // Aplatis les évènements valides
+    const all = results.flatMap(r => Array.isArray(r.events) ? r.events : []);
+
+    // === FENÊTRE : 30 jours (temporaire pour tester) ===
     const now = Date.now();
-    const in14 = now + 14 * 24 * 3600 * 1000;
+    const inDays = 30; // passe à 14 ensuite si tu veux
+    const horizon = now + inDays * 24 * 3600 * 1000;
 
     const upcoming = all
       .filter(e => {
         const ts = e.start ? Date.parse(e.start) : 0;
-        return ts >= now && ts <= in14;
+        return ts >= now && ts <= horizon;
       })
       .sort((a, b) => Date.parse(a.start) - Date.parse(b.start))
-      .slice(0, 50);
+      .slice(0, 80);
 
-    res.status(200).json({
-      events: upcoming,
-      count: upcoming.length,
-      // debug: arrays.filter(x => x.__ics_error).map(x => x.__ics_error) // décommente si besoin
-    });
+    const body = { events: upcoming, count: upcoming.length };
+
+    // En mode debug, renvoyer le détail par URL (très utile pour savoir lequel “ne parle pas”)
+    return res.status(200).json(debug ? { ...body, debug: { urlsUsed: urls, perUrl } } : body);
+
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       error: String(err?.message || err),
-      note: 'Souvent un blocage réseau/redirect ou un timeout ICS. Vérifie les URLs (Secret iCal) et les variables d’env.',
+      note: 'Vérifie les variables d’env (Production), la validité des URLs ICS, et réessaie.',
     });
   }
 }
