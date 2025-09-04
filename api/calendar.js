@@ -1,19 +1,15 @@
-// /api/calendar.js — runtime Node.js (pas Edge)
+// /api/calendar.js — runtime Node.js (plus robuste que Edge)
 export const config = { runtime: 'nodejs' };
 
-// --- Décommente pour tester en local sans variables d'env ---
-const FALLBACK_ICS_URLS = [
-"https://calendar.google.com/calendar/ical/family11188397262878417961%40group.calendar.google.com/private-bca8406e5702a1ee390473ac16f27d36/basic.ics",
-//   "https://calendar.google.com/calendar/ical/YYYYYYYYYYYY/basic.ics"
- ];
-
 const ALLOWED_ORIGINS = new Set([
-  'https://start.bogarts.be',
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'http://localhost',
-  'http://127.0.0.1',
+  'https://start.bogarts.be'
 ]);
+
+// --- Décommente pour tester en local sans variables d'env ---
+// const FALLBACK_ICS_URLS = [
+//   "https://calendar.google.com/calendar/ical/XXXXXXXXXXXX/basic.ics",
+//   "https://calendar.google.com/calendar/ical/YYYYYYYYYYYY/basic.ics"
+// ];
 
 function corsHeaders(req) {
   const origin = req.headers.get?.('origin') || '';
@@ -26,8 +22,9 @@ function corsHeaders(req) {
   };
 }
 
-// Unfold + parse minimal VEVENT
+// Parser ICS minimal
 function parseICS(icsText) {
+  // Dépliage des lignes (RFC5545)
   const rawLines = icsText.split(/\r?\n/);
   const lines = [];
   for (let i = 0; i < rawLines.length; i++) {
@@ -35,24 +32,40 @@ function parseICS(icsText) {
     if (line.startsWith(' ')) lines[lines.length - 1] += line.slice(1);
     else lines.push(line);
   }
+
   const events = []; let cur = null;
   const flush = () => { if (cur) events.push(cur); cur = null; };
+
   for (const line of lines) {
     if (line === 'BEGIN:VEVENT') { cur = {}; continue; }
     if (line === 'END:VEVENT')   { flush(); continue; }
     if (!cur) continue;
-    if (line.startsWith('DTSTART')) { const i=line.indexOf(':'); cur.startRaw=(i>-1?line.slice(i+1):'').trim(); }
-    else if (line.startsWith('DTEND')) { const i=line.indexOf(':'); cur.endRaw=(i>-1?line.slice(i+1):'').trim(); }
-    else if (line.startsWith('SUMMARY')) { const i=line.indexOf(':'); cur.summary=(i>-1?line.slice(i+1):'').trim(); }
-    else if (line.startsWith('LOCATION')) { const i=line.indexOf(':'); cur.location=(i>-1?line.slice(i+1):'').trim(); }
+
+    if (line.startsWith('DTSTART')) {
+      const idx = line.indexOf(':');
+      cur.startRaw = (idx > -1 ? line.slice(idx + 1) : '').trim();
+    } else if (line.startsWith('DTEND')) {
+      const idx = line.indexOf(':');
+      cur.endRaw = (idx > -1 ? line.slice(idx + 1) : '').trim();
+    } else if (line.startsWith('SUMMARY')) {
+      const idx = line.indexOf(':');
+      cur.summary = (idx > -1 ? line.slice(idx + 1) : '').trim();
+    } else if (line.startsWith('LOCATION')) {
+      const idx = line.indexOf(':');
+      cur.location = (idx > -1 ? line.slice(idx + 1) : '').trim();
+    }
   }
+
   const norm = (s) => {
     if (!s) return null;
-    if (/^\d{8}$/.test(s))  return new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T00:00:00`).toISOString();
+    if (/^\d{8}$/.test(s))  // All-day
+      return new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T00:00:00`).toISOString();
     if (/^\d{8}T\d{6}Z$/.test(s)) return new Date(s).toISOString();
-    if (/^\d{8}T\d{6}$/.test(s))  return new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${s.slice(9,11)}:${s.slice(11,13)}:${s.slice(13,15)}`).toISOString();
+    if (/^\d{8}T\d{6}$/.test(s))  // local time
+      return new Date(`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}T${s.slice(9,11)}:${s.slice(11,13)}:${s.slice(13,15)}`).toISOString();
     const d = new Date(s); return isNaN(d) ? null : d.toISOString();
   };
+
   return events.map(e => ({
     summary: e.summary || '(Sans titre)',
     location: e.location || '',
@@ -62,15 +75,12 @@ function parseICS(icsText) {
 }
 
 async function fetchICS(url) {
-  // Certains serveurs (Google) aiment bien un UA + Accept explicites
   const r = await fetch(url, {
-    // @ts-ignore (Node runtime supporte agent/redirect)
     redirect: 'follow',
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; HomepageICS/1.0; +https://start.bogarts.be)',
       'Accept': 'text/calendar, text/plain, */*',
       'Cache-Control': 'no-cache',
-      'Pragma': 'no-cache',
     },
   });
   if (!r.ok) throw new Error(`ICS HTTP ${r.status} for ${url}`);
@@ -113,7 +123,7 @@ export default async function handler(req) {
   } catch (err) {
     return new Response(JSON.stringify({
       error: String(err?.message || err),
-      note: 'Souvent un blocage réseau/redirect côté ICS. Vérifie les URLs (Secret iCal) et réessaie en Node runtime.',
+      note: 'Souvent un blocage réseau/redirect côté ICS. Vérifie les URLs (Secret iCal) et les variables d’env.',
     }), { headers: corsHeaders(req), status: 500 });
   }
 }
