@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Homepage</title>
 
-    <!-- Perf Fonts: preconnect + Inter (proche de SF) -->
+    <!-- Perf Fonts: preconnect + Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -15,21 +15,85 @@
     <link rel="icon" href="favicon.png" />
   </head>
   <body>
-    <!-- Barre fixe : switch thème + densité -->
+    <!-- Barre fixe : thème (icône), densité, Control Center -->
     <div class="top-controls">
-      <label class="switch" aria-label="Basculer le thème clair/sombre">
-        <input type="checkbox" id="theme-toggle" />
-        <span class="slider"></span>
-      </label>
+      <!-- Bouton thème (icône monochrome) -->
+      <button id="theme-toggle-btn" class="btn-icon" aria-pressed="false" title="Basculer clair/sombre" aria-label="Basculer le thème">
+        <svg id="theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <!-- Soleil par défaut -->
+          <path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/>
+          <circle cx="12" cy="12" r="4.5"/>
+        </svg>
+      </button>
 
-      <!-- Toggle densité (icône “A ↕︎”) -->
       <button id="density-toggle" class="btn-icon" aria-pressed="false" title="Basculer densité (compacte/spacieuse)" aria-label="Basculer la densité">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path d="M8.2 16h1.9l.6-1.7h2.7l.6 1.7h1.9L12.9 8h-1.8L8.2 16zm3.1-3.3l1-2.7 1 2.7h-2z" />
           <path d="M17 6.5l1.4 1.4-.9.9V9h-1V8.8l-.9-.9L17 6.5zm0 11l-1.4-1.4.9-.9V15h1v.2l.9.9L17 17.5zM16.5 9v6h1V9h-1z"/>
         </svg>
       </button>
+
+      <!-- Bouton Control Center (sidebar) -->
+      <button id="cc-toggle" class="btn-icon" aria-expanded="false" aria-controls="control-center" title="Ouvrir le Control Center" aria-label="Ouvrir le Control Center">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm9 3.5a7.7 7.7 0 0 0-.1-1l2-1.5-1.8-3.1-2.4 1a7.7 7.7 0 0 0-1.7-1l-.3-2.6h-3.6l-.3 2.6a7.7 7.7 0 0 0-1.7 1l-2.4-1-1.8 3.1 2 1.5a7.7 7.7 0 0 0-.1 1c0 .34.03.67.08 1l-1.98 1.47 1.8 3.1 2.37-.96c.5.39 1.07.72 1.68.97l.31 2.62h3.6l.31-2.62c.61-.25 1.18-.58 1.68-.97l2.37.96 1.8-3.1-1.98-1.47c.05-.33.08-.66.08-1z"/>
+        </svg>
+      </button>
     </div>
+
+    <!-- Sidebar Control Center -->
+    <aside id="control-center" class="cc-panel" aria-hidden="true">
+      <div class="cc-header">
+        <h3>Control Center</h3>
+        <button id="cc-close" class="btn-icon small" aria-label="Fermer">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="cc-content">
+        <!-- Réseau -->
+        <section class="cc-card">
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18a10 10 0 0 1 20 0h-2a8 8 0 0 0-16 0H2zm4 0a6 6 0 0 1 12 0h-2a4 4 0 0 0-8 0H6zm4 0a2 2 0 1 1 4 0h-4z"/></svg>
+            <span>Réseau</span>
+          </div>
+          <div class="cc-row"><span id="cc-net-state">—</span></div>
+          <div class="cc-row sub" id="cc-net-extra">—</div>
+        </section>
+
+        <!-- Batterie (si disponible) -->
+        <section class="cc-card" id="cc-battery-card" hidden>
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24"><path d="M16 7H5a3 3 0 0 0-3 3v4a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3V10a3 3 0 0 0-3-3zm5 4v2a1 1 0 0 1-2 0v-2a1 1 0 1 1 2 0z"/></svg>
+            <span>Batterie</span>
+          </div>
+          <div class="cc-row"><span id="cc-batt-level">—</span></div>
+          <div class="cc-row sub" id="cc-batt-status">—</div>
+        </section>
+
+        <!-- Événements à venir (via ICS) -->
+        <section class="cc-card">
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
+            <span>À venir (14 jours)</span>
+          </div>
+          <div id="cc-events" class="cc-events" aria-live="polite">Chargement…</div>
+        </section>
+
+        <!-- Notes -->
+        <section class="cc-card">
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5"/></svg>
+            <span>Notes rapides</span>
+          </div>
+          <textarea id="cc-notes" placeholder="Écrire une note…"></textarea>
+          <div class="cc-row sub">Astuce : les notes sont enregistrées automatiquement sur cet appareil.</div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- Overlay cliquable -->
+    <div id="cc-overlay" class="cc-overlay" hidden></div>
 
     <div class="container">
       <!-- Horloge -->
@@ -46,25 +110,8 @@
       <section id="weather-details" class="card glass weather-details" hidden></section>
 
       <!-- Spotlight : barre de recherche Google -->
-      <form
-        class="spotlight glass"
-        action="https://www.google.com/search"
-        method="GET"
-        target="_self"
-        role="search"
-        aria-label="Recherche"
-      >
-        <input
-          type="search"
-          name="q"
-          placeholder="Rechercher…"
-          inputmode="search"
-          autocapitalize="off"
-          autocorrect="off"
-          spellcheck="false"
-          required
-          aria-label="Votre recherche"
-        />
+      <form class="spotlight glass" action="https://www.google.com/search" method="GET" target="_self" role="search" aria-label="Recherche">
+        <input type="search" name="q" placeholder="Rechercher…" inputmode="search" autocapitalize="off" autocorrect="off" spellcheck="false" required aria-label="Votre recherche" />
         <button type="submit" class="visually-hidden">Rechercher</button>
       </form>
 
@@ -76,15 +123,7 @@
         <h2>ChatGPT</h2>
         <div id="gpt-messages" aria-live="polite" aria-busy="false"></div>
         <form id="gpt-form" autocomplete="off">
-          <input
-            id="gpt-input"
-            type="text"
-            name="prompt"
-            placeholder="Pose ta question…"
-            inputmode="text"
-            required
-            aria-label="Message pour ChatGPT"
-          />
+          <input id="gpt-input" type="text" name="prompt" placeholder="Pose ta question…" inputmode="text" required aria-label="Message pour ChatGPT" />
           <button type="submit">Envoyer</button>
         </form>
         <p class="hint">Astuce : / ou ⌘K / Ctrl+K → focus barre Google • Densité via l’icône “A↕︎”.</p>
@@ -113,43 +152,31 @@
       /* ========= Météo (Open-Meteo) ========= */
       const BRU = { lat: 50.8503, lon: 4.3517, tz: 'Europe/Brussels' };
 
-      // PATCH robuste : gère current{} et current_weather{}
       function getWeather() {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&current=temperature_2m,weather_code&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=1`;
-
         fetch(url)
-          .then(r => {
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            return r.json();
-          })
+          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
           .then(data => {
             let t = data?.current?.temperature_2m;
             let wcode = data?.current?.weather_code;
 
-            if (t == null && data?.current_weather?.temperature != null) {
-              t = Math.round(data.current_weather.temperature);
-            } else if (t != null) {
-              t = Math.round(t);
-            }
-            if (wcode == null && data?.current_weather?.weathercode != null) {
-              wcode = data.current_weather.weathercode;
-            }
+            if (t == null && data?.current_weather?.temperature != null) t = Math.round(data.current_weather.temperature);
+            else if (t != null) t = Math.round(t);
+            if (wcode == null && data?.current_weather?.weathercode != null) wcode = data.current_weather.weathercode;
 
             if (t == null || wcode == null) throw new Error("Structure inattendue de la réponse météo");
-
-            document.getElementById("temp").textContent = `${t} °C`;
-            document.getElementById("weather-description").textContent = weatherCodeToFr(wcode);
+            $("#temp").textContent = `${t} °C`;
+            $("#weather-description").textContent = weatherCodeToFr(wcode);
           })
           .catch(err => {
             console.error("Météo (current) erreur:", err);
-            const card = document.getElementById("weather");
+            const card = $("#weather");
             if (card) card.innerHTML = `<div class="inline">Météo indisponible</div>`;
           });
       }
 
-      // Cache local 5 jours (TTL 1h) + validations + fallback cache si réseau HS
       const WEATHER_CACHE_KEY = 'weather5d_cache_v1';
-      const WEATHER_TTL_MS = 60 * 60 * 1000; // 1 heure
+      const WEATHER_TTL_MS = 60 * 60 * 1000;
 
       function getWeather5dCached() {
         try {
@@ -159,18 +186,11 @@
             if (data && Date.now() - ts < WEATHER_TTL_MS) return Promise.resolve(data);
           }
         } catch {}
-
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=5`;
-
         return fetch(url)
-          .then(r => {
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            return r.json();
-          })
+          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
           .then(data => {
-            if (!data?.daily?.time || !data?.daily?.weather_code) {
-              throw new Error("Structure inattendue daily");
-            }
+            if (!data?.daily?.time || !data?.daily?.weather_code) throw new Error("Structure inattendue daily");
             try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
             return data;
           })
@@ -178,99 +198,79 @@
             console.error("Météo (5j) erreur:", err);
             try {
               const raw = localStorage.getItem(WEATHER_CACHE_KEY);
-              if (raw) {
-                const { data } = JSON.parse(raw);
-                if (data) return data;
-              }
+              if (raw) { const { data } = JSON.parse(raw); if (data) return data; }
             } catch {}
             throw err;
           });
       }
 
       function weatherCodeToFr(code) {
-        const map = {
-          0: "Ciel dégagé", 1: "Plutôt dégagé", 2: "Partiellement nuageux", 3: "Couvert",
-          45: "Brouillard", 48: "Brouillard givrant",
-          51: "Bruine légère", 53: "Bruine", 55: "Bruine forte",
-          61: "Pluie légère", 63: "Pluie", 65: "Pluie forte",
-          66: "Pluie verglaçante légère", 67: "Pluie verglaçante forte",
-          71: "Neige légère", 73: "Neige", 75: "Neige forte", 77: "Grains de neige",
-          80: "Averses faibles", 81: "Averses", 82: "Averses fortes",
-          85: "Averses de neige faibles", 86: "Averses de neige fortes",
-          95: "Orages", 96: "Orages (grésil)", 99: "Orages (grêle)"
-        };
+        const map = {0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine légère",53:"Bruine",55:"Bruine forte",61:"Pluie légère",63:"Pluie",65:"Pluie forte",66:"Pluie verglaçante légère",67:"Pluie verglaçante forte",71:"Neige légère",73:"Neige",75:"Neige forte",77:"Grains de neige",80:"Averses faibles",81:"Averses",82:"Averses fortes",85:"Averses de neige faibles",86:"Averses de neige fortes",95:"Orages",96:"Orages (grésil)",99:"Orages (grêle)"};
         return map[code] ?? "Météo";
       }
 
       function renderWeather5d(data) {
-        const days = data.daily.time.map((d, i) => ({
-          date: d,
-          code: data.daily.weather_code[i],
-          tmax: Math.round(data.daily.temperature_2m_max[i]),
-          tmin: Math.round(data.daily.temperature_2m_min[i]),
-        }));
-
+        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) }));
         const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
-        const html = [
-          "<div class='weather5d'>",
-          ...days.map((day) => `
-            <div class="weather-day">
-              <div class="wd-date">${df.format(new Date(day.date))}</div>
-              <div class="wd-desc">${weatherCodeToFr(day.code)}</div>
-              <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
-            </div>
-          `),
-          "</div>"
-        ].join("");
-        const panel = document.getElementById("weather-details");
-        panel.innerHTML = html;
+        const html = ["<div class='weather5d'>", ...days.map((day) => `
+          <div class="weather-day">
+            <div class="wd-date">${df.format(new Date(day.date))}</div>
+            <div class="wd-desc">${weatherCodeToFr(day.code)}</div>
+            <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
+          </div>`), "</div>"].join("");
+        $("#weather-details").innerHTML = html;
       }
 
-      /* ========= Favoris (texte) ========= */
+      /* ========= Favoris ========= */
       function setupBookmarks() {
-        const el = document.getElementById("bookmark-container");
-        el.innerHTML = bookmarks
-          .map((b) => {
-            const html = ["<section class='bookmark-set card glass'>"];
-            html.push(`<div class="bookmark-title">${b.title}</div>`);
-            html.push('<div class="bookmark-inner-container">');
-            html.push(
-              ...b.links.map((l) =>
-                `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`
-              )
-            );
-            html.push("</div></section>");
-            return html.join("");
-          })
-          .join("");
+        const el = $("#bookmark-container");
+        el.innerHTML = bookmarks.map((b) => {
+          const html = ["<section class='bookmark-set card glass'>"];
+          html.push(`<div class="bookmark-title">${b.title}</div>`);
+          html.push('<div class="bookmark-inner-container">');
+          html.push(...b.links.map((l) => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`));
+          html.push("</div></section>");
+          return html.join("");
+        }).join("");
       }
 
-      /* ========= Switch clair/sombre ========= */
+      /* ========= Switch clair/sombre (icône) ========= */
       (function () {
         const root = document.documentElement;
-        const toggle = document.getElementById("theme-toggle");
-        const saved = localStorage.getItem("theme");
-        if (saved === "light" || saved === "dark") {
-          root.setAttribute("data-theme", saved);
-          toggle.checked = saved === "light";
-        } else {
-          toggle.checked = !matchMedia("(prefers-color-scheme: dark)").matches;
+        const btn = $("#theme-toggle-btn");
+        const icon = $("#theme-icon");
+
+        function setIcon(theme) {
+          icon.innerHTML = (theme === "light")
+            ? '<path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/><circle cx="12" cy="12" r="4.5"/>'
+            : '<path d="M21 12.7A9 9 0 1 1 11.3 3a7 7 0 1 0 9.7 9.7z"/>';
         }
-        toggle.addEventListener("change", () => {
-          const next = toggle.checked ? "light" : "dark";
-          root.setAttribute("data-theme", next);
-          localStorage.setItem("theme", next);
+
+        const saved = localStorage.getItem("theme");
+        let theme = (saved === "light" || saved === "dark")
+          ? saved
+          : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+
+        root.setAttribute("data-theme", theme);
+        btn.setAttribute("aria-pressed", theme === "light");
+        setIcon(theme);
+
+        btn.addEventListener("click", () => {
+          theme = (root.getAttribute("data-theme") === "light") ? "dark" : "light";
+          root.setAttribute("data-theme", theme);
+          localStorage.setItem("theme", theme);
+          btn.setAttribute("aria-pressed", theme === "light");
+          setIcon(theme);
         });
       })();
 
       /* ========= Toggle densité ========= */
       (function () {
         const root = document.documentElement;
-        const btn = document.getElementById("density-toggle");
+        const btn = $("#density-toggle");
         const saved = localStorage.getItem("density") || "cozy";
         root.setAttribute("data-density", saved);
         btn.setAttribute("aria-pressed", saved === "compact" ? "true" : "false");
-
         btn.addEventListener("click", () => {
           const current = root.getAttribute("data-density") === "compact" ? "cozy" : "compact";
           root.setAttribute("data-density", current);
@@ -279,141 +279,150 @@
         });
       })();
 
-      /* ========= Raccourcis type Spotlight ========= */
+      /* ========= Raccourcis Spotlight ========= */
       window.addEventListener("keydown", (e) => {
-        const spotlight = document.querySelector(".spotlight input[type='search']");
+        const spotlight = $(".spotlight input[type='search']");
         if (!spotlight) return;
-
         const activeTag = document.activeElement.tagName.toLowerCase();
         if (activeTag === "input" || activeTag === "textarea") return;
-
-        if (e.key === "/" && !e.metaKey && !e.ctrlKey) {
-          e.preventDefault();
-          spotlight.focus();
-          return;
-        }
-        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-          e.preventDefault();
-          spotlight.focus();
-        }
+        if (e.key === "/" && !e.metaKey && !e.ctrlKey) { e.preventDefault(); spotlight.focus(); return; }
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); spotlight.focus(); }
       });
 
-      /* ========= ChatGPT (front streaming texte) ========= */
+      /* ========= ChatGPT ========= */
       (function () {
-        const form = document.getElementById('gpt-form');
-        const input = document.getElementById('gpt-input');
-        const messages = document.getElementById('gpt-messages');
-
+        const form = $("#gpt-form"), input = $("#gpt-input"), messages = $("#gpt-messages");
         function addBubble(text, who = 'you', pending = false) {
           const div = document.createElement('div');
           div.className = `msg ${who}` + (pending ? ' pending' : '');
-          div.textContent = text;
-          messages.appendChild(div);
-          messages.scrollTop = messages.scrollHeight;
-          return div;
+          div.textContent = text; messages.appendChild(div);
+          messages.scrollTop = messages.scrollHeight; return div;
         }
-
         form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const prompt = input.value.trim();
-          if (!prompt) return;
-
-          addBubble(prompt, 'you');
-          input.value = '';
-
+          e.preventDefault(); const prompt = input.value.trim(); if (!prompt) return;
+          addBubble(prompt, 'you'); input.value = '';
           const bot = addBubble('', 'bot', true);
           try {
-            const API_URL = '/api/chat'; // si la page n'est pas servie par Vercel : mets l’URL complète
-            const res = await fetch(API_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt }),
-            });
-
-            if (!res.ok) {
-              const errText = await res.text();
-              bot.classList.remove('pending');
-              bot.textContent = `Erreur API (${res.status}) : ${errText}`;
-              return;
-            }
-
+            const res = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ prompt }) });
+            if (!res.ok) { const errText=await res.text(); bot.classList.remove('pending'); bot.textContent=`Erreur API (${res.status}) : ${errText}`; return; }
             if (!res.body) throw new Error('Pas de flux de réponse');
-
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let acc = '';
-
-            for (;;) {
-              const { value, done } = await reader.read();
-              if (done) break;
-              acc += decoder.decode(value, { stream: true });
-              bot.textContent = acc;
-              messages.scrollTop = messages.scrollHeight;
-            }
+            const reader = res.body.getReader(); const decoder = new TextDecoder('utf-8'); let acc = '';
+            for (;;) { const {value,done}=await reader.read(); if(done) break;
+              acc += decoder.decode(value,{stream:true}); bot.textContent = acc; messages.scrollTop = messages.scrollHeight; }
             bot.classList.remove('pending');
-          } catch (err) {
-            bot.classList.remove('pending');
-            bot.textContent = "Erreur réseau/JS. Voir console.";
-            console.error(err);
-          }
+          } catch(err){ bot.classList.remove('pending'); bot.textContent="Erreur réseau/JS. Voir console."; console.error(err); }
         });
       })();
 
-      /* ========= Badge Réseau : IP publique + état + débit estimé ========= */
+      /* ========= Badge Réseau (footer) ========= */
       async function setupNetworkChip() {
-        const el = document.getElementById("net-chip");
+        const el = $("#net-chip");
         const renderState = (ip, info) => {
           const online = navigator.onLine ? "En ligne" : "Hors-ligne";
-          const pieces = [];
-          if (ip) pieces.push(ip);
-          pieces.push(online);
-          if (info) pieces.push(info);
-          el.textContent = pieces.join(" • ");
+          el.textContent = [ip, online, info].filter(Boolean).join(" • ");
         };
-
-        let connInfo = "";
-        const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (c) {
-          const makeInfo = () => {
-            const eff = c.effectiveType || "";
-            const down = c.downlink ? `${c.downlink}Mb/s` : "";
-            return [eff, down].filter(Boolean).join(" ");
-          };
-          connInfo = makeInfo();
-          c.addEventListener('change', () => renderState(currentIP, makeInfo()));
-        } else {
-          window.addEventListener('online', () => renderState(currentIP, connInfo));
-          window.addEventListener('offline', () => renderState(currentIP, connInfo));
-        }
-
-        let currentIP = "";
-        try {
-          const r = await fetch('https://api.ipify.org?format=json');
-          const j = await r.json();
-          currentIP = j.ip || "";
-        } catch {
-          currentIP = "";
-        }
-
-        renderState(currentIP, connInfo);
+        let connInfo=""; const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+        if(c){ const makeInfo=()=>[c.effectiveType||"",c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ");
+          connInfo=makeInfo(); c.addEventListener('change',()=>renderState(currentIP,makeInfo())); }
+        let currentIP=""; try{ const r=await fetch('https://api.ipify.org?format=json'); const j=await r.json(); currentIP=j.ip||""; }catch{}
+        renderState(currentIP,connInfo);
       }
+
+      /* ========= Control Center (sidebar) ========= */
+      (function () {
+        const panel = $("#control-center");
+        const overlay = $("#cc-overlay");
+        const btnOpen = $("#cc-toggle");
+        const btnClose = $("#cc-close");
+        const html = document.documentElement;
+
+        const open = () => { panel.setAttribute("aria-hidden","false"); btnOpen.setAttribute("aria-expanded","true"); overlay.hidden=false; html.classList.add("cc-open"); };
+        const close = () => { panel.setAttribute("aria-hidden","true");  btnOpen.setAttribute("aria-expanded","false"); overlay.hidden=true;  html.classList.remove("cc-open"); };
+
+        btnOpen.addEventListener("click", () => (panel.getAttribute("aria-hidden") !== "false" ? open() : close()));
+        btnClose.addEventListener("click", close);
+        overlay.addEventListener("click", close);
+        window.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+
+        // Réseau (détaillé)
+        (async function setupCCNetwork() {
+          const stateEl = $("#cc-net-state");
+          const extraEl = $("#cc-net-extra");
+          const onlineTxt = () => navigator.onLine ? "En ligne" : "Hors-ligne";
+          const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+          const makeInfo = () => c ? [c.effectiveType||"", c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ") : "";
+          if (c) c.addEventListener("change", () => extraEl.textContent = makeInfo());
+
+          let ip = "";
+          try { const r = await fetch('https://api.ipify.org?format=json'); const j = await r.json(); ip = j.ip || ""; } catch {}
+          stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • ");
+          extraEl.textContent = makeInfo() || "—";
+          window.addEventListener("online",  () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
+          window.addEventListener("offline", () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
+        })();
+
+        // Batterie
+        (async function setupBattery() {
+          try {
+            if (!navigator.getBattery) return;
+            const b = await navigator.getBattery();
+            $("#cc-battery-card").hidden = false;
+            const levelEl = $("#cc-batt-level");
+            const statusEl = $("#cc-batt-status");
+            const render = () => { levelEl.textContent = `${Math.round(b.level * 100)}%`; statusEl.textContent = b.charging ? "En charge" : "Sur batterie"; };
+            render(); b.addEventListener("levelchange", render); b.addEventListener("chargingchange", render);
+          } catch {}
+        })();
+
+        // Événements à venir (via /api/calendar)
+        (async function setupEvents() {
+          const el = $("#cc-events");
+          try {
+            const r = await fetch('/api/calendar');
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const { events } = await r.json();
+            if (!events || !events.length) { el.textContent = "Aucun événement à venir."; return; }
+            const fmtDate = new Intl.DateTimeFormat('fr-BE', { weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+            el.innerHTML = events.map(ev => {
+              const when = ev.start ? fmtDate.format(new Date(ev.start)) : '';
+              const loc = ev.location ? `<div class="evt-loc">${ev.location}</div>` : '';
+              return `<div class="evt">
+                <div class="evt-when">${when}</div>
+                <div class="evt-title">${escapeHTML(ev.summary)}</div>
+                ${loc}
+              </div>`;
+            }).join("");
+          } catch (e) {
+            el.textContent = "Impossible de charger les événements.";
+            console.error(e);
+          }
+          function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+        })();
+
+        // Notes
+        (function setupNotes() {
+          const ta = $("#cc-notes");
+          const KEY = "cc_notes_v1";
+          try { ta.value = localStorage.getItem(KEY) || ""; } catch {}
+          let t = null;
+          ta.addEventListener("input", () => {
+            clearTimeout(t);
+            t = setTimeout(() => { try { localStorage.setItem(KEY, ta.value); } catch {} }, 300);
+          });
+        })();
+      })();
 
       /* ========= Interactions météo ========= */
       (function () {
-        const weatherCard = document.getElementById("weather");
-        const details = document.getElementById("weather-details");
+        const weatherCard = $("#weather");
+        const details = $("#weather-details");
         let loaded = false;
 
         async function toggleDetails() {
           const isHidden = details.hasAttribute("hidden");
           if (isHidden && !loaded) {
-            try {
-              const data = await getWeather5dCached();
-              renderWeather5d(data);
-              loaded = true;
-            } catch (e) {
-              details.innerHTML = "<div class='wd-error'>Impossible de charger les prévisions.</div>";
-            }
+            try { const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; }
+            catch { details.innerHTML = "<div class='wd-error'>Impossible de charger les prévisions.</div>"; }
           }
           details.toggleAttribute("hidden");
           const expanded = !details.hasAttribute("hidden");
@@ -421,19 +430,13 @@
         }
 
         weatherCard.addEventListener("click", toggleDetails);
-        weatherCard.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            toggleDetails();
-          }
-        });
+        weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
       })();
 
       /* ========= Init ========= */
       window.addEventListener("load", () => {
-        const clock = document.getElementById("clock");
-        clock.textContent = getTime();
-        setInterval(() => (clock.textContent = getTime()), 1000);
+        $("#clock").textContent = getTime();
+        setInterval(() => ($("#clock").textContent = getTime()), 1000);
 
         setupBookmarks();
         getWeather();
