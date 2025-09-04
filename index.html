@@ -1,451 +1,191 @@
 <!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Homepage</title>
-
-    <!-- Perf Fonts: preconnect + Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="icon" href="favicon.png" />
-  </head>
-  <body>
-    <!-- Barre fixe : thème (icône), densité, Control Center -->
-    <div class="top-controls">
-      <!-- Bouton thème (icône monochrome) -->
-      <button id="theme-toggle-btn" class="btn-icon" aria-pressed="false" title="Basculer clair/sombre" aria-label="Basculer le thème">
-        <svg id="theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <!-- Soleil par défaut -->
-          <path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/>
-          <circle cx="12" cy="12" r="4.5"/>
-        </svg>
-      </button>
-
-      <button id="density-toggle" class="btn-icon" aria-pressed="false" title="Basculer densité (compacte/spacieuse)" aria-label="Basculer la densité">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M8.2 16h1.9l.6-1.7h2.7l.6 1.7h1.9L12.9 8h-1.8L8.2 16zm3.1-3.3l1-2.7 1 2.7h-2z" />
-          <path d="M17 6.5l1.4 1.4-.9.9V9h-1V8.8l-.9-.9L17 6.5zm0 11l-1.4-1.4.9-.9V15h1v.2l.9.9L17 17.5zM16.5 9v6h1V9h-1z"/>
-        </svg>
-      </button>
-
-      <!-- Bouton Control Center (sidebar) -->
-      <button id="cc-toggle" class="btn-icon" aria-expanded="false" aria-controls="control-center" title="Ouvrir le Control Center" aria-label="Ouvrir le Control Center">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm9 3.5a7.7 7.7 0 0 0-.1-1l2-1.5-1.8-3.1-2.4 1a7.7 7.7 0 0 0-1.7-1l-.3-2.6h-3.6l-.3 2.6a7.7 7.7 0 0 0-1.7 1l-2.4-1-1.8 3.1 2 1.5a7.7 7.7 0 0 0-.1 1c0 .34.03.67.08 1l-1.98 1.47 1.8 3.1 2.37-.96c.5.39 1.07.72 1.68.97l.31 2.62h3.6l.31-2.62c.61-.25 1.18-.58 1.68-.97l2.37.96 1.8-3.1-1.98-1.47c.05-.33.08-.66.08-1z"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Sidebar Control Center -->
-    <aside id="control-center" class="cc-panel" aria-hidden="true">
-      <div class="cc-header">
-        <h3>Control Center</h3>
-        <button id="cc-close" class="btn-icon small" aria-label="Fermer">
-          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <div class="cc-content">
-        <!-- Réseau -->
-        <section class="cc-card">
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18a10 10 0 0 1 20 0h-2a8 8 0 0 0-16 0H2zm4 0a6 6 0 0 1 12 0h-2a4 4 0 0 0-8 0H6zm4 0a2 2 0 1 1 4 0h-4z"/></svg>
-            <span>Réseau</span>
-          </div>
-          <div class="cc-row"><span id="cc-net-state">—</span></div>
-          <div class="cc-row sub" id="cc-net-extra">—</div>
-        </section>
-
-        <!-- Batterie (si disponible) -->
-        <section class="cc-card" id="cc-battery-card" hidden>
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24"><path d="M16 7H5a3 3 0 0 0-3 3v4a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3V10a3 3 0 0 0-3-3zm5 4v2a1 1 0 0 1-2 0v-2a1 1 0 1 1 2 0z"/></svg>
-            <span>Batterie</span>
-          </div>
-          <div class="cc-row"><span id="cc-batt-level">—</span></div>
-          <div class="cc-row sub" id="cc-batt-status">—</div>
-        </section>
-
-        <!-- Événements à venir (via ICS) -->
-        <section class="cc-card">
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
-            <span>À venir (14 jours)</span>
-          </div>
-          <div id="cc-events" class="cc-events" aria-live="polite">Chargement…</div>
-        </section>
-
-        <!-- Notes -->
-        <section class="cc-card">
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5"/></svg>
-            <span>Notes rapides</span>
-          </div>
-          <textarea id="cc-notes" placeholder="Écrire une note…"></textarea>
-          <div class="cc-row sub">Astuce : les notes sont enregistrées automatiquement sur cet appareil.</div>
-        </section>
-      </div>
-    </aside>
-
-    <!-- Overlay cliquable -->
-    <div id="cc-overlay" class="cc-overlay" hidden></div>
-
-    <div class="container">
-      <!-- Horloge -->
-      <div id="clock" aria-label="Heure actuelle"></div>
-
-      <!-- Météo : résumé (clic pour détails 5 jours) -->
-      <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" aria-controls="weather-details" title="Cliquer pour afficher les prévisions 5 jours">
-        <div class="row">
-          <div id="weather-description" class="inline"></div>
-          <div class="inline">•</div>
-          <div id="temp" class="inline"></div>
-        </div>
-      </section>
-      <section id="weather-details" class="card glass weather-details" hidden></section>
-
-      <!-- Spotlight : barre de recherche Google -->
-      <form class="spotlight glass" action="https://www.google.com/search" method="GET" target="_self" role="search" aria-label="Recherche">
-        <input type="search" name="q" placeholder="Rechercher…" inputmode="search" autocapitalize="off" autocorrect="off" spellcheck="false" required aria-label="Votre recherche" />
-        <button type="submit" class="visually-hidden">Rechercher</button>
+<html lang="fr" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Start – Bogarts</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <!-- Recherche Google -->
+    <section class="search-bar">
+      <form action="https://www.google.com/search" method="GET" target="_blank" rel="noopener">
+        <input type="text" name="q" placeholder="Recherche Google…" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus />
       </form>
+    </section>
 
-      <!-- Favoris -->
-      <div id="bookmark-container"></div>
+    <!-- Météo -->
+    <section id="weather" class="widget">Chargement météo…</section>
 
-      <!-- ChatGPT (via /api/chat en streaming) -->
-      <section id="gpt-chat" class="card glass">
-        <h2>ChatGPT</h2>
-        <div id="gpt-messages" aria-live="polite" aria-busy="false"></div>
-        <form id="gpt-form" autocomplete="off">
-          <input id="gpt-input" type="text" name="prompt" placeholder="Pose ta question…" inputmode="text" required aria-label="Message pour ChatGPT" />
-          <button type="submit">Envoyer</button>
-        </form>
-        <p class="hint">Astuce : / ou ⌘K / Ctrl+K → focus barre Google • Densité via l’icône “A↕︎”.</p>
-      </section>
+    <!-- ChatGPT -->
+    <section class="chat">
+      <form id="chat-form">
+        <input id="chat-input" type="text" placeholder="Parlez avec ChatGPT…" autocomplete="off" />
+      </form>
+      <div id="chat-output" aria-live="polite"></div>
+    </section>
+  </main>
 
-      <!-- Badge réseau en bas (centré) -->
-      <section id="net-section" class="footer-net">
-        <div id="net-chip" class="chip" title="État réseau et IP publique">Réseau…</div>
-      </section>
+  <!-- Control Center -->
+  <aside id="cc" role="complementary" aria-label="Control Center">
+    <header>Control Center</header>
+    <div id="cc-content">
+      <div class="cc-block">
+        <h3>Réseau</h3>
+        <div id="cc-network">Chargement…</div>
+      </div>
+      <div class="cc-block">
+        <h3>Batterie</h3>
+        <div id="cc-battery">Chargement…</div>
+      </div>
+      <div class="cc-block">
+        <h3>Événements</h3>
+        <div id="cc-events" class="cc-events">Chargement…</div>
+      </div>
+      <div class="cc-block">
+        <h3>Notes</h3>
+        <textarea id="cc-notes" placeholder="Écris tes notes ici…"></textarea>
+      </div>
     </div>
+  </aside>
 
-    <!-- Favoris (données) -->
-    <script src="bookmarks.js"></script>
-
-    <script>
-      /* ========= Helpers ========= */
-      const $ = (sel, root = document) => root.querySelector(sel);
-
-      /* ========= Horloge ========= */
-      function getTime() {
-        const d = new Date();
-        const pad = (n) => (n < 10 ? "0" + n : n);
-        return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-      }
-
-      /* ========= Météo (Open-Meteo) ========= */
-      const BRU = { lat: 50.8503, lon: 4.3517, tz: 'Europe/Brussels' };
-
-      function getWeather() {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&current=temperature_2m,weather_code&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=1`;
-        fetch(url)
-          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-          .then(data => {
-            let t = data?.current?.temperature_2m;
-            let wcode = data?.current?.weather_code;
-
-            if (t == null && data?.current_weather?.temperature != null) t = Math.round(data.current_weather.temperature);
-            else if (t != null) t = Math.round(t);
-            if (wcode == null && data?.current_weather?.weathercode != null) wcode = data.current_weather.weathercode;
-
-            if (t == null || wcode == null) throw new Error("Structure inattendue de la réponse météo");
-            $("#temp").textContent = `${t} °C`;
-            $("#weather-description").textContent = weatherCodeToFr(wcode);
-          })
-          .catch(err => {
-            console.error("Météo (current) erreur:", err);
-            const card = $("#weather");
-            if (card) card.innerHTML = `<div class="inline">Météo indisponible</div>`;
-          });
-      }
-
-      const WEATHER_CACHE_KEY = 'weather5d_cache_v1';
-      const WEATHER_TTL_MS = 60 * 60 * 1000;
-
-      function getWeather5dCached() {
-        try {
-          const raw = localStorage.getItem(WEATHER_CACHE_KEY);
-          if (raw) {
-            const { ts, data } = JSON.parse(raw);
-            if (data && Date.now() - ts < WEATHER_TTL_MS) return Promise.resolve(data);
-          }
-        } catch {}
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=5`;
-        return fetch(url)
-          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-          .then(data => {
-            if (!data?.daily?.time || !data?.daily?.weather_code) throw new Error("Structure inattendue daily");
-            try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
-            return data;
-          })
-          .catch(err => {
-            console.error("Météo (5j) erreur:", err);
-            try {
-              const raw = localStorage.getItem(WEATHER_CACHE_KEY);
-              if (raw) { const { data } = JSON.parse(raw); if (data) return data; }
-            } catch {}
-            throw err;
-          });
-      }
-
-      function weatherCodeToFr(code) {
-        const map = {0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine légère",53:"Bruine",55:"Bruine forte",61:"Pluie légère",63:"Pluie",65:"Pluie forte",66:"Pluie verglaçante légère",67:"Pluie verglaçante forte",71:"Neige légère",73:"Neige",75:"Neige forte",77:"Grains de neige",80:"Averses faibles",81:"Averses",82:"Averses fortes",85:"Averses de neige faibles",86:"Averses de neige fortes",95:"Orages",96:"Orages (grésil)",99:"Orages (grêle)"};
-        return map[code] ?? "Météo";
-      }
-
-      function renderWeather5d(data) {
-        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) }));
-        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
-        const html = ["<div class='weather5d'>", ...days.map((day) => `
-          <div class="weather-day">
-            <div class="wd-date">${df.format(new Date(day.date))}</div>
-            <div class="wd-desc">${weatherCodeToFr(day.code)}</div>
-            <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
-          </div>`), "</div>"].join("");
-        $("#weather-details").innerHTML = html;
-      }
-
-      /* ========= Favoris ========= */
-      function setupBookmarks() {
-        const el = $("#bookmark-container");
-        el.innerHTML = bookmarks.map((b) => {
-          const html = ["<section class='bookmark-set card glass'>"];
-          html.push(`<div class="bookmark-title">${b.title}</div>`);
-          html.push('<div class="bookmark-inner-container">');
-          html.push(...b.links.map((l) => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`));
-          html.push("</div></section>");
-          return html.join("");
-        }).join("");
-      }
-
-      /* ========= Switch clair/sombre (icône) ========= */
-      (function () {
-        const root = document.documentElement;
-        const btn = $("#theme-toggle-btn");
-        const icon = $("#theme-icon");
-
-        function setIcon(theme) {
-          icon.innerHTML = (theme === "light")
-            ? '<path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/><circle cx="12" cy="12" r="4.5"/>'
-            : '<path d="M21 12.7A9 9 0 1 1 11.3 3a7 7 0 1 0 9.7 9.7z"/>';
-        }
-
-        const saved = localStorage.getItem("theme");
-        let theme = (saved === "light" || saved === "dark")
-          ? saved
-          : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-
-        root.setAttribute("data-theme", theme);
-        btn.setAttribute("aria-pressed", theme === "light");
-        setIcon(theme);
-
-        btn.addEventListener("click", () => {
-          theme = (root.getAttribute("data-theme") === "light") ? "dark" : "light";
-          root.setAttribute("data-theme", theme);
-          localStorage.setItem("theme", theme);
-          btn.setAttribute("aria-pressed", theme === "light");
-          setIcon(theme);
-        });
-      })();
-
-      /* ========= Toggle densité ========= */
-      (function () {
-        const root = document.documentElement;
-        const btn = $("#density-toggle");
-        const saved = localStorage.getItem("density") || "cozy";
-        root.setAttribute("data-density", saved);
-        btn.setAttribute("aria-pressed", saved === "compact" ? "true" : "false");
-        btn.addEventListener("click", () => {
-          const current = root.getAttribute("data-density") === "compact" ? "cozy" : "compact";
-          root.setAttribute("data-density", current);
-          btn.setAttribute("aria-pressed", current === "compact" ? "true" : "false");
-          localStorage.setItem("density", current);
-        });
-      })();
-
-      /* ========= Raccourcis Spotlight ========= */
-      window.addEventListener("keydown", (e) => {
-        const spotlight = $(".spotlight input[type='search']");
-        if (!spotlight) return;
-        const activeTag = document.activeElement.tagName.toLowerCase();
-        if (activeTag === "input" || activeTag === "textarea") return;
-        if (e.key === "/" && !e.metaKey && !e.ctrlKey) { e.preventDefault(); spotlight.focus(); return; }
-        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); spotlight.focus(); }
-      });
-
-      /* ========= ChatGPT ========= */
-      (function () {
-        const form = $("#gpt-form"), input = $("#gpt-input"), messages = $("#gpt-messages");
-        function addBubble(text, who = 'you', pending = false) {
-          const div = document.createElement('div');
-          div.className = `msg ${who}` + (pending ? ' pending' : '');
-          div.textContent = text; messages.appendChild(div);
-          messages.scrollTop = messages.scrollHeight; return div;
-        }
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault(); const prompt = input.value.trim(); if (!prompt) return;
-          addBubble(prompt, 'you'); input.value = '';
-          const bot = addBubble('', 'bot', true);
-          try {
-            const res = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ prompt }) });
-            if (!res.ok) { const errText=await res.text(); bot.classList.remove('pending'); bot.textContent=`Erreur API (${res.status}) : ${errText}`; return; }
-            if (!res.body) throw new Error('Pas de flux de réponse');
-            const reader = res.body.getReader(); const decoder = new TextDecoder('utf-8'); let acc = '';
-            for (;;) { const {value,done}=await reader.read(); if(done) break;
-              acc += decoder.decode(value,{stream:true}); bot.textContent = acc; messages.scrollTop = messages.scrollHeight; }
-            bot.classList.remove('pending');
-          } catch(err){ bot.classList.remove('pending'); bot.textContent="Erreur réseau/JS. Voir console."; console.error(err); }
-        });
-      })();
-
-      /* ========= Badge Réseau (footer) ========= */
-      async function setupNetworkChip() {
-        const el = $("#net-chip");
-        const renderState = (ip, info) => {
-          const online = navigator.onLine ? "En ligne" : "Hors-ligne";
-          el.textContent = [ip, online, info].filter(Boolean).join(" • ");
-        };
-        let connInfo=""; const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-        if(c){ const makeInfo=()=>[c.effectiveType||"",c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ");
-          connInfo=makeInfo(); c.addEventListener('change',()=>renderState(currentIP,makeInfo())); }
-        let currentIP=""; try{ const r=await fetch('https://api.ipify.org?format=json'); const j=await r.json(); currentIP=j.ip||""; }catch{}
-        renderState(currentIP,connInfo);
-      }
-
-      /* ========= Control Center (sidebar) ========= */
-      (function () {
-        const panel = $("#control-center");
-        const overlay = $("#cc-overlay");
-        const btnOpen = $("#cc-toggle");
-        const btnClose = $("#cc-close");
-        const html = document.documentElement;
-
-        const open = () => { panel.setAttribute("aria-hidden","false"); btnOpen.setAttribute("aria-expanded","true"); overlay.hidden=false; html.classList.add("cc-open"); };
-        const close = () => { panel.setAttribute("aria-hidden","true");  btnOpen.setAttribute("aria-expanded","false"); overlay.hidden=true;  html.classList.remove("cc-open"); };
-
-        btnOpen.addEventListener("click", () => (panel.getAttribute("aria-hidden") !== "false" ? open() : close()));
-        btnClose.addEventListener("click", close);
-        overlay.addEventListener("click", close);
-        window.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-
-        // Réseau (détaillé)
-        (async function setupCCNetwork() {
-          const stateEl = $("#cc-net-state");
-          const extraEl = $("#cc-net-extra");
-          const onlineTxt = () => navigator.onLine ? "En ligne" : "Hors-ligne";
-          const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-          const makeInfo = () => c ? [c.effectiveType||"", c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ") : "";
-          if (c) c.addEventListener("change", () => extraEl.textContent = makeInfo());
-
-          let ip = "";
-          try { const r = await fetch('https://api.ipify.org?format=json'); const j = await r.json(); ip = j.ip || ""; } catch {}
-          stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • ");
-          extraEl.textContent = makeInfo() || "—";
-          window.addEventListener("online",  () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
-          window.addEventListener("offline", () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
-        })();
-
-        // Batterie
-        (async function setupBattery() {
-          try {
-            if (!navigator.getBattery) return;
-            const b = await navigator.getBattery();
-            $("#cc-battery-card").hidden = false;
-            const levelEl = $("#cc-batt-level");
-            const statusEl = $("#cc-batt-status");
-            const render = () => { levelEl.textContent = `${Math.round(b.level * 100)}%`; statusEl.textContent = b.charging ? "En charge" : "Sur batterie"; };
-            render(); b.addEventListener("levelchange", render); b.addEventListener("chargingchange", render);
-          } catch {}
-        })();
-
-        // Événements à venir (via /api/calendar)
-(async function setupEvents() {
-  const el = document.getElementById('cc-events');
-  try {
-    const r = await fetch('/api/calendar');
-    const text = await r.text(); // lis d’abord le texte
-    if (!r.ok) {
-      el.textContent = `Erreur API (${r.status}) : ${text}`;
-      return;
+  <script>
+  // ============ Météo (Open-Meteo, Bruxelles) ============
+  (async function setupWeather() {
+    const el = document.getElementById('weather');
+    try {
+      const url = "https://api.open-meteo.com/v1/forecast?latitude=50.85&longitude=4.35&current=temperature_2m,weathercode&timezone=auto";
+      const r = await fetch(url, { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      el.textContent = `🌡️ ${Math.round(data.current.temperature_2m)}°C`;
+    } catch (e) {
+      el.textContent = "Météo indisponible.";
+      console.error('Météo:', e);
     }
-    const data = JSON.parse(text);
-    const events = data.events || [];
-    if (!events.length) { el.textContent = "Aucun événement à venir."; return; }
+  })();
 
-    const fmtDate = new Intl.DateTimeFormat('fr-BE', { weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
-    el.innerHTML = events.map(ev => {
-      const when = ev.start ? fmtDate.format(new Date(ev.start)) : '';
-      const loc = ev.location ? `<div class="evt-loc">${escapeHTML(ev.location)}</div>` : '';
-      return `<div class="evt">
-        <div class="evt-when">${when}</div>
-        <div class="evt-title">${escapeHTML(ev.summary)}</div>
-        ${loc}
-      </div>`;
-    }).join("");
-  } catch (e) {
-    el.textContent = `Impossible de charger les événements : ${String(e)}`;
-    console.error(e);
-  }
-  function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-})();        // Notes
-        (function setupNotes() {
-          const ta = $("#cc-notes");
-          const KEY = "cc_notes_v1";
-          try { ta.value = localStorage.getItem(KEY) || ""; } catch {}
-          let t = null;
-          ta.addEventListener("input", () => {
-            clearTimeout(t);
-            t = setTimeout(() => { try { localStorage.setItem(KEY, ta.value); } catch {} }, 300);
-          });
-        })();
-      })();
+  // ============ ChatGPT (frontend minimal) ============
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const chatOutput = document.getElementById('chat-output');
 
-      /* ========= Interactions météo ========= */
-      (function () {
-        const weatherCard = $("#weather");
-        const details = $("#weather-details");
-        let loaded = false;
-
-        async function toggleDetails() {
-          const isHidden = details.hasAttribute("hidden");
-          if (isHidden && !loaded) {
-            try { const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; }
-            catch { details.innerHTML = "<div class='wd-error'>Impossible de charger les prévisions.</div>"; }
-          }
-          details.toggleAttribute("hidden");
-          const expanded = !details.hasAttribute("hidden");
-          weatherCard.setAttribute("aria-expanded", expanded ? "true" : "false");
-        }
-
-        weatherCard.addEventListener("click", toggleDetails);
-        weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
-      })();
-
-      /* ========= Init ========= */
-      window.addEventListener("load", () => {
-        $("#clock").textContent = getTime();
-        setInterval(() => ($("#clock").textContent = getTime()), 1000);
-
-        setupBookmarks();
-        getWeather();
-        setupNetworkChip();
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = chatInput.value.trim();
+    if (!q) return;
+    chatOutput.innerHTML += `<div class="user-msg">${escapeHTML(q)}</div>`;
+    chatInput.value = '';
+    try {
+      const r = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: q })
       });
-    </script>
-  </body>
+      const data = await r.json().catch(() => ({}));
+      chatOutput.innerHTML += `<div class="bot-msg">${escapeHTML(data.reply || 'Pas de réponse')}</div>`;
+      chatOutput.scrollTop = chatOutput.scrollHeight;
+    } catch (err) {
+      chatOutput.innerHTML += `<div class="bot-msg">Erreur API</div>`;
+    }
+  });
+
+  // ============ Événements (Aujourd’hui / Demain / Plus tard) ============
+  (async function setupEvents() {
+    const el = document.getElementById('cc-events');
+    try {
+      // Ajuste à 14/30/60 jours si besoin
+      const r = await fetch('/api/calendar?days=30', { cache: 'no-store' });
+      const text = await r.text();
+      if (!r.ok) { el.textContent = `Erreur API (${r.status}) : ${text}`; return; }
+      const data = JSON.parse(text);
+      const events = data.events || [];
+      if (!events.length) { el.textContent = "Aucun événement à venir."; return; }
+
+      const fmtDate = new Intl.DateTimeFormat('fr-BE', {
+        weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'
+      });
+
+      const startOfDay = (d) => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+      const endOfDay   = (d) => { const x = new Date(d); x.setHours(23,59,59,999); return x; };
+      const now = new Date();
+      const todayStart = startOfDay(now), todayEnd = endOfDay(now);
+      const tomorrowStart = new Date(todayStart); tomorrowStart.setDate(tomorrowStart.getDate()+1);
+      const tomorrowEnd   = new Date(todayEnd);   tomorrowEnd.setDate(tomorrowEnd.getDate()+1);
+      const inRange = (date,a,b)=>date>=a&&date<=b;
+
+      const today=[],tomorrow=[],later=[];
+      for(const ev of events){
+        const dt = ev.start ? new Date(ev.start) : null;
+        if(!dt) continue;
+        if(inRange(dt,todayStart,todayEnd)) today.push(ev);
+        else if(inRange(dt,tomorrowStart,tomorrowEnd)) tomorrow.push(ev);
+        else later.push(ev);
+      }
+
+      function renderItem(ev){
+        const when = ev.start ? fmtDate.format(new Date(ev.start)) : '';
+        const loc = ev.location ? `<div class="evt-loc">${escapeHTML(ev.location)}</div>` : '';
+        const srcBadge = ev.srcLabel ? `<span class="src-badge">${escapeHTML(ev.srcLabel)}</span>` : '';
+        const dataSrc = (ev.src!=null) ? ` data-src="${ev.src}"` : '';
+        return `<div class="evt"${dataSrc}>
+          <div class="evt-head">${srcBadge}<span class="evt-when">${when}</span></div>
+          <div class="evt-title">${escapeHTML(ev.summary)}</div>
+          ${loc}
+        </div>`;
+      }
+      function renderGroup(title,arr){
+        if(!arr.length) return '';
+        return `<div class="evt-group">
+          <h4 class="evt-group-title">${title}</h4>
+          <div class="evt-list">${arr.map(renderItem).join('')}</div>
+        </div>`;
+      }
+
+      el.innerHTML =
+        renderGroup("Aujourd’hui", today) +
+        renderGroup("Demain", tomorrow) +
+        renderGroup("Plus tard", later);
+    } catch(e){
+      el.textContent = "Impossible de charger les événements.";
+      console.error('Events:', e);
+    }
+
+    function escapeHTML(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  })();
+
+  // ============ Réseau & Batterie & Notes (facultatif léger) ============
+  (function setupNetwork() {
+    const el = document.getElementById('cc-network');
+    const update = () => el.textContent = navigator.onLine ? 'En ligne' : 'Hors ligne';
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    update();
+  })();
+  (async function setupBattery(){
+    const el = document.getElementById('cc-battery');
+    try {
+      if (!navigator.getBattery) { el.textContent = 'Non disponible'; return; }
+      const b = await navigator.getBattery();
+      const render = () => {
+        const pct = Math.round(b.level * 100);
+        el.textContent = `${pct}% ${b.charging ? '⚡︎' : ''}`;
+      };
+      ['levelchange','chargingchange'].forEach(ev => b.addEventListener(ev, render));
+      render();
+    } catch { el.textContent = 'Non disponible'; }
+  })();
+  (function setupNotes(){
+    const el = document.getElementById('cc-notes');
+    const KEY = 'cc-notes';
+    el.value = localStorage.getItem(KEY) || '';
+    el.addEventListener('input', () => localStorage.setItem(KEY, el.value));
+  })();
+  </script>
+</body>
 </html>
