@@ -243,12 +243,58 @@ html.cc-open .cc-overlay { opacity: 1; }
 .cc-row { font-size: .98rem; }
 .cc-row.sub { color: var(--secondaryFg); font-size: .9rem; margin-top: .2rem; }
 
-/* Événements (calendar) */
-.cc-events { display: grid; gap: .5rem; }
-.cc-events .evt { padding: .5rem .6rem; border: 1px solid var(--glass-border); border-radius: 10px; background: color-mix(in srgb, var(--fg) 5%, transparent); }
-.cc-events .evt-when { color: var(--secondaryFg); font-size: .9rem; margin-bottom: .2rem; text-transform: lowercase; }
-.cc-events .evt-title { font-weight: 600; }
-.cc-events .evt-loc { color: var(--secondaryFg); font-size: .9rem; }
+/* Événements (liste + groupes par jour) */
+.cc-events { display: grid; gap: .6rem; }
+.evt-group { display: grid; gap: .5rem; margin-top: .6rem; }
+.evt-group-title {
+  margin: .2rem 0 .1rem 0;
+  font-size: .95rem; font-weight: 700;
+  color: var(--secondaryFg);
+  text-transform: capitalize;
+  letter-spacing: .02em;
+}
+.evt-list { display: grid; gap: .5rem; }
+.evt {
+  padding: .6rem .7rem;
+  border: 1px solid var(--glass-border);
+  border-left: 4px solid var(--glass-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+}
+.evt-when  { color: var(--secondaryFg); font-size: .9rem; margin-bottom: .2rem; }
+.evt-title { font-weight: 600; }
+.evt-loc   { color: var(--secondaryFg); font-size: .9rem; }
+
+/* Badge source */
+.src-badge {
+  display: inline-flex; align-items: center;
+  font-size: .8rem; line-height: 1;
+  padding: .15rem .45rem; border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  color: var(--secondaryFg);
+  margin-right: .4rem;
+}
+
+/* Déclinaisons de gris par source (0..7) */
+:root {
+  --src0: color-mix(in srgb, var(--fg) 18%, transparent);
+  --src1: color-mix(in srgb, var(--fg) 28%, transparent);
+  --src2: color-mix(in srgb, var(--fg) 38%, transparent);
+  --src3: color-mix(in srgb, var(--fg) 48%, transparent);
+  --src4: color-mix(in srgb, var(--fg) 58%, transparent);
+  --src5: color-mix(in srgb, var(--fg) 68%, transparent);
+  --src6: color-mix(in srgb, var(--fg) 78%, transparent);
+  --src7: color-mix(in srgb, var(--fg) 88%, transparent);
+}
+.cc-events .evt[data-src="0"] { border-left-color: var(--src0); }
+.cc-events .evt[data-src="1"] { border-left-color: var(--src1); }
+.cc-events .evt[data-src="2"] { border-left-color: var(--src2); }
+.cc-events .evt[data-src="3"] { border-left-color: var(--src3); }
+.cc-events .evt[data-src="4"] { border-left-color: var(--src4); }
+.cc-events .evt[data-src="5"] { border-left-color: var(--src5); }
+.cc-events .evt[data-src="6"] { border-left-color: var(--src6); }
+.cc-events .evt[data-src="7"] { border-left-color: var(--src7); }
 
 /* Notes */
 #cc-notes { width: 100%; min-height: 96px; resize: vertical; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--fg); padding: .6rem .7rem; outline: none; -webkit-backdrop-filter: saturate(160%) blur(18px); backdrop-filter: saturate(160%) blur(18px); }
