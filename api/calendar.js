@@ -127,8 +127,6 @@ export default async function handler(req, res) {
     const urlsFromIndexed = [
       process.env.CAL1_ICS_URL, process.env.CAL2_ICS_URL,
       process.env.CAL3_ICS_URL, process.env.CAL4_ICS_URL,
-      process.env.CAL5_ICS_URL, process.env.CAL6_ICS_URL,
-      process.env.CAL7_ICS_URL, process.env.CAL8_ICS_URL,
     ].filter(Boolean);
 
     const urls = urlsFromList.length ? urlsFromList : urlsFromIndexed;
