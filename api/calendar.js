@@ -163,8 +163,6 @@ async function handler(req, res) {
     const urlsFromIdx = [
       process.env.CAL1_ICS_URL, process.env.CAL2_ICS_URL,
       process.env.CAL3_ICS_URL, process.env.CAL4_ICS_URL,
-      process.env.CAL5_ICS_URL, process.env.CAL6_ICS_URL,
-      process.env.CAL7_ICS_URL, process.env.CAL8_ICS_URL,
     ].filter(Boolean);
     const urls = urlsFromList.length ? urlsFromList : urlsFromIdx;
 
@@ -178,9 +176,10 @@ async function handler(req, res) {
       .split(',').map(s => s.trim()).filter(Boolean);
 
     // Fenêtre days (1..90), défaut 14
-    const days = Math.max(1, Math.min(90, parseInt(req.query.days, 10) || 14));
-    const now = Date.now();
-    const horizon = now + days * 24 * 3600 * 1000;
+const now = Date.now();
+const pastDays = Math.max(0, parseInt(req.query.pastDays, 10) || 0);
+const fromTs = now - pastDays * 24 * 3600 * 1000;
+const horizon = now + days * 24 * 3600 * 1000;
 
     // Récupérer et parser chaque ICS (tolérant aux erreurs)
     const results = await Promise.all(
@@ -198,13 +197,13 @@ async function handler(req, res) {
     });
 
     // Filtre futur
-    const upcoming = all
-      .filter(ev => {
-        const ts = ev.start ? Date.parse(ev.start) : NaN;
-        return !isNaN(ts) && ts >= now && ts <= horizon;
-      })
-      .sort((a, b) => Date.parse(a.start) - Date.parse(b.start))
-      .slice(0, 400);
+const upcoming = all
+  .filter(ev => {
+    const ts = ev.start ? Date.parse(ev.start) : NaN;
+    return !isNaN(ts) && ts >= fromTs && ts <= horizon;
+  })
+  .sort((a, b) => Date.parse(a.start) - Date.parse(b.start))
+  .slice(0, 400);
 
     const body = { events: upcoming, count: upcoming.length };
     if (req.query.debug === '1' || req.query.debug === 'true') {
