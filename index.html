@@ -44,11 +44,6 @@
       </section>
       <section id="weather-details" class="card glass weather-details" hidden></section>
 
-      <section id="calendar" class="card glass calendar-container" hidden>
-        <h2>Agenda</h2>
-        <div id="calendar-events" aria-live="polite"></div>
-      </section>
-
       <form class="spotlight glass" action="https://www.google.com/search" method="GET" target="_self" role="search" aria-label="Recherche">
         <input type="search" name="q" placeholder="Rechercher…" inputmode="search" autocapitalize="off" autocorrect="off" spellcheck="false" required aria-label="Votre recherche" />
         <button type="submit" class="visually-hidden">Rechercher</button>
@@ -180,55 +175,6 @@
             <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
           </div>`), "</div>"].join("");
         $("#weather-details").innerHTML = html;
-      }
-
-      /* Calendrier */
-      async function getCalendarEvents() {
-        const calContainer = $("#calendar");
-        const calEvents = $("#calendar-events");
-        try {
-          const res = await fetch('/api/calendar');
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
-          if (data.count === 0) {
-            calEvents.innerHTML = "Aucun événement à venir.";
-            calContainer.hidden = false;
-            return;
-          }
-          calContainer.hidden = false;
-          const today = new Date();
-          const tomorrow = new Date(today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          const formatDay = (d) => {
-            if (d.toDateString() === today.toDateString()) return "Aujourd'hui";
-            if (d.toDateString() === tomorrow.toDateString()) return "Demain";
-            return d.toLocaleDateString('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
-          };
-          const formatTime = (d) => d.toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
-          
-          let lastDay = '';
-          const html = data.events.map(ev => {
-            const start = new Date(ev.start);
-            const end = new Date(ev.end);
-            const day = formatDay(start);
-            let dayHeader = '';
-            if (day !== lastDay) {
-              dayHeader = `<div class="cal-day-header">${day}</div>`;
-              lastDay = day;
-            }
-            return `${dayHeader}<div class="cal-evt">
-              <span class="cal-evt-title">${ev.summary}</span>
-              <span class="cal-evt-time">${formatTime(start)} - ${formatTime(end)}</span>
-              ${ev.location ? `<span class="cal-evt-loc">${ev.location}</span>` : ''}
-              <span class="cal-evt-src">${ev.srcLabel}</span>
-            </div>`;
-          }).join("");
-          calEvents.innerHTML = html;
-        } catch (err) {
-          console.error("Calendrier:", err);
-          calContainer.hidden = false;
-          calEvents.innerHTML = `<div class="cal-error">Impossible de charger l'agenda.</div>`;
-        }
       }
 
       /* Favoris */
@@ -400,7 +346,6 @@
 
         setupBookmarks();
         getWeather();
-        getCalendarEvents(); // Appel de la nouvelle fonction pour le calendrier
       });
     </script>
   </body>
