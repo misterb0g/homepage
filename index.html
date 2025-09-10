@@ -1,472 +1,361 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Homepage</title>
-
-    <!-- Perf Fonts: preconnect + Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="icon" href="favicon.png" />
-  </head>
-  <body>
-    <!-- Barre fixe : thème (icône), densité, Control Center -->
-    <div class="top-controls">
-      <!-- Bouton thème -->
-      <button id="theme-toggle-btn" class="btn-icon" aria-pressed="false" title="Basculer clair/sombre" aria-label="Basculer le thème">
-        <svg id="theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/>
-          <circle cx="12" cy="12" r="4.5"/>
-        </svg>
-      </button>
-
-      <!-- Bouton densité -->
-      <button id="density-toggle" class="btn-icon" aria-pressed="false" title="Basculer densité (compacte/spacieuse)" aria-label="Basculer la densité">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M8.2 16h1.9l.6-1.7h2.7l.6 1.7h1.9L12.9 8h-1.8L8.2 16zm3.1-3.3l1-2.7 1 2.7h-2z" />
-          <path d="M17 6.5l1.4 1.4-.9.9V9h-1V8.8l-.9-.9L17 6.5zm0 11l-1.4-1.4.9-.9V15h1v.2l.9.9L17 17.5zM16.5 9v6h1V9h-1z"/>
-        </svg>
-      </button>
-
-      <!-- Bouton Control Center -->
-      <button id="cc-toggle" class="btn-icon" aria-expanded="false" aria-controls="control-center" title="Ouvrir le Control Center" aria-label="Ouvrir le Control Center">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 3.5 0 0 0 0-7zm9 3.5a7.7 7.7 0 0 0-.1-1l2-1.5-1.8-3.1-2.4 1a7.7 7.7 0 0 0-1.7-1l-.3-2.6h-3.6l-.3 2.6a7.7 7.7 0 0 0-1.7 1l-2.4-1-1.8 3.1 2 1.5a7.7 7.7 0 0 0-.1 1c0 .34.03.67.08 1l-1.98 1.47 1.8 3.1 2.37-.96c.5.39 1.07.72 1.68.97l.31 2.62h3.6l.31-2.62c.61-.25 1.18-.58 1.68-.97l2.37.96 1.8-3.1-1.98-1.47c.05-.33.08-.66.08-1z"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Sidebar Control Center -->
-    <aside id="control-center" class="cc-panel" aria-hidden="true">
-      <div class="cc-header">
-        <h3>Control Center</h3>
-        <button id="cc-close" class="btn-icon small" aria-label="Fermer">
-          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>start.bogarts — Accueil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar glass">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">⌘</span>
+        <span class="title">Start</span>
+      </div>
+      <div class="toggles">
+        <button id="themeToggle" class="btn-icon" title="Basculer thème" aria-label="Basculer thème">
+          <svg viewBox="0 0 24 24" class="icon"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"/></svg>
+        </button>
+        <button id="densityToggle" class="btn-icon" title="Basculer densité" aria-label="Basculer densité">
+          <svg viewBox="0 0 24 24" class="icon"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg>
         </button>
       </div>
+    </header>
 
-      <div class="cc-content">
-        <!-- Réseau -->
-        <section class="cc-card">
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18a10 10 0 0 1 20 0h-2a8 8 0 0 0-16 0H2zm4 0a6 6 0 0 1 12 0h-2a4 4 0 0 0-8 0H6zm4 0a2 2 0 1 1 4 0h-4z"/></svg>
-            <span>Réseau</span>
+    <main class="grid">
+      <!-- Column: Search / Chat -->
+      <section class="stack">
+        <article class="card glass">
+          <header class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" class="icon"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <h2>Recherche</h2>
+            </div>
+          </header>
+          <div class="card-body">
+            <form class="row" action="https://www.google.com/search" method="GET" target="_blank" role="search" aria-label="Recherche Google">
+              <input type="text" name="q" class="input" placeholder="Rechercher sur Google…" autocomplete="on" required />
+              <button class="btn">Google</button>
+            </form>
           </div>
-          <div class="cc-row"><span id="cc-net-state">—</span></div>
-          <div class="cc-row sub" id="cc-net-extra">—</div>
-        </section>
+        </article>
 
-        <!-- Batterie -->
-        <section class="cc-card" id="cc-battery-card" hidden>
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24"><path d="M16 7H5a3 3 0 0 0-3 3v4a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3V10a3 3 0 0 0-3-3zm5 4v2a1 1 0 0 1-2 0v-2a1 1 0 1 1 2 0z"/></svg>
-            <span>Batterie</span>
+        <article class="card glass">
+          <header class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" class="icon"><path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4z"/></svg>
+              <h2>ChatGPT</h2>
+            </div>
+          </header>
+          <div class="card-body">
+            <form id="chatForm" class="row" autocomplete="off">
+              <input id="chatInput" class="input" placeholder="Pose-moi une question…" required />
+              <button class="btn" type="submit">Envoyer</button>
+            </form>
+            <div id="chatOutput" class="output" aria-live="polite"></div>
           </div>
-          <div class="cc-row"><span id="cc-batt-level">—</span></div>
-          <div class="cc-row sub" id="cc-batt-status">—</div>
-        </section>
+          <footer class="card-foot hint">Utilise ton endpoint <code>/api/chat</code> (Next.js) si disponible.</footer>
+        </article>
 
-        <!-- Événements à venir (14 jours) -->
-        <section class="cc-card">
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
-            <span>À venir (14 jours)</span>
+        <article class="card glass">
+          <header class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" class="icon"><path d="M4 6h16M4 12h10M4 18h7"/></svg>
+              <h2>Favoris</h2>
+            </div>
+            <div class="actions">
+              <button id="addToggle" class="btn-ghost">Ajouter</button>
+            </div>
+          </header>
+          <div class="card-body">
+            <form id="addForm" class="row add-form" hidden>
+              <input id="bmTitle" class="input" placeholder="Titre (ex. Gmail)" />
+              <input id="bmUrl" class="input" placeholder="URL (https://…)" />
+              <button class="btn" type="submit">+ Ajouter</button>
+            </form>
+            <div id="bookmarks" class="bookmarks-grid"></div>
+            <div class="hint">Astuce : clique-droit ou appui long sur une tuile pour la supprimer.</div>
           </div>
-          <div id="cc-events" class="cc-events" aria-live="polite">Chargement…</div>
-        </section>
-
-        <!-- Notes -->
-        <section class="cc-card">
-          <div class="cc-title">
-            <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5"/></svg>
-            <span>Notes rapides</span>
-          </div>
-          <textarea id="cc-notes" placeholder="Écrire une note…"></textarea>
-          <div class="cc-row sub">Astuce : les notes sont enregistrées automatiquement sur cet appareil.</div>
-        </section>
-      </div>
-    </aside>
-
-    <!-- Overlay -->
-    <div id="cc-overlay" class="cc-overlay" hidden></div>
-
-    <div class="container">
-      <!-- Horloge -->
-      <div id="clock" aria-label="Heure actuelle"></div>
-
-      <!-- Météo + détails 5 jours -->
-      <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" aria-controls="weather-details" title="Cliquer pour afficher les prévisions 5 jours">
-        <div class="row">
-          <div id="weather-description" class="inline"></div>
-          <div class="inline">•</div>
-          <div id="temp" class="inline"></div>
-        </div>
-      </section>
-      <section id="weather-details" class="card glass weather-details" hidden></section>
-
-      <!-- Spotlight Google -->
-      <form class="spotlight glass" action="https://www.google.com/search" method="GET" target="_self" role="search" aria-label="Recherche">
-        <input type="search" name="q" placeholder="Rechercher…" inputmode="search" autocapitalize="off" autocorrect="off" spellcheck="false" required aria-label="Votre recherche" />
-        <button type="submit" class="visually-hidden">Rechercher</button>
-      </form>
-
-      <!-- Favoris -->
-      <div id="bookmark-container"></div>
-
-      <!-- ChatGPT -->
-      <section id="gpt-chat" class="card glass">
-        <h2>ChatGPT</h2>
-        <div id="gpt-messages" aria-live="polite" aria-busy="false"></div>
-        <form id="gpt-form" autocomplete="off">
-          <input id="gpt-input" type="text" name="prompt" placeholder="Pose ta question…" inputmode="text" required aria-label="Message pour ChatGPT" />
-          <button type="submit">Envoyer</button>
-        </form>
-        <p class="hint">Astuce : / ou ⌘K / Ctrl+K → focus barre Google • Densité via l’icône “A↕︎”.</p>
+        </article>
       </section>
 
-      <!-- Réseau (bas de page) -->
-      <section id="net-section" class="footer-net">
-        <div id="net-chip" class="chip" title="État réseau et IP publique">Réseau…</div>
-      </section>
-    </div>
-
-    <!-- Favoris -->
-    <script src="bookmarks.js"></script>
-
-    <script>
-      const $ = (sel, root = document) => root.querySelector(sel);
-
-      /* Horloge */
-      function getTime() {
-        const d = new Date();
-        const pad = (n) => (n < 10 ? "0" + n : n);
-        return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-      }
-
-      /* Météo (Open-Meteo) */
-      const BRU = { lat: 50.8503, lon: 4.3517, tz: 'Europe/Brussels' };
-
-      function getWeather() {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&current=temperature_2m,weather_code&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=1`;
-        fetch(url)
-          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-          .then(data => {
-            let t = data?.current?.temperature_2m;
-            let wcode = data?.current?.weather_code;
-            if (t == null && data?.current_weather?.temperature != null) t = Math.round(data.current_weather.temperature);
-            else if (t != null) t = Math.round(t);
-            if (wcode == null && data?.current_weather?.weathercode != null) wcode = data.current_weather.weathercode;
-
-            if (t == null || wcode == null) throw new Error("Structure inattendue");
-            $("#temp").textContent = `${t} °C`;
-            $("#weather-description").textContent = weatherCodeToFr(wcode);
-          })
-          .catch(err => {
-            console.error("Météo:", err);
-            const card = $("#weather");
-            if (card) card.innerHTML = `<div class="inline">Météo indisponible</div>`;
-          });
-      }
-
-      const WEATHER_CACHE_KEY = 'weather5d_cache_v1';
-      const WEATHER_TTL_MS = 60 * 60 * 1000;
-
-      function getWeather5dCached() {
-        try {
-          const raw = localStorage.getItem(WEATHER_CACHE_KEY);
-          if (raw) {
-            const { ts, data } = JSON.parse(raw);
-            if (data && Date.now() - ts < WEATHER_TTL_MS) return Promise.resolve(data);
-          }
-        } catch {}
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=5`;
-        return fetch(url)
-          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-          .then(data => {
-            if (!data?.daily?.time || !data?.daily?.weather_code) throw new Error("Structure inattendue daily");
-            try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
-            return data;
-          })
-          .catch(err => {
-            console.error("Météo (5j):", err);
-            try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { data } = JSON.parse(raw); if (data) return data; } } catch {}
-            throw err;
-          });
-      }
-
-      function weatherCodeToFr(code) {
-        const map = {0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine légère",53:"Bruine",55:"Bruine forte",61:"Pluie légère",63:"Pluie",65:"Pluie forte",66:"Pluie verglaçante légère",67:"Pluie verglaçante forte",71:"Neige légère",73:"Neige",75:"Neige forte",77:"Grains de neige",80:"Averses faibles",81:"Averses",82:"Averses fortes",85:"Averses de neige faibles",86:"Averses de neige fortes",95:"Orages",96:"Orages (grésil)",99:"Orages (grêle)"};
-        return map[code] ?? "Météo";
-      }
-
-      function renderWeather5d(data) {
-        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) }));
-        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
-        const html = ["<div class='weather5d'>", ...days.map((day) => `
-          <div class="weather-day">
-            <div class="wd-date">${df.format(new Date(day.date))}</div>
-            <div class="wd-desc">${weatherCodeToFr(day.code)}</div>
-            <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
-          </div>`), "</div>"].join("");
-        $("#weather-details").innerHTML = html;
-      }
-
-      /* Favoris */
-      function setupBookmarks() {
-        const el = $("#bookmark-container");
-        el.innerHTML = bookmarks.map((b) => {
-          const html = ["<section class='bookmark-set card glass'>"];
-          html.push(`<div class="bookmark-title">${b.title}</div>`);
-          html.push('<div class="bookmark-inner-container">');
-          html.push(...b.links.map((l) => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`));
-          html.push("</div></section>");
-          return html.join("");
-        }).join("");
-      }
-
-      /* Thème (icône) */
-      (function () {
-        const root = document.documentElement;
-        const btn = $("#theme-toggle-btn");
-        const icon = $("#theme-icon");
-
-        function setIcon(theme) {
-          icon.innerHTML = (theme === "light")
-            ? '<path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/><circle cx="12" cy="12" r="4.5"/>'
-            : '<path d="M21 12.7A9 9 0 1 1 11.3 3a7 7 0 1 0 9.7 9.7z"/>';
-        }
-
-        const saved = localStorage.getItem("theme");
-        let theme = (saved === "light" || saved === "dark")
-          ? saved
-          : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-
-        root.setAttribute("data-theme", theme);
-        btn.setAttribute("aria-pressed", theme === "light");
-        setIcon(theme);
-
-        btn.addEventListener("click", () => {
-          theme = (root.getAttribute("data-theme") === "light") ? "dark" : "light";
-          root.setAttribute("data-theme", theme);
-          localStorage.setItem("theme", theme);
-          btn.setAttribute("aria-pressed", theme === "light");
-          setIcon(theme);
-        });
-      })();
-
-      /* Densité */
-      (function () {
-        const root = document.documentElement;
-        const btn = $("#density-toggle");
-        const saved = localStorage.getItem("density") || "cozy";
-        root.setAttribute("data-density", saved);
-        btn.setAttribute("aria-pressed", saved === "compact" ? "true" : "false");
-        btn.addEventListener("click", () => {
-          const current = root.getAttribute("data-density") === "compact" ? "cozy" : "compact";
-          root.setAttribute("data-density", current);
-          btn.setAttribute("aria-pressed", current === "compact" ? "true" : "false");
-          localStorage.setItem("density", current);
-        });
-      })();
-
-      /* Raccourcis Spotlight */
-      window.addEventListener("keydown", (e) => {
-        const spotlight = $(".spotlight input[type='search']");
-        if (!spotlight) return;
-        const activeTag = document.activeElement.tagName.toLowerCase();
-        if (activeTag === "input" || activeTag === "textarea") return;
-        if (e.key === "/" && !e.metaKey && !e.ctrlKey) { e.preventDefault(); spotlight.focus(); return; }
-        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); spotlight.focus(); }
-      });
-
-      /* ChatGPT */
-      (function () {
-        const form = $("#gpt-form"), input = $("#gpt-input"), messages = $("#gpt-messages");
-        function addBubble(text, who = 'you', pending = false) {
-          const div = document.createElement('div');
-          div.className = `msg ${who}` + (pending ? ' pending' : '');
-          div.textContent = text; messages.appendChild(div);
-          messages.scrollTop = messages.scrollHeight; return div;
-        }
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault(); const prompt = input.value.trim(); if (!prompt) return;
-          addBubble(prompt, 'you'); input.value = '';
-          const bot = addBubble('', 'bot', true);
-          try {
-            const res = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ prompt }) });
-            if (!res.ok) { const errText=await res.text(); bot.classList.remove('pending'); bot.textContent=`Erreur API (${res.status}) : ${errText}`; return; }
-            if (!res.body) throw new Error('Pas de flux de réponse');
-            const reader = res.body.getReader(); const decoder = new TextDecoder('utf-8'); let acc = '';
-            for (;;) { const {value,done}=await reader.read(); if(done) break;
-              acc += decoder.decode(value,{stream:true}); bot.textContent = acc; messages.scrollTop = messages.scrollHeight; }
-            bot.classList.remove('pending');
-          } catch(err){ bot.classList.remove('pending'); bot.textContent="Erreur réseau/JS. Voir console."; console.error(err); }
-        });
-      })();
-
-      /* Réseau (footer) */
-      async function setupNetworkChip() {
-        const el = $("#net-chip");
-        const renderState = (ip, info) => {
-          const online = navigator.onLine ? "En ligne" : "Hors-ligne";
-          el.textContent = [ip, online, info].filter(Boolean).join(" • ");
-        };
-        let connInfo=""; const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-        if(c){ const makeInfo=()=>[c.effectiveType||"",c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ");
-          connInfo=makeInfo(); c.addEventListener('change',()=>renderState(currentIP,makeInfo())); }
-        let currentIP=""; try{ const r=await fetch('https://api.ipify.org?format=json'); const j=await r.json(); currentIP=j.ip||""; }catch{}
-        renderState(currentIP,connInfo);
-      }
-
-      /* Control Center */
-      (function () {
-        const panel = $("#control-center");
-        const overlay = $("#cc-overlay");
-        const btnOpen = $("#cc-toggle");
-        const btnClose = $("#cc-close");
-        const html = document.documentElement;
-
-        const open = () => { panel.setAttribute("aria-hidden","false"); btnOpen.setAttribute("aria-expanded","true"); overlay.hidden=false; html.classList.add("cc-open"); };
-        const close = () => { panel.setAttribute("aria-hidden","true");  btnOpen.setAttribute("aria-expanded","false"); overlay.hidden=true;  html.classList.remove("cc-open"); };
-
-        btnOpen.addEventListener("click", () => (panel.getAttribute("aria-hidden") !== "false" ? open() : close()));
-        btnClose.addEventListener("click", close);
-        overlay.addEventListener("click", close);
-        window.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-
-        // Réseau détaillé
-        (async function setupCCNetwork() {
-          const stateEl = $("#cc-net-state");
-          const extraEl = $("#cc-net-extra");
-          const onlineTxt = () => navigator.onLine ? "En ligne" : "Hors-ligne";
-          const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-          const makeInfo = () => c ? [c.effectiveType||"", c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ") : "";
-          if (c) c.addEventListener("change", () => extraEl.textContent = makeInfo());
-
-          let ip = "";
-          try { const r = await fetch('https://api.ipify.org?format=json'); const j = await r.json(); ip = j.ip || ""; } catch {}
-          stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • ");
-          extraEl.textContent = makeInfo() || "—";
-          window.addEventListener("online",  () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
-          window.addEventListener("offline", () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
-        })();
-
-        // Batterie
-        (async function setupBattery() {
-          try {
-            if (!navigator.getBattery) return;
-            const b = await navigator.getBattery();
-            $("#cc-battery-card").hidden = false;
-            const levelEl = $("#cc-batt-level");
-            const statusEl = $("#cc-batt-status");
-            const render = () => { levelEl.textContent = `${Math.round(b.level * 100)}%`; statusEl.textContent = b.charging ? "En charge" : "Sur batterie"; };
-            render(); b.addEventListener("levelchange", render); b.addEventListener("chargingchange", render);
-          } catch {}
-        })();
-
-        // ===== Événements à venir : regrouper par jour + badge source (gris) =====
-        (async function setupEvents() {
-          const el = document.getElementById('cc-events');
-          try {
-            const r = await fetch('/api/calendar?days=14', { cache: 'no-store' });
-            const txt = await r.text();
-            if (!r.ok) { el.textContent = `Erreur API (${r.status}) : ${txt}`; return; }
-            const data = JSON.parse(txt);
-            const events = data.events || [];
-            if (!events.length) { el.textContent = "Aucun événement à venir."; return; }
-
-            // Grouper par YYYY-MM-DD (date locale)
-            const byDay = new Map();
-            const dfHead = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: '2-digit', month: 'long' });
-            const dfItem = new Intl.DateTimeFormat('fr-BE', { hour: '2-digit', minute: '2-digit' });
-
-            for (const ev of events) {
-              const d = ev.start ? new Date(ev.start) : null;
-              if (!d) continue;
-              const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-              if (!byDay.has(key)) byDay.set(key, { date: d, items: [] });
-              byDay.get(key).items.push(ev);
-            }
-
-            // Render
-            const escapeHTML = (s) => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-            const renderItem = (ev) => {
-              const t = ev.start ? dfItem.format(new Date(ev.start)) : '';
-              const loc = ev.location ? `<div class="evt-loc">${escapeHTML(ev.location)}</div>` : '';
-              const badge = ev.srcLabel ? `<span class="src-badge">${escapeHTML(ev.srcLabel)}</span>` : '';
-              const dataSrc = (ev.src != null) ? ` data-src="${ev.src}"` : '';
-              return `<div class="evt"${dataSrc}>
-                <div class="evt-when">${t}</div>
-                <div class="evt-title">${badge}${escapeHTML(ev.summary)}</div>
-                ${loc}
-              </div>`;
-            };
-
-            const groups = [...byDay.values()].sort((a,b)=>a.date - b.date);
-            el.innerHTML = groups.map(g => `
-              <div class="evt-group">
-                <h4 class="evt-group-title">${dfHead.format(g.date)}</h4>
-                <div class="evt-list">
-                  ${g.items.map(renderItem).join('')}
-                </div>
+      <!-- Column: Weather -->
+      <section class="stack">
+        <article class="card glass">
+          <header class="card-head">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" class="icon"><path d="M6 19a7 7 0 1112.12-5.12A4.5 4.5 0 1118 19z"/></svg>
+              <h2>Météo</h2>
+            </div>
+            <button id="refreshWeather" class="btn-ghost">Actualiser</button>
+          </header>
+          <div class="card-body">
+            <div class="weather">
+              <div class="weather-main">
+                <div class="temp" id="temp">--°</div>
+                <div class="cond" id="cond">—</div>
               </div>
-            `).join('');
+              <div class="weather-meta">
+                <div id="city">Localisation…</div>
+                <div id="meta">Vent — • Humidité —</div>
+              </div>
+            </div>
+          </div>
+          <footer class="card-foot hint">Source : <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a></footer>
+        </article>
+      </section>
+    </main>
 
-          } catch (e) {
-            el.textContent = `Impossible de charger les événements : ${String(e)}`;
-            console.error(e);
+    <footer class="footer">
+      <small>© <span id="year"></span> Gilles Bogarts — start.bogarts.be</small>
+    </footer>
+  </div>
+
+  <script>
+    // ===== Utils =====
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+    // ===== Theme & Density Toggles =====
+    const themeToggle = $('#themeToggle');
+    const densityToggle = $('#densityToggle');
+
+    const applyTheme = (t) => {
+      document.documentElement.dataset.theme = t;
+      localStorage.setItem('theme', t);
+    };
+    const applyDensity = (d) => {
+      document.documentElement.dataset.density = d;
+      localStorage.setItem('density', d);
+    };
+
+    const initPrefs = () => {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+      const density = localStorage.getItem('density') || 'comfortable';
+      applyTheme(theme);
+      applyDensity(density);
+    };
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+    densityToggle.addEventListener('click', () => {
+      const next = document.documentElement.dataset.density === 'compact' ? 'comfortable' : 'compact';
+      applyDensity(next);
+    });
+
+    // ===== Year =====
+    $('#year').textContent = new Date().getFullYear();
+
+    // ===== Chat Form (calls /api/chat if present) =====
+    const chatForm = $('#chatForm');
+    const chatInput = $('#chatInput');
+    const chatOutput = $('#chatOutput');
+
+    async function callChatAPI(message) {
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        if (!res.ok) throw new Error('Endpoint non disponible');
+        const data = await res.json();
+        return data.reply || JSON.stringify(data);
+      } catch (e) {
+        return '⚠️ Impossible de contacter /api/chat. Vérifie ton endpoint côté serveur.';
+      }
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = chatInput.value.trim();
+      if (!q) return;
+      chatOutput.textContent = '…';
+      const reply = await callChatAPI(q);
+      chatOutput.textContent = reply;
+      chatInput.value = '';
+    });
+
+    // ===== Bookmarks =====
+    const bmGrid = $('#bookmarks');
+    const addToggle = $('#addToggle');
+    const addForm = $('#addForm');
+    const bmTitle = $('#bmTitle');
+    const bmUrl = $('#bmUrl');
+    const BM_KEY = 'bookmarks@start.bogarts';
+
+    const DEFAULT_BM = [
+      { title: 'Gmail', url: 'https://mail.google.com' },
+      { title: 'Agenda', url: 'https://calendar.google.com' },
+      { title: 'Drive', url: 'https://drive.google.com' },
+      { title: 'GitHub', url: 'https://github.com' },
+      { title: 'Vercel', url: 'https://vercel.com' },
+      { title: 'Le Silex', url: 'https://lesilex.be' },
+      { title: 'Start – Admin', url: 'https://start.bogarts.be' }
+    ];
+
+    function normalizeUrl(u) {
+      try {
+        if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+        return new URL(u).toString();
+      } catch { return ''; }
+    }
+
+    function loadBM() {
+      try {
+        const raw = localStorage.getItem(BM_KEY);
+        return raw ? JSON.parse(raw) : DEFAULT_BM;
+      } catch { return DEFAULT_BM; }
+    }
+    function saveBM(list) {
+      localStorage.setItem(BM_KEY, JSON.stringify(list));
+    }
+
+    function favicon(url) {
+      try {
+        const u = new URL(url);
+        return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=64`;
+      } catch { return ''; }
+    }
+
+    function renderBM() {
+      const list = loadBM();
+      bmGrid.innerHTML = '';
+      list.forEach((bm, idx) => {
+        const a = document.createElement('a');
+        a.className = 'bm';
+        a.href = bm.url;
+        a.target = '_blank';
+        a.rel = 'noreferrer';
+        a.innerHTML = \`
+          <img class="bm-ico" alt="" src="\${favicon(bm.url)}">
+          <span class="bm-title">\${bm.title}</span>
+        \`;
+        // Delete on contextmenu (right-click) or long-press
+        let pressTimer;
+        const longPressMs = 600;
+        const askDelete = (ev) => {
+          ev.preventDefault();
+          if (confirm('Supprimer ce favori ?')) {
+            const arr = loadBM();
+            arr.splice(idx, 1);
+            saveBM(arr);
+            renderBM();
           }
-        })();
-
-        // Notes
-        (function setupNotes() {
-          const ta = $("#cc-notes");
-          const KEY = "cc_notes_v1";
-          try { ta.value = localStorage.getItem(KEY) || ""; } catch {}
-          let t = null;
-          ta.addEventListener("input", () => {
-            clearTimeout(t);
-            t = setTimeout(() => { try { localStorage.setItem(KEY, ta.value); } catch {} }, 300);
-          });
-        })();
-
-      })();
-
-      /* Interactions météo (toggle détails) */
-      (function () {
-        const weatherCard = $("#weather");
-        const details = $("#weather-details");
-        let loaded = false;
-
-        async function toggleDetails() {
-          const isHidden = details.hasAttribute("hidden");
-          if (isHidden && !loaded) {
-            try { const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; }
-            catch { details.innerHTML = "<div class='wd-error'>Impossible de charger les prévisions.</div>"; }
-          }
-          details.toggleAttribute("hidden");
-          const expanded = !details.hasAttribute("hidden");
-          weatherCard.setAttribute("aria-expanded", expanded ? "true" : "false");
-        }
-
-        weatherCard.addEventListener("click", toggleDetails);
-        weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
-      })();
-
-      /* Init */
-      window.addEventListener("load", () => {
-        $("#clock").textContent = getTime();
-        setInterval(() => ($("#clock").textContent = getTime()), 1000);
-
-        setupBookmarks();
-        getWeather();
-        setupNetworkChip();
+        };
+        a.addEventListener('contextmenu', askDelete);
+        a.addEventListener('touchstart', () => {
+          pressTimer = setTimeout(() => askDelete(new Event('contextmenu')), longPressMs);
+        }, {passive: true});
+        a.addEventListener('touchend', () => clearTimeout(pressTimer));
+        bmGrid.appendChild(a);
       });
-    </script>
-  </body>
+    }
+
+    addToggle.addEventListener('click', () => {
+      addForm.hidden = !addForm.hidden;
+      if (!addForm.hidden) bmTitle.focus();
+    });
+
+    addForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = bmTitle.value.trim();
+      const url = normalizeUrl(bmUrl.value.trim());
+      if (!title || !url) return;
+      const list = loadBM();
+      list.push({ title, url });
+      saveBM(list);
+      bmTitle.value = '';
+      bmUrl.value = '';
+      addForm.hidden = true;
+      renderBM();
+    });
+
+    // ===== Weather (Open-Meteo) =====
+    const weatherEls = {
+      temp: $('#temp'),
+      cond: $('#cond'),
+      city: $('#city'),
+      meta: $('#meta')
+    };
+
+    const WMO = {
+      0: 'Ciel clair',
+      1: 'Peu nuageux',
+      2: 'Variable',
+      3: 'Couvert',
+      45: 'Brouillard',
+      48: 'Brouillard givrant',
+      51: 'Bruine légère',
+      53: 'Bruine',
+      55: 'Bruine forte',
+      61: 'Pluie faible',
+      63: 'Pluie',
+      65: 'Pluie forte',
+      71: 'Neige faible',
+      73: 'Neige',
+      75: 'Neige forte',
+      95: 'Orage',
+      96: 'Orage (grêle)',
+      99: 'Orage (forte grêle)'
+    };
+
+    function kmh(ms) { return Math.round(ms * 3.6); }
+
+    async function fetchWeather(lat, lon) {
+      const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${lat}&longitude=\${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto\`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Météo indisponible');
+      const data = await res.json();
+      const c = data.current;
+      weatherEls.temp.textContent = Math.round(c.temperature_2m) + '°';
+      weatherEls.cond.textContent = WMO[c.weather_code] || '—';
+      weatherEls.meta.textContent = \`Vent \${kmh(c.wind_speed_10m)} km/h • Humidité \${c.relative_humidity_2m}%\`;
+    }
+
+    async function reverseGeocode(lat, lon) {
+      try {
+        const res = await fetch(\`https://nominatim.openstreetmap.org/reverse?format=json&lat=\${lat}&lon=\${lon}\`);
+        if (!res.ok) throw new Error('');
+        const data = await res.json();
+        return data.address?.city || data.address?.town || data.address?.village || data.address?.municipality || 'Position';
+      } catch {
+        return 'Position';
+      }
+    }
+
+    async function loadWeather() {
+      weatherEls.city.textContent = 'Localisation…';
+      try {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000 });
+        });
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        const city = await reverseGeocode(lat, lon);
+        weatherEls.city.textContent = city;
+        await fetchWeather(lat, lon);
+      } catch {
+        // Fallback Brussels
+        const lat = 50.8503, lon = 4.3517;
+        weatherEls.city.textContent = 'Bruxelles (défaut)';
+        await fetchWeather(lat, lon);
+      }
+    }
+
+    $('#refreshWeather').addEventListener('click', loadWeather);
+
+    // Init
+    initPrefs();
+    renderBM();
+    loadWeather();
+  </script>
+</body>
 </html>
