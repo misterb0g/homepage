@@ -1,7 +1,7 @@
 /* =========================
    Typo : Inter (proche macOS SF)
    ========================= */
-:root { --fontFamily: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif; }
+:root { --fontFamily: 'Inter', 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif; }
 html, body, input, button, a, textarea, select { font-family: var(--fontFamily); }
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
@@ -99,24 +99,6 @@ appearance: none; border: 1px solid var(--glass-border); background: var(--bg);
 .btn-icon:hover { filter: brightness(.95); }
 .btn-icon:active { transform: translateY(1px); }
 .btn-icon svg { width: 20px; height: 20px; fill: currentColor; stroke: currentColor; stroke-width: 1.5; }
-
-/* Chip réseau */
-.chip {
-  display: inline-flex; align-items: center; gap: .4ch;
-  font-size: .9rem; color: var(--fg);
-  background: var(--bg); border: 1px solid var(--glass-border);
-  border-radius: 999px; padding: .35rem .6rem;
-  -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px);
-  box-shadow: var(--glass-shadow);
-}
-
-/* Footer réseau */
-.footer-net {
-  width: min(920px, 94%);
-  margin: 0 auto 2rem;
-  display: flex;
-  justify-content: center;
-}
 
 /* Card + effet verre */
 .card {
@@ -228,77 +210,24 @@ appearance: none; border: 1px solid var(--glass-border); background: var(--bg);
 #gpt-form button:hover { filter: brightness(.92); }
 #gpt-form button:active { transform: translateY(1px); }
 
-/* Control Center (sidebar) */
-.cc-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.25); opacity: 0; transition: opacity .25s ease; z-index: 1000; }
-html.cc-open .cc-overlay { opacity: 1; }
-.cc-panel { position: fixed; top: 0; right: 0; height: 100vh; width: min(380px, 92%); background: var(--bg); border-left: 1px solid var(--glass-border); box-shadow: -8px 0 30px rgba(0,0,0,.25); transform: translateX(100%); transition: transform .28s ease; z-index: 1001; color: var(--fg); }
-.cc-panel[aria-hidden="false"] { transform: translateX(0%); }
-.cc-header { display: flex; align-items: center; justify-content: space-between; padding: .9rem 1rem; border-bottom: 1px solid var(--glass-border); }
-.cc-header h3 { margin: 0; font-size: 1.05rem; font-weight: 600; letter-spacing: .2px; }
-.cc-content { padding: 1rem; display: grid; gap: .9rem; }
-.cc-card { border: 1px solid var(--glass-border); border-radius: 14px; padding: .8rem .9rem; background: color-mix(in srgb, var(--fg) 5%, transparent); }
-.cc-title { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; color: var(--fg); }
-.cc-title svg { width: 18px; height: 18px; fill: currentColor; }
-.cc-row { font-size: .98rem; }
-.cc-row.sub { color: var(--secondaryFg); font-size: .9rem; margin-top: .2rem; }
-
-/* Événements (liste + groupes par jour) */
-.cc-events { display: grid; gap: .6rem; }
-.evt-group { display: grid; gap: .5rem; margin-top: .6rem; }
-.evt-group-title {
-  margin: .2rem 0 .1rem 0;
-  font-size: .95rem; font-weight: 700;
+/* Nouveau bloc Réseau et Batterie */
+.footer-card {
+  width: min(920px, 94%);
+  margin: 0.6rem auto 2rem;
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-around;
+  gap: 1.5rem;
   color: var(--secondaryFg);
-  text-transform: capitalize;
-  letter-spacing: .02em;
+  font-size: 0.95rem;
 }
-.evt-list { display: grid; gap: .5rem; }
-.evt {
-  padding: .6rem .7rem;
-  border: 1px solid var(--glass-border);
-  border-left: 4px solid var(--glass-border);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--fg) 5%, transparent);
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
 }
-.evt-when  { color: var(--secondaryFg); font-size: .9rem; margin-bottom: .2rem; }
-.evt-title { font-weight: 600; }
-.evt-loc   { color: var(--secondaryFg); font-size: .9rem; }
-
-/* Badge source */
-.src-badge {
-  display: inline-flex; align-items: center;
-  font-size: .8rem; line-height: 1;
-  padding: .15rem .45rem; border-radius: 999px;
-  border: 1px solid var(--glass-border);
-  background: color-mix(in srgb, var(--fg) 6%, transparent);
-  color: var(--secondaryFg);
-  margin-right: .4rem;
+.footer-item svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
 }
-
-/* Déclinaisons de gris par source (0..7) */
-:root {
-  --src0: color-mix(in srgb, var(--fg) 18%, transparent);
-  --src1: color-mix(in srgb, var(--fg) 28%, transparent);
-  --src2: color-mix(in srgb, var(--fg) 38%, transparent);
-  --src3: color-mix(in srgb, var(--fg) 48%, transparent);
-  --src4: color-mix(in srgb, var(--fg) 58%, transparent);
-  --src5: color-mix(in srgb, var(--fg) 68%, transparent);
-  --src6: color-mix(in srgb, var(--fg) 78%, transparent);
-  --src7: color-mix(in srgb, var(--fg) 88%, transparent);
-}
-.cc-events .evt[data-src="0"] { border-left-color: var(--src0); }
-.cc-events .evt[data-src="1"] { border-left-color: var(--src1); }
-.cc-events .evt[data-src="2"] { border-left-color: var(--src2); }
-.cc-events .evt[data-src="3"] { border-left-color: var(--src3); }
-.cc-events .evt[data-src="4"] { border-left-color: var(--src4); }
-.cc-events .evt[data-src="5"] { border-left-color: var(--src5); }
-.cc-events .evt[data-src="6"] { border-left-color: var(--src6); }
-.cc-events .evt[data-src="7"] { border-left-color: var(--src7); }
-
-/* Notes */
-#cc-notes { width: 100%; min-height: 96px; resize: vertical; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg); color: var(--fg); padding: .6rem .7rem; outline: none; }
-#cc-notes:focus { box-shadow: 0 0 0 4px color-mix(in srgb, var(--mac-brand) 18%, transparent); }
-
-/* Scrollbar du panel */
-.cc-panel::-webkit-scrollbar { width: 10px; }
-.cc-panel::-webkit-scrollbar-thumb { background: var(--scrollbarColor); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
