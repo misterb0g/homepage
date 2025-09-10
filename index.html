@@ -44,6 +44,11 @@
       </section>
       <section id="weather-details" class="card glass weather-details" hidden></section>
 
+      <section id="calendar" class="card glass calendar-container" hidden>
+        <h2>Agenda</h2>
+        <div id="calendar-events" aria-live="polite"></div>
+      </section>
+
       <form class="spotlight glass" action="https://www.google.com/search" method="GET" target="_self" role="search" aria-label="Recherche">
         <input type="search" name="q" placeholder="Rechercher…" inputmode="search" autocapitalize="off" autocorrect="off" spellcheck="false" required aria-label="Votre recherche" />
         <button type="submit" class="visually-hidden">Rechercher</button>
@@ -84,10 +89,38 @@
       }
 
       /* Météo (Open-Meteo) */
-      const BRU = { lat: 50.8503, lon: 4.3517, tz: 'Europe/Brussels' };
+      const DEFAULT_LOCATION = { lat: 50.8503, lon: 4.3517, tz: 'Europe/Brussels' };
+      const GEOLOCATION_OPTIONS = { enableHighAccuracy: false, timeout: 5000, maximumAge: 0 };
+      const WEATHER_CACHE_KEY = 'weather5d_cache_v1';
+      const WEATHER_TTL_MS = 60 * 60 * 1000;
+      let userLocation = null;
 
-      function getWeather() {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&current=temperature_2m,weather_code&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=1`;
+      function getUserLocation() {
+        return new Promise((resolve, reject) => {
+          if (!("geolocation" in navigator)) { reject(new Error("Géolocalisation non supportée")); }
+          navigator.geolocation.getCurrentPosition(
+            (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+            (err) => reject(new Error(`Erreur de géolocalisation: ${err.message}`)),
+            GEOLOCATION_OPTIONS
+          );
+        });
+      }
+
+      async function getWeather() {
+        let location = DEFAULT_LOCATION;
+        if (userLocation) {
+          location = userLocation;
+        } else {
+          try {
+            const pos = await getUserLocation();
+            userLocation = pos; // Cache the location
+            location = pos;
+          } catch (err) {
+            console.warn("Utilisation de la localisation par défaut. ", err.message);
+          }
+        }
+        
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lon}&current=temperature_2m,weather_code&timezone=auto&forecast_days=1`;
         fetch(url)
           .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
           .then(data => {
@@ -108,10 +141,8 @@
           });
       }
 
-      const WEATHER_CACHE_KEY = 'weather5d_cache_v1';
-      const WEATHER_TTL_MS = 60 * 60 * 1000;
-
       function getWeather5dCached() {
+        let location = userLocation || DEFAULT_LOCATION;
         try {
           const raw = localStorage.getItem(WEATHER_CACHE_KEY);
           if (raw) {
@@ -119,7 +150,7 @@
             if (data && Date.now() - ts < WEATHER_TTL_MS) return Promise.resolve(data);
           }
         } catch {}
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=5`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`;
         return fetch(url)
           .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
           .then(data => {
@@ -149,6 +180,55 @@
             <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
           </div>`), "</div>"].join("");
         $("#weather-details").innerHTML = html;
+      }
+
+      /* Calendrier */
+      async function getCalendarEvents() {
+        const calContainer = $("#calendar");
+        const calEvents = $("#calendar-events");
+        try {
+          const res = await fetch('/api/calendar');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          if (data.count === 0) {
+            calEvents.innerHTML = "Aucun événement à venir.";
+            calContainer.hidden = false;
+            return;
+          }
+          calContainer.hidden = false;
+          const today = new Date();
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const formatDay = (d) => {
+            if (d.toDateString() === today.toDateString()) return "Aujourd'hui";
+            if (d.toDateString() === tomorrow.toDateString()) return "Demain";
+            return d.toLocaleDateString('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
+          };
+          const formatTime = (d) => d.toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
+          
+          let lastDay = '';
+          const html = data.events.map(ev => {
+            const start = new Date(ev.start);
+            const end = new Date(ev.end);
+            const day = formatDay(start);
+            let dayHeader = '';
+            if (day !== lastDay) {
+              dayHeader = `<div class="cal-day-header">${day}</div>`;
+              lastDay = day;
+            }
+            return `${dayHeader}<div class="cal-evt">
+              <span class="cal-evt-title">${ev.summary}</span>
+              <span class="cal-evt-time">${formatTime(start)} - ${formatTime(end)}</span>
+              ${ev.location ? `<span class="cal-evt-loc">${ev.location}</span>` : ''}
+              <span class="cal-evt-src">${ev.srcLabel}</span>
+            </div>`;
+          }).join("");
+          calEvents.innerHTML = html;
+        } catch (err) {
+          console.error("Calendrier:", err);
+          calContainer.hidden = false;
+          calEvents.innerHTML = `<div class="cal-error">Impossible de charger l'agenda.</div>`;
+        }
       }
 
       /* Favoris */
@@ -320,6 +400,7 @@
 
         setupBookmarks();
         getWeather();
+        getCalendarEvents(); // Appel de la nouvelle fonction pour le calendrier
       });
     </script>
   </body>
