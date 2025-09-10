@@ -302,36 +302,3 @@ html.cc-open .cc-overlay { opacity: 1; }
 /* Scrollbar du panel */
 .cc-panel::-webkit-scrollbar { width: 10px; }
 .cc-panel::-webkit-scrollbar-thumb { background: var(--scrollbarColor); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
-
-/* ===== System cards (below bookmarks) ===== */
-.system-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(280px, 1fr));
-  gap: var(--gap-grid);
-  width: min(1400px, 94%);
-  margin: 0 auto 2.2rem;
-}
-@media (max-width: 960px)  { .system-grid { grid-template-columns: 1fr; } }
-.sys-row { margin: .4rem 0; font-size: var(--bk-font); color: var(--fg); }
-.sys-row.sub { color: var(--secondaryFg); }
-
-
-/* ===== Bookmark grid (fallback when rendered via JS) ===== */
-.bookmark-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(220px, 1fr));
-  gap: var(--gap-grid);
-  width: min(1400px, 94%);
-  margin: 0 auto 2rem;
-}
-@media (max-width: 1200px) { .bookmark-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 900px)  { .bookmark-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px)  { .bookmark-grid { grid-template-columns: 1fr; } }
-
-.bookmark-list { list-style: none; padding: 0; margin: .2rem 0 0; display: grid; gap: .45rem; }
-.bookmark-item a {
-  text-decoration: none;
-  color: var(--fg);
-  opacity: .92;
-}
-.bookmark-item a:hover { text-decoration: underline; opacity: 1; }
