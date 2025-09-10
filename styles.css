@@ -302,16 +302,3 @@ html.cc-open .cc-overlay { opacity: 1; }
 /* Scrollbar du panel */
 .cc-panel::-webkit-scrollbar { width: 10px; }
 .cc-panel::-webkit-scrollbar-thumb { background: var(--scrollbarColor); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
-
-
-/* ===== System cards (below bookmarks) ===== */
-.system-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
-  gap: var(--gap-grid);
-  width: min(1400px, 94%);
-  margin: 0 auto 2.2rem;
-}
-@media (max-width: 960px)  { .system-grid { grid-template-columns: 1fr; } }
-.sys-row { margin: .4rem 0; font-size: var(--bk-font); color: var(--fg); }
-.sys-row.sub { color: var(--secondaryFg); }

@@ -33,7 +33,67 @@
         </svg>
       </button>
 
-      <!-- (CC toggle removed) --></div>
+      <!-- Bouton Control Center -->
+      <button id="cc-toggle" class="btn-icon" aria-expanded="false" aria-controls="control-center" title="Ouvrir le Control Center" aria-label="Ouvrir le Control Center">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 3.5 0 0 0 0-7zm9 3.5a7.7 7.7 0 0 0-.1-1l2-1.5-1.8-3.1-2.4 1a7.7 7.7 0 0 0-1.7-1l-.3-2.6h-3.6l-.3 2.6a7.7 7.7 0 0 0-1.7 1l-2.4-1-1.8 3.1 2 1.5a7.7 7.7 0 0 0-.1 1c0 .34.03.67.08 1l-1.98 1.47 1.8 3.1 2.37-.96c.5.39 1.07.72 1.68.97l.31 2.62h3.6l.31-2.62c.61-.25 1.18-.58 1.68-.97l2.37.96 1.8-3.1-1.98-1.47c.05-.33.08-.66.08-1z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Sidebar Control Center -->
+    <aside id="control-center" class="cc-panel" aria-hidden="true">
+      <div class="cc-header">
+        <h3>Control Center</h3>
+        <button id="cc-close" class="btn-icon small" aria-label="Fermer">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="cc-content">
+        <!-- Réseau -->
+        <section class="cc-card">
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 18a10 10 0 0 1 20 0h-2a8 8 0 0 0-16 0H2zm4 0a6 6 0 0 1 12 0h-2a4 4 0 0 0-8 0H6zm4 0a2 2 0 1 1 4 0h-4z"/></svg>
+            <span>Réseau</span>
+          </div>
+          <div class="cc-row"><span id="cc-net-state">—</span></div>
+          <div class="cc-row sub" id="cc-net-extra">—</div>
+        </section>
+
+        <!-- Batterie -->
+        <section class="cc-card" id="cc-battery-card" hidden>
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24"><path d="M16 7H5a3 3 0 0 0-3 3v4a3 3 0 0 0 3 3h11a3 3 0 0 0 3-3V10a3 3 0 0 0-3-3zm5 4v2a1 1 0 0 1-2 0v-2a1 1 0 1 1 2 0z"/></svg>
+            <span>Batterie</span>
+          </div>
+          <div class="cc-row"><span id="cc-batt-level">—</span></div>
+          <div class="cc-row sub" id="cc-batt-status">—</div>
+        </section>
+
+        <!-- Événements à venir (14 jours) -->
+        <section class="cc-card">
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
+            <span>À venir (14 jours)</span>
+          </div>
+          <div id="cc-events" class="cc-events" aria-live="polite">Chargement…</div>
+        </section>
+
+        <!-- Notes -->
+        <section class="cc-card">
+          <div class="cc-title">
+            <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5"/></svg>
+            <span>Notes rapides</span>
+          </div>
+          <textarea id="cc-notes" placeholder="Écrire une note…"></textarea>
+          <div class="cc-row sub">Astuce : les notes sont enregistrées automatiquement sur cet appareil.</div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="cc-overlay" class="cc-overlay" hidden></div>
 
     <div class="container">
       <!-- Horloge -->
@@ -57,27 +117,6 @@
 
       <!-- Favoris -->
       <div id="bookmark-container"></div>
-
-      <!-- Système : Réseau + Batterie (style "bookmark") -->
-      <div id="system-cards" class="system-grid">
-        <section class="bookmark-set card glass">
-          <div class="bookmark-title">Réseau</div>
-          <div class="bookmark-inner-container">
-            <div class="sys-row"><strong>État&nbsp;:</strong> <span id="sys-net-state">—</span></div>
-            <div class="sys-row sub" id="sys-net-extra">—</div>
-            <div class="sys-row sub" id="sys-net-ip">IP publique : —</div>
-          </div>
-        </section>
-
-        <section class="bookmark-set card glass" id="sys-batt-card" hidden>
-          <div class="bookmark-title">Batterie</div>
-          <div class="bookmark-inner-container">
-            <div class="sys-row"><strong>Niveau&nbsp;:</strong> <span id="sys-batt-level">—</span></div>
-            <div class="sys-row sub" id="sys-batt-status">—</div>
-          </div>
-        </section>
-      </div>
-
 
       <!-- ChatGPT -->
       <section id="gpt-chat" class="card glass">
@@ -284,7 +323,38 @@
         renderState(currentIP,connInfo);
       }
 
-      /* (Control Center removed) */
+      /* Control Center */
+      (function () {
+        const panel = $("#control-center");
+        const overlay = $("#cc-overlay");
+        const btnOpen = $("#cc-toggle");
+        const btnClose = $("#cc-close");
+        const html = document.documentElement;
+
+        const open = () => { panel.setAttribute("aria-hidden","false"); btnOpen.setAttribute("aria-expanded","true"); overlay.hidden=false; html.classList.add("cc-open"); };
+        const close = () => { panel.setAttribute("aria-hidden","true");  btnOpen.setAttribute("aria-expanded","false"); overlay.hidden=true;  html.classList.remove("cc-open"); };
+
+        btnOpen.addEventListener("click", () => (panel.getAttribute("aria-hidden") !== "false" ? open() : close()));
+        btnClose.addEventListener("click", close);
+        overlay.addEventListener("click", close);
+        window.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+
+        // Réseau détaillé
+        (async function setupCCNetwork() {
+          const stateEl = $("#cc-net-state");
+          const extraEl = $("#cc-net-extra");
+          const onlineTxt = () => navigator.onLine ? "En ligne" : "Hors-ligne";
+          const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+          const makeInfo = () => c ? [c.effectiveType||"", c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ") : "";
+          if (c) c.addEventListener("change", () => extraEl.textContent = makeInfo());
+
+          let ip = "";
+          try { const r = await fetch('https://api.ipify.org?format=json'); const j = await r.json(); ip = j.ip || ""; } catch {}
+          stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • ");
+          extraEl.textContent = makeInfo() || "—";
+          window.addEventListener("online",  () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
+          window.addEventListener("offline", () => stateEl.textContent = [ip, onlineTxt()].filter(Boolean).join(" • "));
+        })();
 
         // Batterie
         (async function setupBattery() {
@@ -366,50 +436,6 @@
         })();
 
       })();
-
-      
-      /* Système (Réseau + Batterie) */
-      (function setupSystemCards(){
-        const netState = document.getElementById('sys-net-state');
-        const netExtra = document.getElementById('sys-net-extra');
-        const netIP   = document.getElementById('sys-net-ip');
-
-        const onlineTxt = () => navigator.onLine ? "En ligne" : "Hors-ligne";
-        const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        const makeInfo = () => c ? [c.effectiveType||"", c.downlink?`${c.downlink}Mb/s`:""].filter(Boolean).join(" ") : "—";
-
-        netState.textContent = onlineTxt();
-        netExtra.textContent = makeInfo();
-        try {
-          fetch('https://api.ipify.org?format=json')
-            .then(r => r.json()).then(j => netIP.textContent = `IP publique : ${j.ip || "—"}`)
-            .catch(() => {});
-        } catch {}
-
-        window.addEventListener("online",  () => netState.textContent = onlineTxt());
-        window.addEventListener("offline", () => netState.textContent = onlineTxt());
-        if (c) c.addEventListener("change", () => netExtra.textContent = makeInfo());
-
-        // Batterie
-        (async () => {
-          try {
-            if (!navigator.getBattery) return;
-            const battCard = document.getElementById('sys-batt-card');
-            const levelEl = document.getElementById('sys-batt-level');
-            const statusEl = document.getElementById('sys-batt-status');
-            const b = await navigator.getBattery();
-            const render = () => {
-              levelEl.textContent = `${Math.round(b.level * 100)}%`;
-              statusEl.textContent = b.charging ? "En charge" : "Sur batterie";
-            };
-            render();
-            b.addEventListener("levelchange", render);
-            b.addEventListener("chargingchange", render);
-            battCard.hidden = false;
-          } catch {}
-        })();
-      })();
-
 
       /* Interactions météo (toggle détails) */
       (function () {
