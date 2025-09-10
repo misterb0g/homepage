@@ -34,7 +34,6 @@ const bookmarks = [
       { name: "Dolibarr", url: "https://dolibarr.lesilex.be" },
       { name: "Flow", url: "https://admin.joinflow.com/pbxservices.jsp" },
       { name: "Odoo", url: "https://silex-asbl.odoo.com/odoo" },
-      { name: "Silex", url: "http://lesilex.be/admin/login.php" },
     ],
   },
 
