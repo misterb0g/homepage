@@ -107,6 +107,86 @@
     <script>
       const $ = (sel, root = document) => root.querySelector(sel);
 
+
+      /* Favoris - rendu à partir d'un JSON localStorage ou défaut lisible */
+      (function setupBookmarks(){
+        const container = document.getElementById('bookmark-container');
+        if (!container) return;
+        const KEY = 'start.bookmarks.v2';
+        const DEFAULT = [
+          { title: 'RH', links: [
+            ['DinClock', 'https://www.dinclocks.com'], 
+            ['Partena', 'https://www.partena-professional.be'], 
+            ['Edenred', 'https://www.edenred.be'], 
+            ['My Actiris', 'https://www.actiris.brussels'] ]},
+          { title: 'Comptes', links: [
+            ['ING', 'https://www.ing.be'], 
+            ['Winbooks', 'https://www.winbooks.be'], 
+            ['Clé', 'https://www.google.com'] ]},
+          { title: 'Google', links: [
+            ['Drive Partagé', 'https://drive.google.com/drive/shared-with-me'], 
+            ['Drive perso', 'https://drive.google.com/drive/my-drive'], 
+            ['Mail', 'https://mail.google.com'], 
+            ['Agenda', 'https://calendar.google.com'] ]},
+          { title: 'Admin', links: [
+            ['Dolibarr', 'https://dolibarr.org'], 
+            ['Flow', 'https://flow.microsoft.com'], 
+            ['Odoo', 'https://www.odoo.com'], 
+            ['Silex', 'https://lesilex.be'] ]},
+          { title: 'Vidéo', links: [
+            ['Prime', 'https://www.primevideo.com'], 
+            ['Netflix', 'https://www.netflix.com'], 
+            ['Disney+', 'https://www.disneyplus.com'], 
+            ['Canal+', 'https://www.canalplus.com'] ]},
+          { title: 'News', links: [
+            ['Club MacG', 'https://club.macg.co'], 
+            ['Courrier Inter', 'https://www.courrierinternational.com'], 
+            ['Le Soir', 'https://www.lesoir.be'], 
+            ['RTBF', 'https://www.rtbf.be'] ]},
+          { title: 'Sport', links: [
+            ['Strava', 'https://www.strava.com'], 
+            ['Garmin', 'https://connect.garmin.com'], 
+            ['Smashrun', 'https://smashrun.com'] ]},
+          { title: 'Web', links: [
+            ['Silex', 'https://lesilex.be'], 
+            ['Fleur d'Ò', 'https://example.com'], 
+            ['Molinaux', 'https://example.com'] ]}
+        ];
+
+        function load() {
+          try { return JSON.parse(localStorage.getItem(KEY)) || DEFAULT; }
+          catch { return DEFAULT; }
+        }
+        function el(tag, cls, html) {
+          const e = document.createElement(tag);
+          if (cls) e.className = cls;
+          if (html!=null) e.innerHTML = html;
+          return e;
+        }
+        const data = load();
+        container.innerHTML = '';
+        const wrap = el('div', 'bookmark-grid');
+        data.forEach(group => {
+          const sec = el('section', 'bookmark-set card glass');
+          const title = el('div', 'bookmark-title', group.title);
+          const inner = el('div', 'bookmark-inner-container');
+          const list = el('ul', 'bookmark-list');
+          (group.links||[]).forEach(([label, url]) => {
+            const li = el('li', 'bookmark-item');
+            const a = el('a', null, label);
+            a.href = url; a.target='_blank'; a.rel='noreferrer';
+            li.appendChild(a);
+            list.appendChild(li);
+          });
+          inner.appendChild(list);
+          sec.appendChild(title);
+          sec.appendChild(inner);
+          wrap.appendChild(sec);
+        });
+        container.appendChild(wrap);
+      })();
+
+
       /* Horloge */
       function getTime() {
         const d = new Date();
