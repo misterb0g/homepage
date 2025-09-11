@@ -80,7 +80,6 @@ body {
   transform: translateY(-2px);
   box-shadow: var(--glass-shadow), 0 12px 24px rgba(0,0,0,0.15);
 }
-/* On retire #chat-container:hover de la règle d'annulation */
 .weather-details:hover {
     transform: none;
     box-shadow: var(--glass-shadow);
@@ -163,8 +162,26 @@ body {
 .bookmark-inner-container::-webkit-scrollbar { width: 6px; }
 .bookmark-inner-container::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
 .bookmark-title { font-size: 1.05rem; font-weight: 600; color: var(--fg); margin: 0 0 .5rem 0; }
-.bookmark { display: block; text-decoration: none; color: var(--secondaryFg); margin: .45rem 0; font-size: 0.95rem; transition: color .2s ease; padding: .25rem .3rem; border-radius: 8px; }
-.bookmark:hover { color: var(--fg); }
+
+/* LA MODIFICATION EST ICI */
+.bookmark { 
+  display: block; 
+  text-decoration: none; 
+  color: var(--secondaryFg); 
+  margin: .45rem 0; 
+  font-size: 0.95rem; 
+  padding: .25rem .3rem; 
+  border-radius: 8px; 
+  /* On ajoute 'background' et 'transform' à la transition pour un effet fluide */
+  transition: color .2s ease, background .2s ease, transform .15s ease;
+}
+.bookmark:hover { 
+  color: var(--fg); 
+  /* On ajoute un fond semi-transparent pour la surbrillance */
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  /* On ajoute un léger décalage pour l'interactivité */
+  transform: translateX(2px);
+}
 
 /* Responsive Bookmarks */
 @media (max-width: 1280px) { #bookmark-container { grid-template-columns: repeat(3, minmax(200px, 1fr)); } }
