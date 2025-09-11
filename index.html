@@ -192,4 +192,135 @@
         const bubble = document.createElement('div');
         bubble.className = `msg ${who}` + (isPending ? ' pending' : '');
         bubble.textContent = text;
-        container.
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+        return bubble;
+      }
+
+      // 1. Logique des onglets
+      const tabs = $$('.chat-tab');
+      const panels = $$('.chat-panel');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetId = tab.dataset.target;
+          
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          panels.forEach(p => {
+            p.hidden = (p.id !== `chat-panel-${targetId}`);
+          });
+        });
+      });
+
+      // 2. Logique ChatGPT (streaming)
+      const gptForm = $("#gpt-form");
+      const gptInput = gptForm.querySelector('input');
+      const gptMessages = $("#chat-panel-gpt .chat-messages");
+
+      gptForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const prompt = gptInput.value.trim();
+        if (!prompt) return;
+        addBubble(gptMessages, prompt, 'you');
+        gptInput.value = '';
+        const botBubble = addBubble(gptMessages, '...', 'bot', true);
+
+        try {
+          const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ prompt }) });
+          if (!res.ok) throw new Error(`API Error (${res.status}): ${await res.text()}`);
+          if (!res.body) throw new Error('No response stream');
+          
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let accumulatedText = '';
+          
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            accumulatedText += decoder.decode(value, { stream: true });
+            botBubble.textContent = accumulatedText;
+            gptMessages.scrollTop = gptMessages.scrollHeight;
+          }
+          botBubble.classList.remove('pending');
+        } catch(err) {
+          botBubble.classList.remove('pending');
+          botBubble.textContent = `Erreur: ${err.message}`;
+          console.error(err);
+        }
+      });
+
+      // 3. Logique Gemini (non-streaming)
+      const geminiForm = $("#gemini-form");
+      const geminiInput = geminiForm.querySelector('input');
+      const geminiMessages = $("#chat-panel-gemini .chat-messages");
+
+      geminiForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const prompt = geminiInput.value.trim();
+        if (!prompt) return;
+        addBubble(geminiMessages, prompt, 'you');
+        geminiInput.value = '';
+        const botBubble = addBubble(geminiMessages, '...', 'bot', true);
+
+        try {
+          const res = await fetch('/api/gemini', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ prompt }) });
+          
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(errorText || `Erreur API (${res.status})`);
+          }
+          
+          const data = await res.json();
+          botBubble.textContent = data.text || "Pas de réponse textuelle.";
+
+        } catch(err) {
+          botBubble.textContent = `Erreur: ${err.message}`;
+          console.error(err);
+        } finally {
+            botBubble.classList.remove('pending');
+        }
+      });
+    })();
+    
+    /* Interactions météo (toggle détails) */
+    (function () {
+      const weatherCard = $("#weather");
+      const details = $("#weather-details");
+      let loaded = false;
+
+      async function toggleDetails() {
+        const isHidden = details.hasAttribute("hidden");
+        if (isHidden && !loaded) {
+          try {
+            details.innerHTML = "Chargement des prévisions...";
+            const data = await getWeather5dCached();
+            renderWeather5d(data);
+            loaded = true;
+          } catch {
+            details.innerHTML = "<div class='wd-error'>Impossible de charger les prévisions.</div>";
+          }
+        }
+        details.toggleAttribute("hidden");
+        weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden")));
+      }
+
+      weatherCard.addEventListener("click", toggleDetails);
+      weatherCard.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleDetails();
+        }
+      });
+    })();
+
+    /* Init */
+    window.addEventListener("load", () => {
+      $("#clock").textContent = getTime();
+      setInterval(() => ($("#clock").textContent = getTime()), 1000);
+      setupBookmarks();
+      getWeather();
+    });
+  </script>
+</body>
+</html>
