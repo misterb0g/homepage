@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// La correction est ici : on passe de 'edge' à 'nodejs'
 export const config = {
   runtime: 'nodejs',
 };
@@ -29,33 +28,27 @@ export default async function handler(req) {
     return new Response('Method Not Allowed', { status: 405, headers: cors({}, origin) });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY non configurée.' }), {
-      status: 500, headers: cors({ 'Content-Type': 'application/json' }, origin),
-    });
-  }
-
-  let payload;
   try {
-    payload = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: 'Requête invalide: JSON manquant ou incorrect' }), {
-      status: 400, headers: cors({ 'Content-Type': 'application/json' }, origin)
-    });
-  }
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey.trim() === '') {
+      throw new Error('GEMINI_API_KEY non configurée ou vide sur Vercel.');
+    }
 
-  const { prompt } = payload;
-  if (!prompt || typeof prompt !== 'string') {
-    return new Response(JSON.stringify({ error: 'Le prompt est requis (string)' }), {
-      status: 400, headers: cors({ 'Content-Type': 'application/json' }, origin)
-    });
-  }
-  
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    let payload;
+    try {
+      payload = await req.json();
+    } catch {
+      throw new Error('Requête invalide: JSON manquant ou incorrect');
+    }
 
-  try {
+    const { prompt } = payload;
+    if (!prompt || typeof prompt !== 'string') {
+      throw new Error('Le prompt est requis (string)');
+    }
+    
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
@@ -71,8 +64,8 @@ export default async function handler(req) {
       }, origin),
     });
   } catch (error) {
-    console.error("Erreur de l'API Gemini:", error);
-    return new Response(JSON.stringify({ error: `Erreur de l'API Gemini : ${error.message}` }), {
+    console.error("Erreur dans la fonction Gemini:", error);
+    return new Response(JSON.stringify({ error: `Erreur côté serveur : ${error.message}` }), {
       status: 500,
       headers: cors({ 'Content-Type': 'application/json' }, origin),
     });
