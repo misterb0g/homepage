@@ -17,15 +17,20 @@ function cors(headers = {}, origin = '') {
   };
 }
 
-export default async function handler(req) {
-  const origin = req.headers.get('origin') || '';
+export default async function handler(req, res) { // On ajoute 'res' pour la cohérence avec Node.js
+  // La correction est ici : on utilise la syntaxe Node.js pour les en-têtes
+  const origin = req.headers.origin || '';
 
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: cors({}, origin) });
+    // En Node.js, on utilise l'objet 'res' pour répondre
+    res.status(204).json({});
+    return;
   }
-
+  
+  // Utilisation de 'res' pour les autres réponses également
   if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405, headers: cors({}, origin) });
+    res.status(405).json({ error: 'Method Not Allowed' });
+    return;
   }
 
   try {
@@ -34,7 +39,7 @@ export default async function handler(req) {
       throw new Error('La variable d\'environnement GEMINI_API_KEY est manquante ou vide sur Vercel.');
     }
 
-    const payload = await req.json();
+    const payload = req.body; // En Node.js, le corps est déjà parsé dans req.body
     const { prompt } = payload;
 
     if (!prompt || typeof prompt !== 'string') {
@@ -51,16 +56,16 @@ export default async function handler(req) {
     const response = await result.response;
     const text = response.text();
 
-    return new Response(JSON.stringify({ text }), {
-      status: 200,
-      headers: cors({ 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, origin),
-    });
+    const headers = cors({}, origin);
+    // On applique les headers manuellement
+    Object.keys(headers).forEach(key => res.setHeader(key, headers[key]));
+    
+    res.status(200).json({ text });
 
   } catch (error) {
     console.error("Erreur détaillée dans la fonction Gemini:", error);
-    return new Response(JSON.stringify({ error: `Erreur côté serveur : ${error.message}` }), {
-      status: 500,
-      headers: cors({ 'Content-Type': 'application/json' }, origin),
-    });
+    const headers = cors({ 'Content-Type': 'application/json' }, origin);
+    Object.keys(headers).forEach(key => res.setHeader(key, headers[key]));
+    res.status(500).json({ error: `Erreur côté serveur : ${error.message}` });
   }
 }
