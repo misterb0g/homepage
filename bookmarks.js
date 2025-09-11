@@ -1,6 +1,6 @@
 const bookmarks = [
   {
-    title: "Ressources Humaines",
+    title: "RH",
     links: [
       { name: "DinClock", url: "https://www.dinclock.com/silex/login/home.jsp" },
       { name: "Partena", url: "https://my.partena-professional.be" },
@@ -8,17 +8,14 @@ const bookmarks = [
       { name: "My Actiris", url: "https://my.actiris.brussels/subsidized-jobs/dashboard/employeur/" },
     ],
   },
-
   {
-    title: "Banques & Finance",
+    title: "Comptes",
     links: [
       { name: "ING", url: "https://ebanking.ing.be/login" },
       { name: "Winbooks", url: "https://app.winbooksconnect.be/" },
-      { name: "Fortis", url: "https://www.bnpparibasfortis.be/fr/generic/logon" },
-
+      { name: "Clé", url: "https://airkey.evva.com" },
     ],
   },
-
   {
     title: "Google",
     links: [
@@ -28,19 +25,16 @@ const bookmarks = [
       { name: "Agenda", url: "https://calendar.google.com" },
     ],
   },
-
   {
     title: "Admin",
     links: [
       { name: "Dolibarr", url: "https://dolibarr.lesilex.be" },
       { name: "Flow", url: "https://admin.joinflow.com/pbxservices.jsp" },
       { name: "Odoo", url: "https://silex-asbl.odoo.com/odoo" },
-      { name: "Clé", url: "https://airkey.evva.com" },
     ],
   },
-
   {
-    title: "Divertissement",
+    title: "Video",
     links: [
       { name: "Prime", url: "https://www.primevideo.com" },
       { name: "Netflix", url: "https://netflix.com" },
@@ -48,7 +42,6 @@ const bookmarks = [
       { name: "Canal+", url: "https://pass.canalplus.com/" },
     ],
   },
-
   {
     title: "News",
     links: [
@@ -58,7 +51,6 @@ const bookmarks = [
       { name: "RTBF", url: "https://www.rtbf.be" },
     ],
   },
-
   {
     title: "Sport",
     links: [
@@ -67,7 +59,6 @@ const bookmarks = [
       { name: "Smashrun", url: "https://fr.smashrun.com/gilles.bogarts" },
     ],
   },
-
   {
     title: "Web",
     links: [
