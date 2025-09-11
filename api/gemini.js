@@ -45,8 +45,7 @@ export default async function handler(req, res) {
     
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // === LA CORRECTION EST ICI ===
-    // On utilise un nom de modèle plus récent et valide
+    // LA CORRECTION EST ICI
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     const result = await model.generateContent({
