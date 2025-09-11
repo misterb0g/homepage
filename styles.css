@@ -69,19 +69,17 @@ body {
 .btn-icon:active { transform: scale(.95); }
 .btn-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 
-/* Correction pour les cartes pour l'effet de survol */
 .card {
   border-radius: var(--radius);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   overflow: hidden;
-  transition: box-shadow .3s ease, border-color .3s ease, transform .2s ease; /* Ajout de transform à la transition */
+  transition: box-shadow .3s ease, border-color .3s ease, transform .2s ease;
 }
-.card:hover { /* Nouvel état de survol pour les cartes */
-  transform: translateY(-2px); /* Léger mouvement vers le haut */
-  box-shadow: var(--glass-shadow), 0 12px 24px rgba(0,0,0,0.15); /* Ombre plus prononcée */
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow), 0 12px 24px rgba(0,0,0,0.15);
 }
-/* Pour les cartes qui ne sont pas cliquables, on annule l'effet si besoin (ex: chat) */
 #chat-container:hover,
 .weather-details:hover {
     transform: none;
@@ -121,11 +119,11 @@ body {
   align-items: center;
   padding: 0 1.1rem;
   border-radius: 99px; 
-  transition: box-shadow .3s ease, border-color .3s ease, transform .2s ease; /* Assure la transition */
+  transition: box-shadow .3s ease, border-color .3s ease, transform .2s ease;
 }
 .spotlight:focus-within,
-.spotlight:hover { /* Ajout de l'état de survol ici */
-  transform: translateY(-2px); /* Léger mouvement vers le haut */
+.spotlight:hover {
+  transform: translateY(-2px);
   box-shadow: var(--glass-shadow), 0 0 0 4px color-mix(in srgb, var(--mac-brand) 20%, transparent);
 }
 .search-icon {
@@ -250,6 +248,7 @@ body {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: .6rem;
+  flex-shrink: 0; /* LA CORRECTION POUR SAFARI EST ICI */
 }
 .chat-form input[type="text"] {
   height: 48px;
