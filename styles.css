@@ -168,7 +168,7 @@ body {
 
 /* Responsive Bookmarks */
 @media (max-width: 1280px) { #bookmark-container { grid-template-columns: repeat(3, minmax(200px, 1fr)); } }
-@media (max-width: 960px)  { #bookmark-columns: repeat(2, minmax(180px, 1fr)); } }
+@media (max-width: 960px)  { #bookmark-container { grid-template-columns: repeat(2, minmax(180px, 1fr)); } }
 @media (max-width: 600px)  { #bookmark-container { grid-template-columns: 1fr; } }
 
 
@@ -180,8 +180,6 @@ body {
   color: var(--fg);
   display: flex;
   flex-direction: column;
-  /* Ajout pour aider Safari à calculer la hauteur */
-  min-height: 0; 
 }
 
 /* Onglets */
@@ -190,44 +188,73 @@ body {
   gap: 0.5rem;
   margin-bottom: 0.8rem;
   padding: 0.3rem;
-  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
   border-radius: 12px;
   align-self: center;
-  /* Pour s'assurer que les onglets ne sont pas étirés */
-  flex-shrink: 0; 
+  flex-shrink: 0;
+}
+.chat-tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--secondaryFg);
+  padding: 0.4rem 0.8rem;
+  border-radius: 9px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.chat-tab.active {
+  background: var(--containerBg);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Panneaux de Chat */
 .chat-panel {
   display: none; 
   flex-direction: column;
-  /* Assurez-vous que le panneau prend l'espace disponible mais ne force pas le débordement */
-  flex-grow: 1; /* Permet au panneau de prendre l'espace restant */
-  min-height: 0; /* Important pour que l'overflow fonctionne correctement dans Flexbox */
 }
 .chat-panel:not([hidden]) {
   display: flex;
 }
 
 .chat-messages {
-  max-height: 320px; /* Conservez cette max-height pour le scroll */
+  max-height: 320px;
   overflow-y: auto;
-  padding-right: 6px;
+  padding: 0.5rem 0.3rem;
   margin-bottom: .8rem;
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: .6rem;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbarColor) transparent;
-  /* Pour s'assurer que les messages prennent l'espace disponible */
-  flex-grow: 1; 
 }
 .chat-messages::-webkit-scrollbar { width: 6px; }
 .chat-messages::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
 
-.msg { padding: .6rem .8rem; border-radius: 12px; line-height: 1.45; white-space: pre-wrap; max-width: 85%; }
-.msg.you { align-self: flex-end; background: var(--mac-brand); color: white; }
-.msg.bot { align-self: flex-start; background: var(--containerBg); }
+/* NOUVEAU DESIGN DES BULLES DE MESSAGE */
+.msg { 
+  padding: .7rem 1rem; 
+  border-radius: 14px; 
+  line-height: 1.45; 
+  white-space: pre-wrap; 
+  max-width: 85%;
+  border: 1px solid transparent;
+}
+.msg.you { 
+  align-self: flex-end; 
+  background: color-mix(in srgb, var(--mac-brand) 25%, transparent);
+  border-color: rgba(0, 122, 255, 0.3);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: white; 
+}
+.msg.bot { 
+  align-self: flex-start; 
+  background: var(--containerBg);
+  border-color: var(--glass-border);
+}
 .msg.pending::after {
   content: '▋';
   display: inline-block;
@@ -241,9 +268,7 @@ body {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: .6rem;
-  /* LA CORRECTION POUR SAFARI EST ICI */
-  flex-shrink: 0; 
-  margin-top: auto; /* Pousse le formulaire vers le bas si le panneau est un flex-container */
+  flex-shrink: 0;
 }
 .chat-form input[type="text"] {
   height: 48px;
@@ -259,26 +284,27 @@ body {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--mac-brand) 20%, transparent);
 }
 
+/* NOUVEAU DESIGN DU BOUTON ENVOYER */
 .chat-form button {
   height: 48px;
-  min-width: 100px;
-  border: 1px solid var(--glass-border);
+  min-width: 120px;
   border-radius: var(--radius);
-  background: var(--fg);
-  color: var(--bg);
+  border: 1px solid rgba(0, 122, 255, 0.4);
+  background: color-mix(in srgb, var(--mac-brand) 30%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: white;
   padding: 0 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: filter .2s ease, transform .1s ease;
+  transition: background .2s ease, transform .1s ease;
 }
 .chat-form button:hover { 
-  filter: brightness(.92); 
-}
-:root[data-theme="dark"] .chat-form button:hover {
-  filter: brightness(1.1);
+  background: color-mix(in srgb, var(--mac-brand) 45%, transparent);
 }
 .chat-form button:active { 
   transform: scale(0.98); 
+  background: color-mix(in srgb, var(--mac-brand) 20%, transparent);
 }
 
 .hint {
@@ -286,5 +312,4 @@ body {
   color: var(--secondaryFg);
   text-align: center;
   margin: 0.8rem 0 0.2rem;
-  flex-shrink: 0; /* S'assure que l'astuce ne se déforme pas */
 }
