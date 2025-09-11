@@ -17,17 +17,14 @@ function cors(headers = {}, origin = '') {
   };
 }
 
-export default async function handler(req, res) { // On ajoute 'res' pour la cohérence avec Node.js
-  // La correction est ici : on utilise la syntaxe Node.js pour les en-têtes
+export default async function handler(req, res) {
   const origin = req.headers.origin || '';
 
   if (req.method === 'OPTIONS') {
-    // En Node.js, on utilise l'objet 'res' pour répondre
     res.status(204).json({});
     return;
   }
   
-  // Utilisation de 'res' pour les autres réponses également
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method Not Allowed' });
     return;
@@ -39,7 +36,7 @@ export default async function handler(req, res) { // On ajoute 'res' pour la coh
       throw new Error('La variable d\'environnement GEMINI_API_KEY est manquante ou vide sur Vercel.');
     }
 
-    const payload = req.body; // En Node.js, le corps est déjà parsé dans req.body
+    const payload = req.body;
     const { prompt } = payload;
 
     if (!prompt || typeof prompt !== 'string') {
@@ -47,7 +44,10 @@ export default async function handler(req, res) { // On ajoute 'res' pour la coh
     }
     
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    // === LA CORRECTION EST ICI ===
+    // On utilise un nom de modèle plus récent et valide
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -57,7 +57,6 @@ export default async function handler(req, res) { // On ajoute 'res' pour la coh
     const text = response.text();
 
     const headers = cors({}, origin);
-    // On applique les headers manuellement
     Object.keys(headers).forEach(key => res.setHeader(key, headers[key]));
     
     res.status(200).json({ text });
