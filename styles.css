@@ -168,7 +168,7 @@ body {
 
 /* Responsive Bookmarks */
 @media (max-width: 1280px) { #bookmark-container { grid-template-columns: repeat(3, minmax(200px, 1fr)); } }
-@media (max-width: 960px)  { #bookmark-container { grid-template-columns: repeat(2, minmax(180px, 1fr)); } }
+@media (max-width: 960px)  { #bookmark-columns: repeat(2, minmax(180px, 1fr)); } }
 @media (max-width: 600px)  { #bookmark-container { grid-template-columns: 1fr; } }
 
 
@@ -180,6 +180,8 @@ body {
   color: var(--fg);
   display: flex;
   flex-direction: column;
+  /* Ajout pour aider Safari à calculer la hauteur */
+  min-height: 0; 
 }
 
 /* Onglets */
@@ -191,35 +193,24 @@ body {
   background: color-mix(in srgb, var(--bg) 60%, transparent);
   border-radius: 12px;
   align-self: center;
-}
-.chat-tab {
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--secondaryFg);
-  padding: 0.4rem 0.8rem;
-  border-radius: 9px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background .2s ease, color .2s ease;
-}
-.chat-tab.active {
-  background: var(--containerBg);
-  color: var(--fg);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  /* Pour s'assurer que les onglets ne sont pas étirés */
+  flex-shrink: 0; 
 }
 
 /* Panneaux de Chat */
 .chat-panel {
   display: none; 
   flex-direction: column;
+  /* Assurez-vous que le panneau prend l'espace disponible mais ne force pas le débordement */
+  flex-grow: 1; /* Permet au panneau de prendre l'espace restant */
+  min-height: 0; /* Important pour que l'overflow fonctionne correctement dans Flexbox */
 }
 .chat-panel:not([hidden]) {
   display: flex;
 }
 
 .chat-messages {
-  max-height: 320px;
+  max-height: 320px; /* Conservez cette max-height pour le scroll */
   overflow-y: auto;
   padding-right: 6px;
   margin-bottom: .8rem;
@@ -228,6 +219,8 @@ body {
   gap: .5rem;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbarColor) transparent;
+  /* Pour s'assurer que les messages prennent l'espace disponible */
+  flex-grow: 1; 
 }
 .chat-messages::-webkit-scrollbar { width: 6px; }
 .chat-messages::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
@@ -248,7 +241,9 @@ body {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: .6rem;
-  flex-shrink: 0; /* LA CORRECTION POUR SAFARI EST ICI */
+  /* LA CORRECTION POUR SAFARI EST ICI */
+  flex-shrink: 0; 
+  margin-top: auto; /* Pousse le formulaire vers le bas si le panneau est un flex-container */
 }
 .chat-form input[type="text"] {
   height: 48px;
@@ -291,4 +286,5 @@ body {
   color: var(--secondaryFg);
   text-align: center;
   margin: 0.8rem 0 0.2rem;
+  flex-shrink: 0; /* S'assure que l'astuce ne se déforme pas */
 }
