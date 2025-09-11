@@ -182,32 +182,36 @@ body {
   flex-direction: column;
 }
 
-/* Onglets */
+/* NOUVEAU STYLE D'ONGLETS */
 .chat-tabs {
   display: flex;
   gap: 0.5rem;
+  padding: 0 0.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  align-self: stretch;
   margin-bottom: 0.8rem;
-  padding: 0.3rem;
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
-  border-radius: 12px;
-  align-self: center;
-  flex-shrink: 0;
 }
 .chat-tab {
   appearance: none;
-  border: none;
+  border: 1px solid transparent;
+  border-bottom: none;
   background: transparent;
   color: var(--secondaryFg);
-  padding: 0.4rem 0.8rem;
-  border-radius: 9px;
+  padding: 0.6rem 1rem;
+  border-radius: 8px 8px 0 0;
   font-weight: 500;
   cursor: pointer;
   transition: background .2s ease, color .2s ease;
+  margin-bottom: -1px; /* Pour que la bordure se superpose */
 }
 .chat-tab.active {
-  background: var(--containerBg);
   color: var(--fg);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+}
+.chat-tab:not(.active):hover {
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  color: var(--fg);
 }
 
 /* Panneaux de Chat */
@@ -233,27 +237,22 @@ body {
 .chat-messages::-webkit-scrollbar { width: 6px; }
 .chat-messages::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
 
-/* NOUVEAU DESIGN DES BULLES DE MESSAGE */
+/* NOUVEAU DESIGN DES BULLES DE MESSAGE (NEUTRE) */
 .msg { 
   padding: .7rem 1rem; 
   border-radius: 14px; 
   line-height: 1.45; 
   white-space: pre-wrap; 
   max-width: 85%;
-  border: 1px solid transparent;
 }
 .msg.you { 
   align-self: flex-end; 
-  background: color-mix(in srgb, var(--mac-brand) 25%, transparent);
-  border-color: rgba(0, 122, 255, 0.3);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: white; 
+  background: color-mix(in srgb, var(--fg) 15%, transparent);
+  color: var(--fg);
 }
 .msg.bot { 
   align-self: flex-start; 
   background: var(--containerBg);
-  border-color: var(--glass-border);
 }
 .msg.pending::after {
   content: '▋';
@@ -284,27 +283,28 @@ body {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--mac-brand) 20%, transparent);
 }
 
-/* NOUVEAU DESIGN DU BOUTON ENVOYER */
+/* NOUVEAU DESIGN DU BOUTON ENVOYER (NEUTRE) */
 .chat-form button {
   height: 48px;
   min-width: 120px;
   border-radius: var(--radius);
-  border: 1px solid rgba(0, 122, 255, 0.4);
-  background: color-mix(in srgb, var(--mac-brand) 30%, transparent);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: white;
+  border: 1px solid var(--glass-border);
+  background: var(--fg);
+  color: var(--bg);
   padding: 0 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background .2s ease, transform .1s ease;
+  transition: filter .2s ease, transform .1s ease;
+  backdrop-filter: none; /* On enlève le blur */
 }
 .chat-form button:hover { 
-  background: color-mix(in srgb, var(--mac-brand) 45%, transparent);
+  filter: brightness(.92); 
+}
+:root[data-theme="dark"] .chat-form button:hover {
+  filter: brightness(1.1);
 }
 .chat-form button:active { 
   transform: scale(0.98); 
-  background: color-mix(in srgb, var(--mac-brand) 20%, transparent);
 }
 
 .hint {
