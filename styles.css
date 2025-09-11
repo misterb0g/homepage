@@ -182,37 +182,37 @@ body {
   flex-direction: column;
 }
 
-/* NOUVEAU STYLE D'ONGLETS */
+/* NOUVEAU STYLE D'ONGLETS "PILULE" */
 .chat-tabs {
   display: flex;
   gap: 0.5rem;
-  padding: 0 0.5rem;
-  border-bottom: 1px solid var(--glass-border);
-  align-self: stretch;
   margin-bottom: 0.8rem;
+  padding: 0.3rem;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  border-radius: 12px;
+  align-self: center;
+  flex-shrink: 0;
 }
 .chat-tab {
   appearance: none;
-  border: 1px solid transparent;
-  border-bottom: none;
+  border: none;
   background: transparent;
   color: var(--secondaryFg);
-  padding: 0.6rem 1rem;
-  border-radius: 8px 8px 0 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 9px;
   font-weight: 500;
   cursor: pointer;
   transition: background .2s ease, color .2s ease;
-  margin-bottom: -1px; /* Pour que la bordure se superpose */
 }
 .chat-tab.active {
+  background: var(--containerBg);
   color: var(--fg);
-  background: var(--glass-bg);
-  border-color: var(--glass-border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .chat-tab:not(.active):hover {
-  background: color-mix(in srgb, var(--fg) 5%, transparent);
   color: var(--fg);
 }
+
 
 /* Panneaux de Chat */
 .chat-panel {
@@ -237,7 +237,7 @@ body {
 .chat-messages::-webkit-scrollbar { width: 6px; }
 .chat-messages::-webkit-scrollbar-thumb { background-color: var(--scrollbarColor); border-radius: 6px; }
 
-/* NOUVEAU DESIGN DES BULLES DE MESSAGE (NEUTRE) */
+/* DESIGN DES BULLES DE MESSAGE (NEUTRE) */
 .msg { 
   padding: .7rem 1rem; 
   border-radius: 14px; 
@@ -283,7 +283,7 @@ body {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--mac-brand) 20%, transparent);
 }
 
-/* NOUVEAU DESIGN DU BOUTON ENVOYER (NEUTRE) */
+/* DESIGN DU BOUTON ENVOYER (NEUTRE) */
 .chat-form button {
   height: 48px;
   min-width: 120px;
@@ -295,7 +295,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: filter .2s ease, transform .1s ease;
-  backdrop-filter: none; /* On enlève le blur */
+  backdrop-filter: none;
 }
 .chat-form button:hover { 
   filter: brightness(.92); 
