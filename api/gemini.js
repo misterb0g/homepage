@@ -31,19 +31,14 @@ export default async function handler(req) {
   try {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey || apiKey.trim() === '') {
-      throw new Error('GEMINI_API_KEY non configurée ou vide sur Vercel.');
+      throw new Error('La variable d\'environnement GEMINI_API_KEY est manquante ou vide sur Vercel.');
     }
 
-    let payload;
-    try {
-      payload = await req.json();
-    } catch {
-      throw new Error('Requête invalide: JSON manquant ou incorrect');
-    }
-
+    const payload = await req.json();
     const { prompt } = payload;
+
     if (!prompt || typeof prompt !== 'string') {
-      throw new Error('Le prompt est requis (string)');
+      throw new Error('Le prompt est requis dans la requête.');
     }
     
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -58,13 +53,11 @@ export default async function handler(req) {
 
     return new Response(JSON.stringify({ text }), {
       status: 200,
-      headers: cors({
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store',
-      }, origin),
+      headers: cors({ 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, origin),
     });
+
   } catch (error) {
-    console.error("Erreur dans la fonction Gemini:", error);
+    console.error("Erreur détaillée dans la fonction Gemini:", error);
     return new Response(JSON.stringify({ error: `Erreur côté serveur : ${error.message}` }), {
       status: 500,
       headers: cors({ 'Content-Type': 'application/json' }, origin),
