@@ -1,6 +1,6 @@
 const bookmarks = [
   {
-    title: "RH",
+    title: "Ressources Humaines",
     links: [
       { name: "DinClock", url: "https://www.dinclock.com/silex/login/home.jsp" },
       { name: "Partena", url: "https://my.partena-professional.be" },
@@ -10,11 +10,12 @@ const bookmarks = [
   },
 
   {
-    title: "Comptes",
+    title: "Banques & Finance",
     links: [
       { name: "ING", url: "https://ebanking.ing.be/login" },
       { name: "Winbooks", url: "https://app.winbooksconnect.be/" },
-      { name: "Clé", url: "https://airkey.evva.com" },
+      { name: "Fortis", url: "https://www.bnpparibasfortis.be/fr/generic/logon" },
+
     ],
   },
 
@@ -34,11 +35,12 @@ const bookmarks = [
       { name: "Dolibarr", url: "https://dolibarr.lesilex.be" },
       { name: "Flow", url: "https://admin.joinflow.com/pbxservices.jsp" },
       { name: "Odoo", url: "https://silex-asbl.odoo.com/odoo" },
+      { name: "Clé", url: "https://airkey.evva.com" },
     ],
   },
 
   {
-    title: "Video",
+    title: "Divertissement",
     links: [
       { name: "Prime", url: "https://www.primevideo.com" },
       { name: "Netflix", url: "https://netflix.com" },

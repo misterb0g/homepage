@@ -38,7 +38,7 @@
       <section id="weather-details" class="card glass weather-details" hidden></section>
 
       <form class="spotlight glass" action="https://www.google.com/search" method="GET" target="_self" role="search" aria-label="Recherche">
-        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
         <input type="search" name="q" placeholder="Rechercher…" inputmode="search" autocapitalize="off" autocorrect="off" spellcheck="false" required aria-label="Votre recherche" />
@@ -175,6 +175,11 @@
 
       /* Favoris */
       function setupBookmarks() {
+        // Triage des favoris par nom
+        bookmarks.forEach(category => {
+          category.links.sort((a, b) => a.name.localeCompare(b.name));
+        });
+
         const el = $("#bookmark-container");
         el.innerHTML = bookmarks.map((b) => {
           const html = ["<section class='bookmark-set card glass'>"];
