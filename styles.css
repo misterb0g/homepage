@@ -22,11 +22,11 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 
   --mac-brand: #9a9aa0;
 
-  --pad-card: 1rem;
-  --gap-grid: 1rem;
-  --spot-h: 60px;
-  --radius: 16px;
-  --bk-font: 1rem;
+  --pad-card: 0.7rem;
+  --gap-grid: 0.7rem;
+  --spot-h: 52px;
+  --radius: 14px;
+  --bk-font: 0.95rem;
 }
 :root[data-theme="light"] {
   --bg: #f2f2f7;
@@ -41,27 +41,11 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 
   --mac-brand: #6e6e73;
 
-  --pad-card: 1rem;
-  --gap-grid: 1rem;
-  --spot-h: 60px;
-  --radius: 16px;
-  --bk-font: 1rem;
-}
-
-/* Densité */
-:root[data-density="compact"] {
   --pad-card: 0.7rem;
   --gap-grid: 0.7rem;
   --spot-h: 52px;
   --radius: 14px;
   --bk-font: 0.95rem;
-}
-:root[data-density="cozy"] {
-  --pad-card: 1rem;
-  --gap-grid: 1rem;
-  --spot-h: 60px;
-  --radius: 16px;
-  --bk-font: 1rem;
 }
 
 /* =========================
@@ -140,6 +124,17 @@ appearance: none; border: 1px solid var(--glass-border); background: var(--bg);
 .wd-desc { color: var(--secondaryFg); font-size: .95rem; margin-bottom: .2rem; }
 .wd-temps .max { font-weight: 700; }
 .wd-temps .min { color: var(--secondaryFg); }
+/* Nouvelle classe pour les icônes de prévisions */
+.weather-icon-small {
+  width: 24px; /* Taille légèrement plus grande pour la visibilité */
+  height: 24px;
+  vertical-align: middle;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  display: block; /* Pour qu'elle prenne toute la largeur disponible dans son conteneur */
+  margin: 0.5rem auto; /* Centrer l'icône */
+}
 
 /* Spotlight (barre Google) */
 .spotlight {

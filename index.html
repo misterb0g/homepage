@@ -23,13 +23,6 @@
           <circle cx="12" cy="12" r="4.5"/>
         </svg>
       </button>
-
-      <button id="density-toggle" class="btn-icon" aria-pressed="false" title="Basculer densité (compacte/spacieuse)" aria-label="Basculer la densité">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M8.2 16h1.9l.6-1.7h2.7l.6 1.7h1.9L12.9 8h-1.8L8.2 16zm3.1-3.3l1-2.7 1 2.7h-2z" />
-          <path d="M17 6.5l1.4 1.4-.9.9V9h-1V8.8l-.9-.9L17 6.5zm0 11l-1.4-1.4.9-.9V15h1v.2l.9.9L17 17.5zM16.5 9v6h1V9h-1z"/>
-        </svg>
-      </button>
     </div>
 
     <div class="container">
@@ -58,7 +51,7 @@
           <input id="gpt-input" type="text" name="prompt" placeholder="Pose ta question…" inputmode="text" required aria-label="Message pour ChatGPT" />
           <button type="submit">Envoyer</button>
         </form>
-        <p class="hint">Astuce : / ou ⌘K / Ctrl+K → focus barre Google • Densité via l’icône “A↕︎”.</p>
+        <p class="hint">Astuce : / ou ⌘K / Ctrl+K → focus barre Google.</p>
       </section>
 
       <section id="net-battery-container" class="card glass footer-card">
@@ -89,6 +82,40 @@
       const WEATHER_CACHE_KEY = 'weather5d_cache_v1';
       const WEATHER_TTL_MS = 60 * 60 * 1000;
       let userLocation = null;
+      
+      const weatherIconMap = {
+        0: '<path d="M12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12zM12 2v2m0 16v2m-8-8H2m20 0h-2m-3-7-1.5 1.5M7.5 16.5l-1.5 1.5M7.5 7.5l-1.5-1.5m9 9 1.5 1.5"/>', // Ciel dégagé
+        1: '<path d="M12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12zM12 2v2m0 16v2m-8-8H2m20 0h-2m-3-7-1.5 1.5M7.5 16.5l-1.5 1.5M7.5 7.5l-1.5-1.5m9 9 1.5 1.5"/>', // Plutôt dégagé
+        2: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12 6a6 6 0 1 1 0 12 6 6 0 0 1 0-12zM12 2v2m0 16v2m-8-8H2m20 0h-2m-3-7-1.5 1.5M7.5 16.5l-1.5 1.5M7.5 7.5l-1.5-1.5m9 9 1.5 1.5"/>', // Partiellement nuageux (Soleil + nuage)
+        3: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/>', // Couvert
+        45: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M10 20h4M10.8 17.5h2.4M11.6 15h.8"/>', // Brouillard
+        48: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M10 20h4M10.8 17.5h2.4M11.6 15h.8"/>', // Brouillard givrant
+        51: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-4 4v3m-2.5-3.5 1 1.5m5.5-1.5-1 1.5"/>', // Bruine légère
+        53: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-4 4v3m-2.5-3.5 1 1.5m5.5-1.5-1 1.5"/>', // Bruine
+        55: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-4 4v3m-2.5-3.5 1 1.5m5.5-1.5-1 1.5"/>', // Bruine forte
+        61: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Pluie légère
+        63: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Pluie
+        65: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Pluie forte
+        66: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Pluie verglaçante légère
+        67: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Pluie verglaçante forte
+        71: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12.5 18.5a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0zM12.5 21a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>', // Neige légère
+        73: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12.5 18.5a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0zM12.5 21a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>', // Neige
+        75: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12.5 18.5a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0zM12.5 21a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>', // Neige forte
+        77: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12.5 18.5a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0zM12.5 21a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>', // Grains de neige
+        80: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Averses faibles
+        81: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Averses
+        82: '<path d="M16 14c-.6 1.7-2.3 3-4.5 3-2.9 0-4.5-2.5-4.5-5a4.5 4.5 0 0 1 4.5-4.5h3c.8 0 1.5.7 1.5 1.5V14zm-2.5 5.5v1.5M14 18v1.5M12.5 19.5v1.5"/>', // Averses fortes
+        85: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12.5 18.5a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0zM12.5 21a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>', // Averses de neige faibles
+        86: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12.5 18.5a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0zM12.5 21a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>', // Averses de neige fortes
+        95: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>', // Orages
+        96: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>', // Orages (grésil)
+        99: '<path d="M18 16a4 4 0 1 0 0-8h-1.5a6 6 0 1 0-5.3 8H18z" stroke-width="1.5" stroke-linecap="round" fill="currentColor"/><path d="M12 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>', // Orages (grêle)
+      };
+      
+      // La fonction getWeatherIconSvg n'est plus utilisée, mais je la laisse au cas où.
+      function getWeatherIconSvg(code) {
+        return weatherIconMap[code] || '';
+      }
 
       function getUserLocation() {
         return new Promise((resolve, reject) => {
@@ -195,6 +222,8 @@
         const root = document.documentElement;
         const btn = $("#theme-toggle-btn");
         const icon = $("#theme-icon");
+        const storedTheme = localStorage.getItem("theme");
+        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
         function setIcon(theme) {
           icon.innerHTML = (theme === "light")
@@ -202,36 +231,34 @@
             : '<path d="M21 12.7A9 9 0 1 1 11.3 3a7 7 0 1 0 9.7 9.7z"/>';
         }
 
-        const saved = localStorage.getItem("theme");
-        let theme = (saved === "light" || saved === "dark")
-          ? saved
-          : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        // Déterminer le thème initial
+        let currentTheme;
+        if (storedTheme) {
+          currentTheme = storedTheme;
+        } else {
+          currentTheme = systemPrefersDark.matches ? "dark" : "light";
+        }
+        root.setAttribute("data-theme", currentTheme);
+        btn.setAttribute("aria-pressed", currentTheme === "light");
+        setIcon(currentTheme);
 
-        root.setAttribute("data-theme", theme);
-        btn.setAttribute("aria-pressed", theme === "light");
-        setIcon(theme);
+        // Écouter les changements système
+        systemPrefersDark.addEventListener("change", (e) => {
+          if (!localStorage.getItem("theme")) {
+            const newTheme = e.matches ? "dark" : "light";
+            root.setAttribute("data-theme", newTheme);
+            btn.setAttribute("aria-pressed", newTheme === "light");
+            setIcon(newTheme);
+          }
+        });
 
+        // Écouter les clics pour basculer manuellement
         btn.addEventListener("click", () => {
-          theme = (root.getAttribute("data-theme") === "light") ? "dark" : "light";
+          const theme = (root.getAttribute("data-theme") === "light") ? "dark" : "light";
           root.setAttribute("data-theme", theme);
           localStorage.setItem("theme", theme);
           btn.setAttribute("aria-pressed", theme === "light");
           setIcon(theme);
-        });
-      })();
-
-      /* Densité */
-      (function () {
-        const root = document.documentElement;
-        const btn = $("#density-toggle");
-        const saved = localStorage.getItem("density") || "cozy";
-        root.setAttribute("data-density", saved);
-        btn.setAttribute("aria-pressed", saved === "compact" ? "true" : "false");
-        btn.addEventListener("click", () => {
-          const current = root.getAttribute("data-density") === "compact" ? "cozy" : "compact";
-          root.setAttribute("data-density", current);
-          btn.setAttribute("aria-pressed", current === "compact" ? "true" : "false");
-          localStorage.setItem("density", current);
         });
       })();
 
