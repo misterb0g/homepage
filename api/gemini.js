@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// La correction est ici : on passe de 'edge' à 'nodejs'
 export const config = {
-  runtime: 'edge',
+  runtime: 'nodejs',
 };
 
 const ALLOWED_ORIGIN = 'https://start.bogarts.be';
@@ -30,7 +31,6 @@ export default async function handler(req) {
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    // Renvoyer une erreur en JSON pour être cohérent
     return new Response(JSON.stringify({ error: 'GEMINI_API_KEY non configurée.' }), {
       status: 500, headers: cors({ 'Content-Type': 'application/json' }, origin),
     });
@@ -56,8 +56,6 @@ export default async function handler(req) {
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
   try {
-    // === LA CORRECTION EST ICI ===
-    // On envoie le prompt dans la structure attendue par l'API
     const result = await model.generateContent({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
