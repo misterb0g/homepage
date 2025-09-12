@@ -15,10 +15,16 @@ const bookmarks = [
       { name: "ING", url: "https://ebanking.ing.be/login" },
       { name: "Winbooks", url: "https://app.winbooksconnect.be/" },
       { name: "Fortis", url: "https://www.bnpparibasfortis.be/fr/generic/logon" },
-
     ],
   },
-
+ {
+    title: "Répertoire Pro",
+    links: [
+      { name: "FESEFA", url: "https://www.fesefa.be/" },
+      { name: "Incidence asbl", url: "https://www.incidence-asbl.be/" },
+      { name: "Culture.be", url: "https://www.culture.be/" }
+    ]
+  },
   {
     title: "Google",
     links: [
@@ -30,7 +36,7 @@ const bookmarks = [
   },
 
   {
-    title: "Admin",
+    title: "Administration",
     links: [
       { name: "Dolibarr", url: "https://dolibarr.lesilex.be" },
       { name: "Flow", url: "https://admin.joinflow.com/pbxservices.jsp" },
