@@ -52,7 +52,11 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); }
 #bookmark-container { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--card-gap); width: min(1400px, 94%); margin: 0 auto 2.2rem; }
 .bookmark-set { padding: 0.7rem; flex: 0 1 280px; }
-.bookmark-inner-container { overflow-y: auto; max-height: 60vh; }
+.bookmark-inner-container { 
+  overflow-y: auto; 
+  overflow-x: hidden; /* Empêche la barre de défilement horizontale */
+  max-height: 60vh; 
+}
 .bookmark-title { font-size: 1.05rem; font-weight: 600; color: var(--fg); margin: 0 0 .5rem 0; }
 .bookmark { display: block; text-decoration: none; color: var(--secondaryFg); margin: var(--bookmark-margin); font-size: 0.95rem; padding: var(--bookmark-padding); border-radius: 8px; transition: color .2s ease, background .2s ease, transform .15s ease; }
 .bookmark:hover { 
