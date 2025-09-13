@@ -11,65 +11,65 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.png" />
 </head>
 <body>
   <div class="top-controls">
-    <button id="settings-toggle-btn" class="btn-icon" aria-expanded="false" title="Ouvrir les paramètres" aria-label="Ouvrir le panneau de contrôle">
-      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.69-1.68-0.91L14.07,3.58 c-0.04-0.24-0.24-0.41-0.48-0.41H9.41c-0.24,0-0.43,0.17-0.48,0.41L8.62,5.7C8,5.92,7.44,6.23,6.94,6.61l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.04,9.19c-0.12,0.2-0.07,0.47,0.12,0.61l2.03,1.58C4.02,11.66,4,11.83,4,12 c0,0.17,0.02,0.34,0.07,0.5l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96 c0.5,0.38,1.06,0.69,1.68,0.91l0.31,2.12c0.04,0.24,0.24,0.41,0.48,0.41h3.18c0.24,0,0.43-0.17,0.48-0.41l0.31-2.12 c0.62-0.22,1.18-0.53,1.68-0.91l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.2,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+    <button id="theme-toggle-btn" class="btn-icon" aria-pressed="false" title="Basculer clair/sombre" aria-label="Basculer le thème">
+      <svg id="theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/>
+        <circle cx="12" cy="12" r="4.5"/>
+      </svg>
     </button>
   </div>
 
-  <aside id="control-panel" class="glass" aria-hidden="true">
-    <div class="panel-header">
-      <h3>Paramètres</h3>
-      <button id="panel-close-btn" class="btn-icon" title="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div class="panel-content">
-      <div class="panel-section">
-        <label for="weather-location-input">Lieu de la météo</label>
-        <div class="input-group">
-          <input type="text" id="weather-location-input" placeholder="Ex: Paris, FR">
-          <button id="weather-location-save">OK</button>
-        </div>
-      </div>
-      <div class="panel-section">
-        <label>Thème</label>
-        <div class="segmented-control" id="theme-selector">
-          <button data-value="light" title="Thème clair">Jour</button>
-          <button data-value="dark" title="Thème sombre">Nuit</button>
-        </div>
-      </div>
-      <div class="panel-section">
-        <label>Densité des favoris</label>
-        <div class="segmented-control" id="density-selector">
-          <button data-value="cozy" title="Normal">Normal</button>
-          <button data-value="compact" title="Compact">Compact</button>
-        </div>
-      </div>
-      <div class="panel-section">
-        <label for="chat-toggle">Afficher le module de chat</label>
-        <label class="toggle-switch">
-          <input type="checkbox" id="chat-toggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-    </div>
-  </aside>
-  <div id="overlay" hidden></div>
-
   <div class="container">
-    <div id="greeting-container"><div id="greeting"></div><div id="clock"></div></div>
-    <section id="weather" class="card glass weather-container"><div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div></section>
+    <div id="clock" aria-label="Heure actuelle"></div>
+
+    <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" aria-controls="weather-details" title="Cliquer pour afficher les prévisions 5 jours">
+      <div class="row">
+        <div id="weather-description" class="inline">Météo...</div>
+        <div class="inline">•</div>
+        <div id="temp" class="inline">-- °C</div>
+      </div>
+    </section>
     <section id="weather-details" class="card glass weather-details" hidden></section>
-    <form class="spotlight glass" action="https://www.google.com/search" method="GET"><svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg><input type="search" name="q" placeholder="Rechercher…" inputmode="search" required><button type="submit" class="visually-hidden">Rechercher</button></form>
-    <div id="bookmark-container"><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section></div>
+
+    <form class="spotlight glass" action="https://www.google.com/search" method="GET" target="_self" role="search" aria-label="Recherche">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="search" name="q" placeholder="Rechercher…" inputmode="search" autocapitalize="off" autocorrect="off" spellcheck="false" required aria-label="Votre recherche" />
+      <button type="submit" class="visually-hidden">Rechercher</button>
+    </form>
+
+    <div id="bookmark-container"></div>
+
     <div id="chat-container" class="card glass">
-      <div class="chat-tabs"><button id="tab-gpt" class="chat-tab active" data-target="gpt">ChatGPT</button><button id="tab-gemini" class="chat-tab" data-target="gemini">Gemini</button></div>
-      <section id="chat-panel-gpt" class="chat-panel"><div class="chat-messages"></div><form class="chat-form" id="gpt-form"><input type="text" name="prompt" placeholder="Question pour ChatGPT…"/><button type="submit">Envoyer</button></form></section>
-      <section id="chat-panel-gemini" class="chat-panel" hidden><div class="chat-messages"></div><form class="chat-form" id="gemini-form"><input type="text" name="prompt" placeholder="Question pour Gemini…"/><button type="submit">Envoyer</button></form></section>
-      <p class="hint">Astuce : `/` ou `⌘K` → Recherche • `Alt+C` → Chat</p>
+      <div class="chat-tabs">
+        <button id="tab-gpt" class="chat-tab active" data-target="gpt">ChatGPT</button>
+        <button id="tab-gemini" class="chat-tab" data-target="gemini">Gemini</button>
+      </div>
+
+      <section id="chat-panel-gpt" class="chat-panel">
+        <div class="chat-messages" aria-live="polite"></div>
+        <form class="chat-form" id="gpt-form" autocomplete="off">
+          <input type="text" name="prompt" placeholder="Question pour ChatGPT…" inputmode="text" required aria-label="Message pour ChatGPT" />
+          <button type="submit">Envoyer</button>
+        </form>
+      </section>
+
+      <section id="chat-panel-gemini" class="chat-panel" hidden>
+        <div class="chat-messages" aria-live="polite"></div>
+        <form class="chat-form" id="gemini-form" autocomplete="off">
+          <input type="text" name="prompt" placeholder="Question pour Gemini…" inputmode="text" required aria-label="Message pour Gemini" />
+          <button type="submit">Envoyer</button>
+        </form>
+      </section>
+      
+      <p class="hint">Astuce : `/` ou `⌘K` / `Ctrl+K` → focus barre Google.</p>
     </div>
+
   </div>
 
   <script src="bookmarks.js"></script>
@@ -77,122 +77,247 @@
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => root.querySelectorAll(sel);
 
-    /* Horloge & Accueil */
-    function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
-    function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
-
-    /* Météo */
-    async function getWeather() {
-        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-        const weatherEl = $('#weather');
-        weatherEl.innerHTML = `<div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>`;
-        try {
-            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-            if (!geoRes.ok) throw new Error('Erreur Geocoding');
-            const geoData = await geoRes.json();
-            if (!geoData.results || geoData.results.length === 0) throw new Error(`Ville '${locationName}' non trouvée`);
-            const { latitude, longitude, name } = geoData.results[0];
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto&forecast_days=1`);
-            if (!weatherRes.ok) throw new Error('Erreur Météo');
-            const data = await weatherRes.json();
-            let t = data?.current?.temperature_2m, wcode = data?.current?.weather_code;
-            if (t == null || wcode == null) throw new Error("Données météo invalides");
-            weatherEl.innerHTML = `<div class="row"><div id="weather-location" class="inline">${name}</div><div class="inline">•</div><div id="weather-description" class="inline">${weatherCodeToFr(wcode)}</div><div class="inline">•</div><div id="temp" class="inline">${Math.round(t)} °C</div></div>`;
-        } catch (err) { console.error("Météo:", err); weatherEl.innerHTML = `<div class="inline">${err.message}</div>`; }
+    /* Horloge */
+    function getTime() {
+      const d = new Date();
+      const pad = (n) => (n < 10 ? "0" + n : n);
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }
-    
+
+    /* Météo (Open-Meteo) */
+    const BRU = { lat: 50.8503, lon: 4.3517, tz: 'Europe/Brussels' };
+    const WEATHER_CACHE_KEY = 'weather5d_cache_v1';
+    const WEATHER_TTL_MS = 60 * 60 * 1000;
+
+    function getWeather() {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&current=temperature_2m,weather_code&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=1`;
+      fetch(url)
+        .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+        .then(data => {
+          let t = data?.current?.temperature_2m;
+          let wcode = data?.current?.weather_code;
+          if (t != null) t = Math.round(t);
+          if (t == null || wcode == null) throw new Error("Structure inattendue");
+          $("#temp").textContent = `${t} °C`;
+          $("#weather-description").textContent = weatherCodeToFr(wcode);
+        })
+        .catch(err => {
+          console.error("Météo:", err);
+          if ($("#weather")) $("#weather").innerHTML = `<div class="inline">Météo indisponible</div>`;
+        });
+    }
+
+    function getWeather5dCached() {
+      try {
+        const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+        if (raw) {
+          const { ts, data } = JSON.parse(raw);
+          if (data && Date.now() - ts < WEATHER_TTL_MS) return Promise.resolve(data);
+        }
+      } catch {}
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${BRU.lat}&longitude=${BRU.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(BRU.tz)}&forecast_days=5`;
+      return fetch(url)
+        .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+        .then(data => {
+          if (!data?.daily?.time) throw new Error("Structure daily inattendue");
+          try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+          return data;
+        });
+    }
+
     function weatherCodeToFr(code) {
-        const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine légère",53:"Bruine",55:"Bruine forte",61:"Pluie légère",63:"Pluie",65:"Pluie forte",71:"Neige légère",73:"Neige",75:"Neige forte",80:"Averses faibles",81:"Averses",82:"Averses fortes",95:"Orages"};
-        return map[code] ?? "Météo";
+      const map = {0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine légère",53:"Bruine",55:"Bruine forte",61:"Pluie légère",63:"Pluie",65:"Pluie forte",66:"Pluie verglaçante légère",67:"Pluie verglaçante forte",71:"Neige légère",73:"Neige",75:"Neige forte",77:"Grains de neige",80:"Averses faibles",81:"Averses",82:"Averses fortes",85:"Averses de neige faibles",86:"Averses de neige fortes",95:"Orages",96:"Orages (grésil)",99:"Orages (grêle)"};
+      return map[code] ?? "Météo";
+    }
+
+    function renderWeather5d(data) {
+      const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) }));
+      const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
+      const html = ["<div class='weather5d'>", ...days.map((day) => `
+        <div class="weather-day">
+          <div class="wd-date">${df.format(new Date(day.date))}</div>
+          <div class="wd-desc">${weatherCodeToFr(day.code)}</div>
+          <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
+        </div>`), "</div>"].join("");
+      $("#weather-details").innerHTML = html;
     }
 
     /* Favoris */
     function setupBookmarks() {
       const el = $("#bookmark-container");
-      el.innerHTML = bookmarks.map((b) => `<section class='bookmark-set card glass'><div class="bookmark-title">${b.title}</div><div class="bookmark-inner-container">${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}</div></section>`).join("");
+      el.innerHTML = bookmarks.map((b) => {
+        return `<section class='bookmark-set card glass'>
+          <div class="bookmark-title">${b.title}</div>
+          <div class="bookmark-inner-container">
+            ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}
+          </div>
+        </section>`;
+      }).join("");
     }
 
-    /* Raccourcis Clavier */
+    /* Thème */
+    (function () {
+      const root = document.documentElement;
+      const btn = $("#theme-toggle-btn");
+      const icon = $("#theme-icon");
+      function setIcon(theme) {
+        icon.innerHTML = (theme === "light")
+          ? '<path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M5.6 5.6 4 4m16 16-1.6-1.6M5.6 18.4 4 20m16-16-1.6 1.6"/><circle cx="12" cy="12" r="4.5"/>'
+          : '<path d="M21 12.7A9 9 0 1 1 11.3 3a7 7 0 1 0 9.7 9.7z"/>';
+      }
+      const saved = localStorage.getItem("theme");
+      let theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      root.setAttribute("data-theme", theme);
+      setIcon(theme);
+      btn.addEventListener("click", () => {
+        theme = (root.getAttribute("data-theme") === "light") ? "dark" : "light";
+        root.setAttribute("data-theme", theme);
+        localStorage.setItem("theme", theme);
+        setIcon(theme);
+      });
+    })();
+
+    /* Raccourcis Spotlight */
     window.addEventListener("keydown", (e) => {
-      const activeTag = document.activeElement.tagName.toLowerCase();
-      const isInputFocused = activeTag === "input" || activeTag === "textarea";
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $(".spotlight input[type='search']").focus(); }
-      if (isInputFocused) return;
-      if (e.key === "/") { e.preventDefault(); $(".spotlight input[type='search']").focus(); }
-      if (e.altKey && e.key.toLowerCase() === 'c') { e.preventDefault(); const input = $('.chat-panel:not([hidden]) .chat-form input'); if (input) input.focus(); }
+      const spotlight = $(".spotlight input[type='search']");
+      if (!spotlight || (document.activeElement.tagName.toLowerCase() === "input")) return;
+      if (e.key === "/" && !e.metaKey && !e.ctrlKey) { e.preventDefault(); spotlight.focus(); }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); spotlight.focus(); }
     });
 
-    /* Logique des CHATS (inchangée) */
+    /* --- Logique des CHATS --- */
     (function() {
-      function addBubble(container, text, who, isPending = false) { const bubble = document.createElement('div'); bubble.className = `msg ${who}` + (isPending ? ' pending' : ''); bubble.textContent = text; container.appendChild(bubble); container.scrollTop = container.scrollHeight; return bubble; }
-      const tabs = $$('.chat-tab'), panels = $$('.chat-panel');
-      tabs.forEach(tab => { tab.addEventListener('click', () => { const targetId = tab.dataset.target; tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); panels.forEach(p => p.hidden = (p.id !== `chat-panel-${targetId}`)); }); });
-      const gptForm = $("#gpt-form"), gptInput = gptForm.querySelector('input'), gptMessages = $("#chat-panel-gpt .chat-messages");
-      gptForm.addEventListener('submit', async (e) => { e.preventDefault(); const prompt = gptInput.value.trim(); if (!prompt) return; addBubble(gptMessages, prompt, 'you'); gptInput.value = ''; const botBubble = addBubble(gptMessages, '…', 'bot', true); try { const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ prompt }) }); if (!res.ok || !res.body) throw new Error(`API Error (${res.status})`); const reader = res.body.getReader(), decoder = new TextDecoder('utf-8'); let acc = ''; while (true) { const { value, done } = await reader.read(); if (done) break; acc += decoder.decode(value, { stream: true }); botBubble.textContent = acc; gptMessages.scrollTop = gptMessages.scrollHeight; } botBubble.classList.remove('pending'); } catch(err) { botBubble.classList.remove('pending'); botBubble.textContent = `Erreur: ${err.message}`; } });
-      const geminiForm = $("#gemini-form"), geminiInput = geminiForm.querySelector('input'), geminiMessages = $("#chat-panel-gemini .chat-messages");
-      geminiForm.addEventListener('submit', async (e) => { e.preventDefault(); const prompt = geminiInput.value.trim(); if (!prompt) return; addBubble(geminiMessages, prompt, 'you'); geminiInput.value = ''; const botBubble = addBubble(geminiMessages, '…', 'bot', true); try { const res = await fetch('/api/gemini', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ prompt }) }); if (!res.ok) { const errText = await res.text(); throw new Error(JSON.parse(errText).error || errText); } const data = await res.json(); botBubble.textContent = data.text || "Pas de réponse."; } catch(err) { botBubble.textContent = `Erreur: ${err.message}`; } finally { botBubble.classList.remove('pending'); } });
-    })();
-    
-    /* Interactions météo (détails) */
-    (function () {
-      const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
-      async function getWeather5dCached() { try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data } = JSON.parse(raw); if (data && Date.now() - ts < WEATHER_TTL_MS) return data; } } catch {} const locationName = localStorage.getItem('weatherLocation') || 'Brussels'; const geoData = await (await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`)).json(); const { latitude, longitude } = geoData.results[0]; const data = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`)).json(); try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {} return data; }
-      function renderWeather5d(data) { const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div><div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`; }
-      async function toggleDetails() { const isHidden = details.hasAttribute("hidden"); if (isHidden && !loaded) { try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } } details.toggleAttribute("hidden"); weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden"))); }
-      weatherCard.addEventListener("click", toggleDetails); weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
-    })();
-    
-    /* Panneau de Contrôle */
-    (function() {
-        const panel = $('#control-panel'), overlay = $('#overlay');
-        const toggleBtn = $('#settings-toggle-btn'), closeBtn = $('#panel-close-btn');
-        function openPanel() { panel.setAttribute('aria-hidden', 'false'); toggleBtn.setAttribute('aria-expanded', 'true'); overlay.hidden = false; document.body.classList.add('panel-open'); }
-        function closePanel() { panel.setAttribute('aria-hidden', 'true'); toggleBtn.setAttribute('aria-expanded', 'false'); overlay.hidden = true; document.body.classList.remove('panel-open'); }
-        toggleBtn.addEventListener('click', openPanel);
-        closeBtn.addEventListener('click', closePanel);
-        overlay.addEventListener('click', closePanel);
-        window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel(); });
+      // Fonction utilitaire pour ajouter une bulle de message
+      function addBubble(container, text, who, isPending = false) {
+        const bubble = document.createElement('div');
+        bubble.className = `msg ${who}` + (isPending ? ' pending' : '');
+        bubble.textContent = text;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+        return bubble;
+      }
 
-        const locationInput = $('#weather-location-input'), saveBtn = $('#weather-location-save');
-        locationInput.value = localStorage.getItem('weatherLocation') || '';
-        const saveLocation = () => { const newLocation = locationInput.value.trim(); if (newLocation) { localStorage.setItem('weatherLocation', newLocation); getWeather(); closePanel(); } };
-        saveBtn.addEventListener('click', saveLocation);
-        locationInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLocation(); });
-
-        const root = document.documentElement;
-        function applySetting(key, value, action) { localStorage.setItem(key, value); action(value); }
-        function setupSelector(selectorId, storageKey, action, defaultValue) {
-            const selector = $(selectorId);
-            const savedValue = localStorage.getItem(storageKey) || defaultValue;
-            action(savedValue);
-            selector.querySelector(`[data-value="${savedValue}"]`).classList.add('active');
-            selector.addEventListener('click', (e) => {
-                const target = e.target.closest('button');
-                if (target && target.dataset.value) {
-                    applySetting(storageKey, target.dataset.value, action);
-                    selector.querySelector('.active').classList.remove('active');
-                    target.classList.add('active');
-                }
-            });
-        }
-        
-        setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
-        
-        const chatToggle = $('#chat-toggle');
-        const showChat = localStorage.getItem('showChat') !== 'false';
-        chatToggle.checked = showChat;
-        document.body.classList.toggle('chat-hidden', !showChat);
-        chatToggle.addEventListener('change', () => {
-            applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val));
+      // 1. Logique des onglets
+      const tabs = $$('.chat-tab');
+      const panels = $$('.chat-panel');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetId = tab.dataset.target;
+          
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          panels.forEach(p => {
+            p.hidden = (p.id !== `chat-panel-${targetId}`);
+          });
         });
+      });
+
+      // 2. Logique ChatGPT (streaming)
+      const gptForm = $("#gpt-form");
+      const gptInput = gptForm.querySelector('input');
+      const gptMessages = $("#chat-panel-gpt .chat-messages");
+
+      gptForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const prompt = gptInput.value.trim();
+        if (!prompt) return;
+        addBubble(gptMessages, prompt, 'you');
+        gptInput.value = '';
+        const botBubble = addBubble(gptMessages, '...', 'bot', true);
+
+        try {
+          const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ prompt }) });
+          if (!res.ok) throw new Error(`API Error (${res.status}): ${await res.text()}`);
+          if (!res.body) throw new Error('No response stream');
+          
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let accumulatedText = '';
+          
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            accumulatedText += decoder.decode(value, { stream: true });
+            botBubble.textContent = accumulatedText;
+            gptMessages.scrollTop = gptMessages.scrollHeight;
+          }
+          botBubble.classList.remove('pending');
+        } catch(err) {
+          botBubble.classList.remove('pending');
+          botBubble.textContent = `Erreur: ${err.message}`;
+          console.error(err);
+        }
+      });
+
+      // 3. Logique Gemini (non-streaming)
+      const geminiForm = $("#gemini-form");
+      const geminiInput = geminiForm.querySelector('input');
+      const geminiMessages = $("#chat-panel-gemini .chat-messages");
+
+      geminiForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const prompt = geminiInput.value.trim();
+        if (!prompt) return;
+        addBubble(geminiMessages, prompt, 'you');
+        geminiInput.value = '';
+        const botBubble = addBubble(geminiMessages, '...', 'bot', true);
+
+        try {
+          const res = await fetch('/api/gemini', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ prompt }) });
+          
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(errorText || `Erreur API (${res.status})`);
+          }
+          
+          const data = await res.json();
+          botBubble.textContent = data.text || "Pas de réponse textuelle.";
+
+        } catch(err) {
+          botBubble.textContent = `Erreur: ${err.message}`;
+          console.error(err);
+        } finally {
+            botBubble.classList.remove('pending');
+        }
+      });
+    })();
+    
+    /* Interactions météo (toggle détails) */
+    (function () {
+      const weatherCard = $("#weather");
+      const details = $("#weather-details");
+      let loaded = false;
+
+      async function toggleDetails() {
+        const isHidden = details.hasAttribute("hidden");
+        if (isHidden && !loaded) {
+          try {
+            details.innerHTML = "Chargement des prévisions...";
+            const data = await getWeather5dCached();
+            renderWeather5d(data);
+            loaded = true;
+          } catch {
+            details.innerHTML = "<div class='wd-error'>Impossible de charger les prévisions.</div>";
+          }
+        }
+        details.toggleAttribute("hidden");
+        weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden")));
+      }
+
+      weatherCard.addEventListener("click", toggleDetails);
+      weatherCard.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleDetails();
+        }
+      });
     })();
 
     /* Init */
     window.addEventListener("load", () => {
-      updateGreeting();
       $("#clock").textContent = getTime();
-      setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
+      setInterval(() => ($("#clock").textContent = getTime()), 1000);
       setupBookmarks();
       getWeather();
     });
