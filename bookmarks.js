@@ -80,6 +80,7 @@ const bookmarks = [
       { name: "Silex", url: "http://lesilex.be/admin/login.php" },
       { name: "Fleur d'Ô", url: "https://fleurdo.be/wp-login.php?redirect_to=https%3A%2F%2Ffleurdo.be%2Fwp-admin%2F&reauth=1" },
       { name: "Molinaux", url: "https://molineaux-flowers.be/wp-admin/" },
+      { name: "Github", url: "https://github.com/misterb0g/homepage" },
     ],
   },
 ];
