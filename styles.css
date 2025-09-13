@@ -55,7 +55,12 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .bookmark-inner-container { overflow-y: auto; max-height: 60vh; }
 .bookmark-title { font-size: 1.05rem; font-weight: 600; color: var(--fg); margin: 0 0 .5rem 0; }
 .bookmark { display: block; text-decoration: none; color: var(--secondaryFg); margin: var(--bookmark-margin); font-size: 0.95rem; padding: var(--bookmark-padding); border-radius: 8px; transition: color .2s ease, background .2s ease, transform .15s ease; }
-.bookmark:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 10%, transparent); transform: translateX(2px); }
+.bookmark:hover { 
+  text-decoration: none; /* Correction spécifique pour Firefox */
+  color: var(--fg); 
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  transform: translateX(2px);
+}
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 .skeleton { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; background-color: color-mix(in srgb, var(--fg) 8%, transparent); border-radius: 8px; }
 .skeleton.bookmark-set { display: flex; flex-direction: column; gap: 0.7rem; padding: 0.7rem; }
