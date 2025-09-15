@@ -5,18 +5,71 @@
 html, body, input, button, a, textarea { font-family: var(--fontFamily); }
 body { -webkit-font-smoothing: antialiased; }
 
+/* =========================
+   Thème + Variables
+   ========================= */
 :root, :root[data-theme="dark"] {
   --bg: #1c1c1e; --fg: #f5f5f7; --secondaryFg: #a1a1a6; --containerBg: #2c2c2e;
-  --glass-bg: rgba(44,44,46,0.6); --glass-border: rgba(255,255,255,.1); --glass-shadow: 0 8px 32px rgba(0,0,0,.3);
+  --glass-bg: rgba(44,44,46,0.55); /* Opacité réduite pour voir le fond */
+  --glass-border: rgba(255,255,255,.12);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,.3);
   --mac-brand: #007aff; --radius: 16px; --spot-h: 52px;
+  --blob-color1: #edf2fb;
+  --blob-color2: #3d2645;
 }
 :root[data-theme="light"] {
-  --bg: #f2f2f7; --fg: #1d1d1f; --secondaryFg: #6e6e73; --containerBg: #ffffff;
-  --glass-bg: rgba(255,255,255,0.65); --glass-border: rgba(0,0,0,.08); --glass-shadow: 0 8px 32px rgba(0,0,0,.1);
+  --bg: #f8f9fa; --fg: #1d1d1f; --secondaryFg: #6e6e73; --containerBg: #ffffff;
+  --glass-bg: rgba(255,255,255,0.6); --glass-border: rgba(0,0,0,.08); --glass-shadow: 0 8px 32px rgba(0,0,0,.1);
+  --blob-color1: #c7ccdb;
+  --blob-color2: #e1e5ee;
 }
 :root[data-density="compact"] { --card-gap: 0.5rem; --bookmark-margin: 0.2rem 0; --bookmark-padding: 0.1rem 0.3rem; }
 :root[data-density="cozy"] { --card-gap: 0.7rem; --bookmark-margin: .45rem 0; --bookmark-padding: .25rem .3rem; }
 
+/* =========================
+   NOUVEAU FOND LIQUIDE ANIMÉ
+   ========================= */
+body {
+  position: relative;
+  overflow-x: hidden; /* Empêche les barres de défilement causées par les blobs */
+}
+.liquid-background {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+@keyframes move-blob {
+  0%   { transform: scale(1) translate(0, 0) rotate(0deg); }
+  25%  { transform: scale(1.1) translate(20px, -30px) rotate(90deg); }
+  50%  { transform: scale(0.9) translate(-20px, 30px) rotate(180deg); }
+  75%  { transform: scale(1.2) translate(-10px, -15px) rotate(270deg); }
+  100% { transform: scale(1) translate(0, 0) rotate(360deg); }
+}
+.blob1, .blob2 {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+  filter: blur(80px); /* Le flou qui crée l'effet liquide */
+  will-change: transform;
+}
+.blob1 {
+  width: 500px; height: 500px;
+  top: -150px; left: -150px;
+  background: var(--blob-color1);
+  animation: move-blob 30s infinite alternate;
+}
+.blob2 {
+  width: 400px; height: 400px;
+  bottom: -100px; right: -100px;
+  background: var(--blob-color2);
+  animation: move-blob 25s infinite alternate-reverse;
+}
+
+
+/* =========================
+   Layout & Éléments Communs
+   ========================= */
 html, body { height: 100%; }
 body { margin: 0; background-color: var(--bg); transition: background-color .3s ease; }
 .container { width: 100%; min-height: 100vh; padding: 3.2rem 1rem 2.2rem; display: flex; align-items: center; flex-direction: column; gap: 1.2rem; box-sizing: border-box; }
@@ -25,17 +78,33 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .btn-icon:hover { opacity: .8; } .btn-icon:active { transform: scale(.95); }
 .btn-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 #settings-toggle-btn svg { fill: currentColor; stroke: none; }
-.card { border-radius: var(--radius); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); overflow: hidden; transition: box-shadow .3s ease, transform .2s ease; }
+
+.card { 
+  position: relative; /* Nécessaire pour l'effet de brillance */
+  border-radius: var(--radius); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); overflow: hidden; transition: box-shadow .3s ease, transform .2s ease; 
+}
+/* NOUVEL EFFET DE BRILLANCE ("SHEEN") */
+.card::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 40%);
+  transform: translateY(100%);
+  transition: transform 0.5s ease-out;
+  pointer-events: none;
+}
+.card:hover::before {
+  transform: translateY(-20%);
+}
 .card:hover { transform: translateY(-2px); box-shadow: var(--glass-shadow), 0 12px 24px rgba(0,0,0,0.15); }
-.weather-details:hover { transform: none; box-shadow: var(--glass-shadow); }
+.weather-details:hover, #chat-container:hover { transform: none; box-shadow: var(--glass-shadow); }
 .glass { background: var(--glass-bg); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
 #greeting-container { text-align: center; margin-bottom: 0.5rem; }
 #greeting { font-size: clamp(2.2rem, 5vw, 2.8rem); font-weight: 600; color: var(--fg); }
 #clock { font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 400; color: var(--secondaryFg); letter-spacing: .5px; }
 #weather-location { font-weight: 600; }
-
-/* LA CORRECTION EST ICI */
-.weather-container { width: min(640px, 92%); padding: 0.7rem; text-align: center; color: var(--fg); cursor: pointer; }
+.weather-container { width: 360px; padding: 0.7rem; text-align: center; color: var(--fg); cursor: pointer; }
 .inline { display: inline-block; margin: 0 .5ch; }
 .weather-details { width: min(820px, 94%); padding: 0.9rem; }
 .weather5d { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.7rem; }
@@ -52,19 +121,10 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); }
 #bookmark-container { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--card-gap); width: min(1400px, 94%); margin: 0 auto 2.2rem; }
 .bookmark-set { padding: 0.7rem; flex: 0 1 280px; }
-.bookmark-inner-container { 
-  overflow-y: auto; 
-  overflow-x: hidden; /* Empêche la barre de défilement horizontale */
-  max-height: 60vh; 
-}
+.bookmark-inner-container { overflow-y: auto; overflow-x: hidden; max-height: 60vh; }
 .bookmark-title { font-size: 1.05rem; font-weight: 600; color: var(--fg); margin: 0 0 .5rem 0; }
 .bookmark { display: block; text-decoration: none; color: var(--secondaryFg); margin: var(--bookmark-margin); font-size: 0.95rem; padding: var(--bookmark-padding); border-radius: 8px; transition: color .2s ease, background .2s ease, transform .15s ease; }
-.bookmark:hover { 
-  text-decoration: none; /* Correction spécifique pour Firefox */
-  color: var(--fg); 
-  background: color-mix(in srgb, var(--fg) 10%, transparent);
-  transform: translateX(2px);
-}
+.bookmark:hover { text-decoration: none; color: var(--fg); background: color-mix(in srgb, var(--fg) 10%, transparent); transform: translateX(2px); }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 .skeleton { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; background-color: color-mix(in srgb, var(--fg) 8%, transparent); border-radius: 8px; }
 .skeleton.bookmark-set { display: flex; flex-direction: column; gap: 0.7rem; padding: 0.7rem; }
@@ -110,3 +170,7 @@ body:not(.panel-open) #overlay { pointer-events: none; }
 .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: var(--fg); border-radius: 50%; transition: .4s; }
 input:checked + .slider { background-color: color-mix(in srgb, var(--mac-brand) 30%, transparent); }
 input:checked + .slider:before { transform: translateX(20px); }
+.palette-selector { display: flex; gap: 0.5rem; }
+.palette-selector button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--glass-border); cursor: pointer; transition: transform .2s ease; }
+.palette-selector button:hover { transform: scale(1.1); }
+.palette-selector button.active { border-color: var(--mac-brand); }
