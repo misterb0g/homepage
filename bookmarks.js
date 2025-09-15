@@ -8,6 +8,15 @@ const bookmarks = [
       { name: "My Actiris", url: "https://my.actiris.brussels/subsidized-jobs/dashboard/employeur/" },
     ],
   },
+  {
+    title: "Administration",
+    links: [
+      { name: "Dolibarr", url: "https://dolibarr.lesilex.be" },
+      { name: "Flow", url: "https://admin.joinflow.com/pbxservices.jsp" },
+      { name: "Odoo", url: "https://silex-asbl.odoo.com/odoo" },
+      { name: "Clé", url: "https://airkey.evva.com" },
+    ],
+  },
 
   {
     title: "Banques & Finance",
@@ -32,16 +41,6 @@ const bookmarks = [
       { name: "Drive perso", url: "https://drive.google.com/drive/my-drive" },
       { name: "Mail", url: "https://mail.google.com/mail" },
       { name: "Agenda", url: "https://calendar.google.com" },
-    ],
-  },
-
-  {
-    title: "Administration",
-    links: [
-      { name: "Dolibarr", url: "https://dolibarr.lesilex.be" },
-      { name: "Flow", url: "https://admin.joinflow.com/pbxservices.jsp" },
-      { name: "Odoo", url: "https://silex-asbl.odoo.com/odoo" },
-      { name: "Clé", url: "https://airkey.evva.com" },
     ],
   },
 
