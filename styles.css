@@ -66,7 +66,6 @@ body {
   animation: move-blob 25s infinite alternate-reverse;
 }
 
-
 /* =========================
    Layout & Éléments Communs
    ========================= */
@@ -78,25 +77,25 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .btn-icon:hover { opacity: .8; } .btn-icon:active { transform: scale(.95); }
 .btn-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 #settings-toggle-btn svg { fill: currentColor; stroke: none; }
-
 .card { 
-  position: relative; /* Nécessaire pour l'effet de brillance */
+  position: relative; 
   border-radius: var(--radius); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); overflow: hidden; transition: box-shadow .3s ease, transform .2s ease; 
 }
 /* NOUVEL EFFET DE BRILLANCE ("SHEEN") */
 .card::before {
   content: '';
   position: absolute;
-  top: -50%; right: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 40%);
-  transform: translateY(100%);
-  transition: transform 0.5s ease-out;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-25deg);
+  opacity: 0;
+  transition: opacity 0.4s ease;
   pointer-events: none;
 }
-.card:hover::before {
-  transform: translateY(-20%);
-}
+.card:hover::before { opacity: 1; }
 .card:hover { transform: translateY(-2px); box-shadow: var(--glass-shadow), 0 12px 24px rgba(0,0,0,0.15); }
 .weather-details:hover, #chat-container:hover { transform: none; box-shadow: var(--glass-shadow); }
 .glass { background: var(--glass-bg); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
