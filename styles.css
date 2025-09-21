@@ -75,7 +75,7 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .top-controls { position: fixed; top: 1rem; right: 1rem; z-index: 1001; display: flex; gap: 0.5rem; }
 .btn-icon { appearance: none; border: none; background: transparent; color: var(--fg); padding: .25rem; border-radius: 10px; cursor: pointer; transition: opacity .2s ease, transform .1s ease; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; }
 .btn-icon:hover { opacity: .8; } .btn-icon:active { transform: scale(.95); }
-.btn-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.btn-icon svg { width: 22px; height: 22px; fill: currentColor; stroke: currentColor; stroke-width: 1.5; }
 #settings-toggle-btn svg { fill: currentColor; stroke: none; }
 .card { 
   position: relative; 
@@ -112,8 +112,30 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .wd-desc { color: var(--secondaryFg); font-size: .9rem; }
 .wd-temps .max { font-weight: 700; }
 .wd-temps .min { color: var(--secondaryFg); }
-.spotlight { width: min(920px, 94%); height: var(--spot-h); margin: 0.6rem auto 2.2rem; display: flex; align-items: center; padding: 0 1.1rem; border-radius: 99px; transition: box-shadow .3s ease, transform .2s ease; }
-.spotlight:focus-within, .spotlight:hover { transform: translateY(-2px); box-shadow: var(--glass-shadow), 0 0 0 4px color-mix(in srgb, var(--mac-brand) 20%, transparent); }
+.spotlight { 
+    width: min(920px, 94%); 
+    height: var(--spot-h); 
+    margin: 0.6rem auto 2.2rem; 
+    display: flex; 
+    align-items: center; 
+    padding: 0 1.1rem; 
+    border-radius: 99px;
+    
+    /* Applique l'effet de verre */
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    
+    transition: box-shadow .3s ease, transform .2s ease;
+}
+.spotlight:hover { 
+    transform: translateY(-2px); 
+    box-shadow: var(--glass-shadow), 0 0 0 4px color-mix(in srgb, var(--mac-brand) 10%, transparent); 
+}
+.spotlight:focus-within { 
+    transform: translateY(-2px); 
+    box-shadow: var(--glass-shadow), 0 0 0 4px color-mix(in srgb, var(--mac-brand) 20%, transparent); 
+}
 .search-icon { width: 22px; height: 22px; fill: var(--secondaryFg); transition: fill .2s ease; margin-right: 0.6rem; }
 .spotlight:focus-within .search-icon { fill: var(--mac-brand); }
 .spotlight input { width: 100%; height: 100%; border: none; background: transparent; color: var(--fg); font-size: 1.1rem; outline: none; padding: 0; }
@@ -163,6 +185,7 @@ body:not(.panel-open) #overlay { pointer-events: none; }
 .segmented-control { display: flex; padding: 0.2rem; background: var(--bg); border-radius: 10px; border: 1px solid var(--glass-border); }
 .segmented-control button { flex: 1; height: 32px; border: none; background: transparent; color: var(--secondaryFg); font-weight: 500; border-radius: 8px; cursor: pointer; transition: background .2s ease, color .2s ease; }
 .segmented-control button.active { background: var(--containerBg); color: var(--fg); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+.segmented-control button:not(.active):hover { color: var(--fg); }
 .toggle-switch { position: relative; display: inline-block; width: 50px; height: 30px; }
 .toggle-switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; inset: 0; background-color: color-mix(in srgb, var(--fg) 10%, transparent); border-radius: 30px; transition: .4s; border: 1px solid var(--glass-border); }
