@@ -2,7 +2,7 @@ import Parser from 'rss-parser';
 
 export default async function handler(request, response) {
   // Le flux principal et sécurisé de MacGeneration (souvent le plus fiable)
-  const targetUrl = 'https://rss.clubigen.fr/2832'; 
+  const targetUrl = 'https://www.lesoir.be/rss2/2/cible_principale'; 
   
   // Configuration du parser avec les options pour contourner les protections
   const parser = new Parser({
