@@ -27,9 +27,13 @@
     #news-container { animation-delay: 0.1s; }
 
     /* NOUVEAU : Animation pour le détail météo quand il s'ouvre */
-    /* Le sélecteur :not([hidden]) signifie "quand l'attribut hidden est retiré" */
     #weather-details:not([hidden]) {
       animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    /* AJOUT : Permet de masquer les news via le panneau de contrôle (l'emporte sur le style inline) */
+    body.news-hidden #news-container {
+        display: none !important;
     }
   </style>
 </head>
@@ -41,7 +45,7 @@
 
   <div class="top-controls">
     <button id="settings-toggle-btn" class="btn-icon" title="Ouvrir les paramètres">
-      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.69-1.68-0.91L14.07,3.58 c-0.04-0.24-0.24-0.41-0.48-0.41H9.41c-0.24,0-0.43,0.17-0.48,0.41L8.62,5.7C8,5.92,7.44,6.23,6.94,6.61l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.04,9.19c-0.12,0.2-0.07,0.47,0.12,0.61l2.03,1.58C4.02,11.66,4,11.83,4,12 c0,0.17,0.02,0.34,0.07,0.5l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96 c0.5,0.38,1.06,0.69,1.68,0.91l0.31,2.12c0.04,0.24,0.24,0.41,0.48,0.41h3.18c0.24,0,0.43-0.17,0.48-0.41l0.31-2.12 c0.62-0.22,1.18-0.53,1.68-0.91l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.2,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.69-1.68-0.91L14.07,3.58 c-0.04-0.24-0.24-0.41-0.48-0.41H9.41c-0.24,0-0.43,0.17-0.48,0.41L8.62,5.7C8,5.92,7.44,6.23,6.94,6.61l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.04,9.19c-0.12,0.2-0.07,0.47,0.12,0.61l2.03,1.58C4.02,11.66,4,11.83,4,12 c0,0.17,0.02,0.34,0.07,0.5l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96 c0.5,0.38,1.06,0.69,1.68,0.91l0.31,2.12c0.04,0.24,0.24,0.41,0.48,0.41h3.18c0.24,0,0.43-0.17,0.48-0.41l0.31-2.12 c0.62-0.22,1.18-0.53,1.68-0.91l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12,0.2,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
     </button>
   </div>
   <aside id="control-panel" class="glass" aria-hidden="true">
@@ -50,6 +54,9 @@
       <div class="panel-section"><label for="weather-location-input">Lieu de la météo</label><div class="input-group"><input type="text" id="weather-location-input" placeholder="Ex: Sterrebeek"><button id="weather-location-save">OK</button></div></div>
       <div class="panel-section"><label>Thème</label><div class="segmented-control" id="theme-selector"><button data-value="light" title="Thème clair">Jour</button><button data-value="dark" title="Thème sombre">Nuit</button></div></div>
       <div class="panel-section"><label>Densité des favoris</label><div class="segmented-control" id="density-selector"><button data-value="cozy" title="Normal">Normal</button><button data-value="compact" title="Compact">Compact</button></div></div>
+      
+      <div class="panel-section"><label for="news-toggle">Afficher les actualités</label><label class="toggle-switch"><input type="checkbox" id="news-toggle"><span class="slider"></span></label></div>
+      
       <div class="panel-section"><label for="chat-toggle">Afficher le module de chat</label><label class="toggle-switch"><input type="checkbox" id="chat-toggle"><span class="slider"></span></label></div>
     </div>
   </aside>
@@ -66,12 +73,12 @@
         <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
-    <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 0 auto 2.2rem; padding: 1rem; display: none;">
+    <div id="bookmark-container"><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section></div>
+
+    <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1rem; display: none;">
       <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg);">Dernières News ClubiGen</h3>
       <div id="news-list" style="display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
     </section>
-    
-    <div id="bookmark-container"><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section></div>
     
     <div id="chat-container" class="card glass">
       <div class="chat-tabs"><button class="chat-tab active" data-target="gpt">ChatGPT</button><button class="chat-tab" data-target="gemini">Gemini</button></div>
@@ -137,6 +144,7 @@
             const news = await res.json();
             
             if (news.length > 0) {
+                // On affiche le bloc (mais la classe CSS .news-hidden le cachera si l'option est désactivée)
                 container.style.display = 'block';
                 list.innerHTML = news.map(item => `
                     <a href="${item.link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
@@ -197,6 +205,17 @@
         function setupSelector(selectorId, storageKey, action, defaultValue) { const selector = $(selectorId), buttons = selector.querySelectorAll('button'); const savedValue = localStorage.getItem(storageKey) || defaultValue; action(savedValue); buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue)); selector.addEventListener('click', (e) => { const target = e.target.closest('button'); if (target?.dataset.value) { applySetting(storageKey, target.dataset.value, action); buttons.forEach(b => b.classList.remove('active')); target.classList.add('active'); } }); }
         setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
+        
+        // --- AJOUT : Logique pour masquer/afficher les News ---
+        const newsToggle = $('#news-toggle');
+        const showNews = localStorage.getItem('showNews') !== 'false'; // Par défaut : true (affiché)
+        newsToggle.checked = showNews;
+        document.body.classList.toggle('news-hidden', !showNews);
+        newsToggle.addEventListener('change', () => { 
+            applySetting('showNews', newsToggle.checked, (val) => document.body.classList.toggle('news-hidden', !val)); 
+        });
+
+        // Logique pour masquer/afficher le Chat (existante)
         const chatToggle = $('#chat-toggle'); const showChat = localStorage.getItem('showChat') !== 'false'; chatToggle.checked = showChat; document.body.classList.toggle('chat-hidden', !showChat);
         chatToggle.addEventListener('change', () => { applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val)); });
     })();
