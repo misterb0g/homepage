@@ -2,7 +2,7 @@ import Parser from 'rss-parser';
 
 export default async function handler(request, response) {
   // Le flux principal et sécurisé de MacGeneration (souvent le plus fiable)
-  const targetUrl = 'https://megaflux.macg.co/'; 
+  const targetUrl = 'https://rss.macg.co'; 
   
   // Configuration du parser avec les options pour contourner les protections
   const parser = new Parser({
