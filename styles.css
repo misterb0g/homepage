@@ -219,3 +219,35 @@ body:not(.panel-open) #overlay { pointer-events: none; }
 .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: var(--fg); border-radius: 50%; transition: .4s; }
 input:checked + .slider { background-color: color-mix(in srgb, var(--mac-brand) 30%, transparent); }
 input:checked + .slider:before { transform: translateX(20px); }
+
+/* =========================
+   ANIMATIONS D'APPARITION
+   ========================= */
+
+/* Définition du mouvement : ça monte, ça devient opaque et le flou disparait */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Application sur les cartes de favoris */
+.bookmark-set {
+  opacity: 0; /* Invisible par défaut avant que l'animation ne commence */
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  will-change: transform, opacity, filter; /* Optimisation performance */
+}
+
+/* On applique aussi l'effet au bloc News pour la cohérence */
+#news-container {
+  opacity: 0;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: 0.1s; /* Apparaît juste après la barre de recherche */
+}
