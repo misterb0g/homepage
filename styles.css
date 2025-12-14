@@ -10,7 +10,7 @@ body { -webkit-font-smoothing: antialiased; }
    ========================= */
 :root, :root[data-theme="dark"] {
   --bg: #1c1c1e; --fg: #f5f5f7; --secondaryFg: #a1a1a6; --containerBg: #2c2c2e;
-  --glass-bg: rgba(44,44,46,0.55); /* Opacité réduite pour voir le fond */
+  --glass-bg: rgba(44,44,46,0.55); 
   --glass-border: rgba(255,255,255,.12);
   --glass-shadow: 0 8px 32px rgba(0,0,0,.3);
   --mac-brand: #007aff; --radius: 16px; --spot-h: 52px;
@@ -27,11 +27,11 @@ body { -webkit-font-smoothing: antialiased; }
 :root[data-density="cozy"] { --card-gap: 0.7rem; --bookmark-margin: .45rem 0; --bookmark-padding: .25rem .3rem; }
 
 /* =========================
-   NOUVEAU FOND LIQUIDE ANIMÉ
+   FOND LIQUIDE ANIMÉ
    ========================= */
 body {
   position: relative;
-  overflow-x: hidden; /* Empêche les barres de défilement causées par les blobs */
+  overflow-x: hidden;
 }
 .liquid-background {
   position: fixed;
@@ -50,7 +50,7 @@ body {
   position: absolute;
   border-radius: 50%;
   opacity: 0.4;
-  filter: blur(80px); /* Le flou qui crée l'effet liquide */
+  filter: blur(80px);
   will-change: transform;
 }
 .blob1 {
@@ -72,33 +72,32 @@ body {
 html, body { height: 100%; }
 body { margin: 0; background-color: var(--bg); transition: background-color .3s ease; }
 .container { width: 100%; min-height: 100vh; padding: 3.2rem 1rem 2.2rem; display: flex; align-items: center; flex-direction: column; gap: 1.2rem; box-sizing: border-box; }
+
+/* Boutons Top Right */
 .top-controls { position: fixed; top: 1rem; right: 1rem; z-index: 1001; display: flex; gap: 0.5rem; }
 .btn-icon { appearance: none; border: none; background: transparent; color: var(--fg); padding: .25rem; border-radius: 10px; cursor: pointer; transition: opacity .2s ease, transform .1s ease; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; }
 .btn-icon:hover { opacity: .8; } .btn-icon:active { transform: scale(.95); }
 .btn-icon svg { width: 22px; height: 22px; fill: currentColor; stroke: currentColor; stroke-width: 1.5; }
 #settings-toggle-btn svg { fill: currentColor; stroke: none; }
+
+/* Cards génériques */
 .card { 
   position: relative; 
   border-radius: var(--radius); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); overflow: hidden; transition: box-shadow .3s ease, transform .2s ease; 
 }
-/* NOUVEL EFFET DE BRILLANCE ("SHEEN") */
 .card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
+  content: ''; position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
   background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
-  transform: skewX(-25deg);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
+  transform: skewX(-25deg); opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
 }
 .card:hover::before { opacity: 1; }
 .card:hover { transform: translateY(-2px); box-shadow: var(--glass-shadow), 0 12px 24px rgba(0,0,0,0.15); }
+/* On désactive le mouvement sur le chat et détails météo pour éviter les sauts */
 .weather-details:hover, #chat-container:hover { transform: none; box-shadow: var(--glass-shadow); }
+
 .glass { background: var(--glass-bg); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+
+/* Greeting & Météo */
 #greeting-container { text-align: center; margin-bottom: 0.5rem; }
 #greeting { font-size: clamp(2.2rem, 5vw, 2.8rem); font-weight: 600; color: var(--fg); }
 #clock { font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 400; color: var(--secondaryFg); letter-spacing: .5px; }
@@ -112,21 +111,18 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .wd-desc { color: var(--secondaryFg); font-size: .9rem; }
 .wd-temps .max { font-weight: 700; }
 .wd-temps .min { color: var(--secondaryFg); }
+
+/* SPOTLIGHT (Barre de recherche) - AMÉLIORÉ */
 .spotlight { 
     width: min(920px, 94%); 
     height: var(--spot-h); 
     margin: 0.6rem auto 2.2rem; 
-    display: flex; 
-    align-items: center; 
-    padding: 0 1.1rem; 
-    border-radius: 99px;
-    
-    /* Applique l'effet de verre */
+    display: flex; align-items: center; padding: 0 1.1rem; border-radius: 99px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    
-    transition: box-shadow .3s ease, transform .2s ease;
+    /* Ombre plus profonde pour détacher du fond */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), var(--glass-shadow);
+    transition: box-shadow .3s ease, transform .2s ease, border-color .3s ease;
 }
 .spotlight:hover { 
     transform: translateY(-2px); 
@@ -134,23 +130,52 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 }
 .spotlight:focus-within { 
     transform: translateY(-2px); 
-    box-shadow: var(--glass-shadow), 0 0 0 4px color-mix(in srgb, var(--mac-brand) 20%, transparent); 
+    border-color: var(--mac-brand);
+    /* Glow effect plus marqué au focus */
+    box-shadow: var(--glass-shadow), 0 0 0 3px color-mix(in srgb, var(--mac-brand) 25%, transparent), 0 0 15px rgba(0, 122, 255, 0.25);
 }
 .search-icon { width: 22px; height: 22px; fill: var(--secondaryFg); transition: fill .2s ease; margin-right: 0.6rem; }
 .spotlight:focus-within .search-icon { fill: var(--mac-brand); }
 .spotlight input { width: 100%; height: 100%; border: none; background: transparent; color: var(--fg); font-size: 1.1rem; outline: none; padding: 0; }
 .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); }
+
+/* FAVORIS - AMÉLIORÉ */
 #bookmark-container { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--card-gap); width: min(1400px, 94%); margin: 0 auto 2.2rem; }
 .bookmark-set { padding: 0.7rem; flex: 0 1 280px; }
 .bookmark-inner-container { overflow-y: auto; overflow-x: hidden; max-height: 60vh; }
-.bookmark-title { font-size: 1.05rem; font-weight: 600; color: var(--fg); margin: 0 0 .5rem 0; }
-.bookmark { display: block; text-decoration: none; color: var(--secondaryFg); margin: var(--bookmark-margin); font-size: 0.95rem; padding: var(--bookmark-padding); border-radius: 8px; transition: color .2s ease, background .2s ease, transform .15s ease; }
-.bookmark:hover { text-decoration: none; color: var(--fg); background: color-mix(in srgb, var(--fg) 10%, transparent); transform: translateX(2px); }
+
+.bookmark-title { 
+  font-size: 0.95rem; font-weight: 600; color: var(--fg); 
+  /* Nouveau style de titre */
+  text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.85;
+  margin: 0 0 .6rem 0; padding-bottom: .4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+.bookmark { 
+  display: block; text-decoration: none; color: var(--secondaryFg); 
+  margin: var(--bookmark-margin); font-size: 0.95rem; 
+  padding: var(--bookmark-padding); border-radius: 8px; 
+  transition: all .2s ease;
+  border: 1px solid transparent; 
+}
+.bookmark:hover { 
+  text-decoration: none; color: var(--fg); 
+  /* Nouveau style de survol */
+  background: color-mix(in srgb, var(--fg) 5%, var(--glass-bg));
+  border-color: color-mix(in srgb, var(--fg) 10%, transparent);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transform: translateX(3px); 
+}
+
+/* Skeleton Loading */
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 .skeleton { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; background-color: color-mix(in srgb, var(--fg) 8%, transparent); border-radius: 8px; }
 .skeleton.bookmark-set { display: flex; flex-direction: column; gap: 0.7rem; padding: 0.7rem; }
 .skeleton-title { width: 40%; height: 20px; background-color: color-mix(in srgb, var(--fg) 12%, transparent); }
 .skeleton-text { width: 75%; height: 16px; }
+
+/* Chat Module */
 #chat-container { width: min(920px, 94%); margin: 1rem auto 0.8rem; padding: var(--card-gap); color: var(--fg); display: flex; flex-direction: column; transition: opacity .3s ease, transform .3s ease, max-height .4s ease, margin .3s ease, padding .3s ease; max-height: 1000px; }
 body.chat-hidden #chat-container { opacity: 0; transform: translateY(20px); pointer-events: none; max-height: 0; margin: 0; padding-top: 0; padding-bottom: 0; overflow: hidden; border: none; }
 .chat-tabs { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; padding: 0.3rem; background: color-mix(in srgb, var(--bg) 70%, transparent); border-radius: 12px; align-self: center; flex-shrink: 0; }
@@ -169,6 +194,8 @@ body.chat-hidden #chat-container { opacity: 0; transform: translateY(20px); poin
 .chat-form button { height: 48px; min-width: 120px; border-radius: var(--radius); border: 1px solid var(--glass-border); background: var(--fg); color: var(--bg); font-weight: 600; cursor: pointer; transition: filter .2s ease, transform .1s ease; }
 .chat-form button:hover { filter: brightness(.92); } :root[data-theme="dark"] .chat-form button:hover { filter: brightness(1.1); } .chat-form button:active { transform: scale(0.98); }
 .hint { font-size: 0.8rem; color: var(--secondaryFg); text-align: center; margin-top: 0.8rem; }
+
+/* Control Panel */
 #control-panel { position: fixed; top: 0; right: 0; height: 100%; width: min(320px, 90vw); z-index: 2000; padding: 1rem; box-sizing: border-box; border-left: 1px solid var(--glass-border); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; flex-direction: column; }
 body.panel-open #control-panel { transform: translateX(0); }
 #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1999; opacity: 0; transition: opacity 0.3s ease; }
@@ -192,7 +219,3 @@ body:not(.panel-open) #overlay { pointer-events: none; }
 .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: var(--fg); border-radius: 50%; transition: .4s; }
 input:checked + .slider { background-color: color-mix(in srgb, var(--mac-brand) 30%, transparent); }
 input:checked + .slider:before { transform: translateX(20px); }
-.palette-selector { display: flex; gap: 0.5rem; }
-.palette-selector button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--glass-border); cursor: pointer; transition: transform .2s ease; }
-.palette-selector button:hover { transform: scale(1.1); }
-.palette-selector button.active { border-color: var(--mac-brand); }
