@@ -1,38 +1,55 @@
 import Parser from 'rss-parser';
 
 export default async function handler(request, response) {
-  // 1. On configure le parser en mode "non-strict" pour qu'il ne plante pas
-  // sur les petites erreurs XML du site distant.
   const parser = new Parser({
-    xml2js: {
-      strict: false, 
-    },
-    // On ajoute un User-Agent pour ne pas se faire bloquer comme un "bot"
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
-    }
+    xml2js: { strict: false } // Permet d'ignorer les petites erreurs de syntaxe XML
   });
 
   try {
-    // 2. Récupérer le flux
-    const feed = await parser.parseURL('https://clubigen.fr/feed/');
+    // 1. On utilise le Megaflux (qui contient MacG, iGen, ClubiGen, etc.)
+    const targetUrl = 'http://megaflux.macg.co/';
+    
+    // 2. On définit un User-Agent de navigateur moderne pour éviter le blocage 403
+    const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-    // 3. Nettoyer et limiter à 4 articles
+    // 3. On récupère le flux manuellement
+    const res = await fetch(targetUrl, {
+      headers: {
+        'User-Agent': userAgent,
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error(`Erreur HTTP: ${res.status}`);
+    }
+
+    const textData = await res.text();
+
+    // 4. Vérification de sécurité : est-ce bien du XML ?
+    if (textData.trim().startsWith('<!DOCTYPE html>')) {
+      throw new Error('Le site a renvoyé une page HTML au lieu du RSS (Blocage)');
+    }
+
+    // 5. Parsing du XML
+    const feed = await parser.parseString(textData);
+
+    // 6. Nettoyage et formatage (On prend les 4 premiers articles)
     const items = feed.items.slice(0, 4).map(item => ({
       title: item.title,
       link: item.link,
-      // On s'assure qu'il y a une date, sinon on met la date du jour
+      // Fallback date si jamais elle est absente
       date: item.pubDate || new Date().toISOString(),
-      author: item.creator
+      // Le créateur ou le nom du site source
+      author: item.creator || 'MacG' 
     }));
 
-    // 4. Renvoyer le JSON
+    // 7. Envoi de la réponse avec cache
     response.setHeader('Cache-Control', 's-maxage=600'); 
     response.status(200).json(items);
 
   } catch (error) {
-    console.error("Erreur RSS détaillée:", error);
-    // En cas d'erreur, on renvoie un tableau vide pour ne pas casser la homepage
+    console.error("Erreur API News:", error.message);
+    // En cas d'erreur, on renvoie un tableau vide pour que le site reste propre
     response.status(200).json([]); 
   }
 }
