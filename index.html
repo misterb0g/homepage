@@ -31,7 +31,7 @@
       animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
-    /* AJOUT : Permet de masquer les news via le panneau de contrôle (l'emporte sur le style inline) */
+    /* AJOUT : Permet de masquer les news via le panneau de contrôle */
     body.news-hidden #news-container {
         display: none !important;
     }
@@ -76,7 +76,7 @@
     <div id="bookmark-container"><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section></div>
 
     <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1rem; display: none;">
-      <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg);">Dernières News ClubiGen</h3>
+      <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg);">À la une - Le Soir</h3>
       <div id="news-list" style="display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
     </section>
     
@@ -134,23 +134,29 @@
         </section>`).join("");
     }
 
+    // MODIFICATION : Utilisation de rss2json pour charger le flux du Soir
     async function loadNews() {
         const container = $('#news-container');
         const list = $('#news-list');
         
+        // URL officielle du flux "À la Une" du Soir
+        const rssUrl = 'https://www.lesoir.be/rss/81851';
+        // On passe par rss2json pour éviter les problèmes CORS (sécurité navigateur)
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+        
         try {
-            const res = await fetch('/api/news');
-            if (!res.ok) throw new Error('Erreur API');
-            const news = await res.json();
+            const res = await fetch(apiUrl);
+            if (!res.ok) throw new Error('Erreur API News');
+            const data = await res.json();
             
-            if (news.length > 0) {
-                // On affiche le bloc (mais la classe CSS .news-hidden le cachera si l'option est désactivée)
+            // Le service rss2json renvoie les articles dans 'items'
+            if (data.items && data.items.length > 0) {
                 container.style.display = 'block';
-                list.innerHTML = news.map(item => `
+                list.innerHTML = data.items.slice(0, 6).map(item => `
                     <a href="${item.link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
                         <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem;">${item.title}</div>
-                            <div style="font-size: 0.8rem; color: var(--secondaryFg);">${new Date(item.date).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short'})}</div>
+                            <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${item.title}</div>
+                            <div style="font-size: 0.8rem; color: var(--secondaryFg);">${new Date(item.pubDate).toLocaleDateString('fr-BE', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})}</div>
                         </article>
                     </a>
                 `).join('');
@@ -206,16 +212,15 @@
         setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
         
-        // --- AJOUT : Logique pour masquer/afficher les News ---
+        // News Toggle Logic
         const newsToggle = $('#news-toggle');
-        const showNews = localStorage.getItem('showNews') !== 'false'; // Par défaut : true (affiché)
+        const showNews = localStorage.getItem('showNews') !== 'false';
         newsToggle.checked = showNews;
         document.body.classList.toggle('news-hidden', !showNews);
         newsToggle.addEventListener('change', () => { 
             applySetting('showNews', newsToggle.checked, (val) => document.body.classList.toggle('news-hidden', !val)); 
         });
 
-        // Logique pour masquer/afficher le Chat (existante)
         const chatToggle = $('#chat-toggle'); const showChat = localStorage.getItem('showChat') !== 'false'; chatToggle.checked = showChat; document.body.classList.toggle('chat-hidden', !showChat);
         chatToggle.addEventListener('change', () => { applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val)); });
     })();
