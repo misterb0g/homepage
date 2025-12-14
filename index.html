@@ -45,6 +45,12 @@
         <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
+    <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 0 auto 2.2rem; padding: 1rem; display: none;">
+      <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg);">Dernières News ClubiGen</h3>
+      <div id="news-list" style="display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        </div>
+    </section>
+    
     <div id="bookmark-container"><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section></div>
     
     <div id="chat-container" class="card glass">
@@ -90,6 +96,33 @@
       });
       const el = $("#bookmark-container");
       el.innerHTML = bookmarks.map((b) => `<section class='bookmark-set card glass'><div class="bookmark-title">${b.title}</div><div class="bookmark-inner-container">${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}</div></section>`).join("");
+    }
+
+    // --- Fonction pour charger les News ClubiGen (Ajouté) ---
+    async function loadNews() {
+        const container = $('#news-container');
+        const list = $('#news-list');
+        
+        try {
+            const res = await fetch('/api/news'); // Appel à notre fonction Vercel
+            if (!res.ok) throw new Error('Erreur API');
+            const news = await res.json();
+            
+            if (news.length > 0) {
+                container.style.display = 'block'; // On affiche le bloc seulement s'il y a des news
+                list.innerHTML = news.map(item => `
+                    <a href="${item.link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
+                        <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem;">${item.title}</div>
+                            <div style="font-size: 0.8rem; color: var(--secondaryFg);">${new Date(item.date).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short'})}</div>
+                        </article>
+                    </a>
+                `).join('');
+            }
+        } catch (e) {
+            console.error("News error:", e);
+            // On laisse caché si erreur
+        }
     }
 
     window.addEventListener("keydown", (e) => { const activeTag = document.activeElement.tagName.toLowerCase(), isInputFocused = activeTag === "input" || activeTag === "textarea"; if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $(".spotlight input[type='search']").focus(); } if (isInputFocused) return; if (e.key === "/") { e.preventDefault(); $(".spotlight input[type='search']").focus(); } if (e.altKey && e.key.toLowerCase() === 'c') { e.preventDefault(); const input = $('.chat-panel:not([hidden]) .chat-form input'); if (input) input.focus(); } });
@@ -152,6 +185,7 @@
       updateGreeting(); $("#clock").textContent = getTime();
       setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
       setupBookmarks(); getWeather();
+      loadNews(); // Chargement des news au démarrage
     });
   </script>
 </body>
