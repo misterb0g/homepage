@@ -7,7 +7,7 @@ export default async function handler(request, response) {
 
   try {
     // 1. On utilise le Megaflux (qui contient MacG, iGen, ClubiGen, etc.)
-    const targetUrl = 'http://megaflux.macg.co/';
+    const targetUrl = 'https://www.macg.co/rss';
     
     // 2. On définit un User-Agent de navigateur moderne pour éviter le blocage 403
     const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
