@@ -11,6 +11,21 @@
 
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="/favicon.ico" sizes="any">
+
+  <style>
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.98); filter: blur(10px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    /* On applique l'animation aux favoris et aux news */
+    .bookmark-set, #news-container {
+      opacity: 0; /* Caché au départ */
+      animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      will-change: transform, opacity, filter;
+    }
+    /* Le conteneur news arrive en premier */
+    #news-container { animation-delay: 0.1s; }
+  </style>
 </head>
 <body>
   <div class="liquid-background">
@@ -47,8 +62,7 @@
     
     <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 0 auto 2.2rem; padding: 1rem; display: none;">
       <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg);">Dernières News ClubiGen</h3>
-      <div id="news-list" style="display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-        </div>
+      <div id="news-list" style="display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
     </section>
     
     <div id="bookmark-container"><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section></div>
@@ -90,26 +104,37 @@
     }
     function weatherCodeToFr(code) { const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"}; return map[code] ?? "Météo"; }
     
+    // --- Fonction MODIFIÉE pour l'effet cascade ---
     function setupBookmarks() {
       bookmarks.forEach(category => {
         category.links.sort((a, b) => a.name.localeCompare(b.name));
       });
       const el = $("#bookmark-container");
-      el.innerHTML = bookmarks.map((b) => `<section class='bookmark-set card glass'><div class="bookmark-title">${b.title}</div><div class="bookmark-inner-container">${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}</div></section>`).join("");
+      
+      // Ajout du style "animation-delay" dynamique
+      el.innerHTML = bookmarks.map((b, index) => `
+        <section 
+            class='bookmark-set card glass' 
+            style="animation-delay: ${200 + (index * 100)}ms"
+        >
+            <div class="bookmark-title">${b.title}</div>
+            <div class="bookmark-inner-container">
+                ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}
+            </div>
+        </section>`).join("");
     }
 
-    // --- Fonction pour charger les News ClubiGen (Ajouté) ---
     async function loadNews() {
         const container = $('#news-container');
         const list = $('#news-list');
         
         try {
-            const res = await fetch('/api/news'); // Appel à notre fonction Vercel
+            const res = await fetch('/api/news');
             if (!res.ok) throw new Error('Erreur API');
             const news = await res.json();
             
             if (news.length > 0) {
-                container.style.display = 'block'; // On affiche le bloc seulement s'il y a des news
+                container.style.display = 'block';
                 list.innerHTML = news.map(item => `
                     <a href="${item.link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
                         <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
@@ -121,7 +146,6 @@
             }
         } catch (e) {
             console.error("News error:", e);
-            // On laisse caché si erreur
         }
     }
 
@@ -185,7 +209,7 @@
       updateGreeting(); $("#clock").textContent = getTime();
       setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
       setupBookmarks(); getWeather();
-      loadNews(); // Chargement des news au démarrage
+      loadNews();
     });
   </script>
 </body>
