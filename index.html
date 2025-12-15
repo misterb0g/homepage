@@ -13,12 +13,12 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
 
   <style>
+    /* Animations globales */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(8px); }
       to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
     
-    /* Animation pour les favoris et les news */
     .bookmark-set, #news-container {
       opacity: 0; 
       animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -26,12 +26,11 @@
     }
     #news-container { animation-delay: 0.1s; }
 
-    /* NOUVEAU : Animation pour le détail météo quand il s'ouvre */
     #weather-details:not([hidden]) {
       animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
-    /* AJOUT : Permet de masquer les news via le panneau de contrôle */
+    /* Masquage conditionnel des news via les paramètres */
     body.news-hidden #news-container {
         display: none !important;
     }
@@ -48,23 +47,61 @@
       <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.69-1.68-0.91L14.07,3.58 c-0.04-0.24-0.24-0.41-0.48-0.41H9.41c-0.24,0-0.43,0.17-0.48,0.41L8.62,5.7C8,5.92,7.44,6.23,6.94,6.61l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.04,9.19c-0.12,0.2-0.07,0.47,0.12,0.61l2.03,1.58C4.02,11.66,4,11.83,4,12 c0,0.17,0.02,0.34,0.07,0.5l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96 c0.5,0.38,1.06,0.69,1.68,0.91l0.31,2.12c0.04,0.24,0.24,0.41,0.48,0.41h3.18c0.24,0,0.43-0.17,0.48-0.41l0.31-2.12 c0.62-0.22,1.18-0.53,1.68-0.91l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12,0.2,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
     </button>
   </div>
+
   <aside id="control-panel" class="glass" aria-hidden="true">
-    <div class="panel-header"><h3>Paramètres</h3><button id="panel-close-btn" class="btn-icon" title="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="panel-header">
+        <h3>Paramètres</h3>
+        <button id="panel-close-btn" class="btn-icon" title="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
     <div class="panel-content">
-      <div class="panel-section"><label for="weather-location-input">Lieu de la météo</label><div class="input-group"><input type="text" id="weather-location-input" placeholder="Ex: Sterrebeek"><button id="weather-location-save">OK</button></div></div>
-      <div class="panel-section"><label>Thème</label><div class="segmented-control" id="theme-selector"><button data-value="light" title="Thème clair">Jour</button><button data-value="dark" title="Thème sombre">Nuit</button></div></div>
-      <div class="panel-section"><label>Densité des favoris</label><div class="segmented-control" id="density-selector"><button data-value="cozy" title="Normal">Normal</button><button data-value="compact" title="Compact">Compact</button></div></div>
-      
-      <div class="panel-section"><label for="news-toggle">Afficher les actualités</label><label class="toggle-switch"><input type="checkbox" id="news-toggle"><span class="slider"></span></label></div>
-      
-      <div class="panel-section"><label for="chat-toggle">Afficher le module de chat</label><label class="toggle-switch"><input type="checkbox" id="chat-toggle"><span class="slider"></span></label></div>
+      <div class="panel-section">
+          <label for="weather-location-input">Lieu de la météo</label>
+          <div class="input-group">
+              <input type="text" id="weather-location-input" placeholder="Ex: Sterrebeek">
+              <button id="weather-location-save">OK</button>
+          </div>
+      </div>
+      <div class="panel-section">
+          <label>Thème</label>
+          <div class="segmented-control" id="theme-selector">
+              <button data-value="light" title="Thème clair">Jour</button>
+              <button data-value="dark" title="Thème sombre">Nuit</button>
+          </div>
+      </div>
+      <div class="panel-section">
+          <label>Densité des favoris</label>
+          <div class="segmented-control" id="density-selector">
+              <button data-value="cozy" title="Normal">Normal</button>
+              <button data-value="compact" title="Compact">Compact</button>
+          </div>
+      </div>
+      <div class="panel-section">
+          <label for="news-toggle">Afficher les actualités</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="news-toggle">
+              <span class="slider"></span>
+          </label>
+      </div>
+      <div class="panel-section">
+          <label for="chat-toggle">Afficher le module de chat</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="chat-toggle">
+              <span class="slider"></span>
+          </label>
+      </div>
     </div>
   </aside>
   <div id="overlay" hidden></div>
 
   <div class="container">
-    <div id="greeting-container"><div id="greeting"></div><div id="clock"></div></div>
-    <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" aria-controls="weather-details" title="Cliquer pour afficher les prévisions à 5 jours"><div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div></section>
+    <div id="greeting-container">
+        <div id="greeting"></div>
+        <div id="clock"></div>
+    </div>
+
+    <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
+        <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
+    </section>
     <section id="weather-details" class="card glass weather-details" hidden></section>
     
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET">
@@ -73,7 +110,12 @@
         <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
-    <div id="bookmark-container"><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section><section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section></div>
+    <div id="bookmark-container">
+        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
+        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
+        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
+        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
+    </div>
 
     <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1rem; display: none;">
       <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg);">À la une - Le Soir</h3>
@@ -81,22 +123,31 @@
     </section>
     
     <div id="chat-container" class="card glass">
-      <div class="chat-tabs"><button class="chat-tab active" data-target="gpt">ChatGPT</button><button class="chat-tab" data-target="gemini">Gemini</button></div>
-      <section id="chat-panel-gpt" class="chat-panel"><div class="chat-messages"></div><form class="chat-form" id="gpt-form"><input type="text" name="prompt" placeholder="Discuter avec ChatGPT…"/><button type="submit">Envoyer</button></form></section>
-      <section id="chat-panel-gemini" class="chat-panel" hidden><div class="chat-messages"></div><form class="chat-form" id="gemini-form"><input type="text" name="prompt" placeholder="Discuter avec Gemini…"/><button type="submit">Envoyer</button></form></section>
+      <div class="chat-tabs">
+          <button class="chat-tab active" data-target="gpt">ChatGPT</button>
+          <button class="chat-tab" data-target="gemini">Gemini</button>
+      </div>
+      <section id="chat-panel-gpt" class="chat-panel">
+          <div class="chat-messages"></div>
+          <form class="chat-form" id="gpt-form"><input type="text" name="prompt" placeholder="Discuter avec ChatGPT…"/><button type="submit">Envoyer</button></form>
+      </section>
+      <section id="chat-panel-gemini" class="chat-panel" hidden>
+          <div class="chat-messages"></div>
+          <form class="chat-form" id="gemini-form"><input type="text" name="prompt" placeholder="Discuter avec Gemini…"/><button type="submit">Envoyer</button></form>
+      </section>
       <p class="hint">Astuce : `/` ou `⌘K` → Recherche • `Alt+C` → Chat</p>
     </div>
   </div>
 
   <script src="bookmarks.js"></script>
   <script>
+    // --- Utilitaires ---
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => root.querySelectorAll(sel);
-
-    const SEARCH_ENGINES = { 'y ': { url: 'https://www.youtube.com/results', queryParam: 'search_query', placeholder: 'Rechercher sur YouTube...' }, 'w ': { url: 'https://fr.wikipedia.org/w/index.php', queryParam: 'search', placeholder: 'Rechercher sur Wikipédia...' }, 'a ': { url: 'https://www.amazon.fr/s', queryParam: 'k', placeholder: 'Rechercher sur Amazon...' }, 'default': { url: 'https://www.google.com/search', queryParam: 'q', placeholder: 'Rechercher sur Google...' } };
     function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
     function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
 
+    // --- Météo ---
     async function getWeather() {
         const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
         const weatherEl = $('#weather');
@@ -106,27 +157,63 @@
             if (!geoRes.ok) throw new Error('Erreur Geocoding');
             const geoData = await geoRes.json();
             if (!geoData.results || geoData.results.length === 0) throw new Error(`Ville '${locationName}' non trouvée`);
+            
             const { latitude, longitude, name } = geoData.results[0];
             const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto&forecast_days=1`);
             if (!weatherRes.ok) throw new Error('Erreur Météo');
+            
             const data = await weatherRes.json();
             let t = data?.current?.temperature_2m, wcode = data?.current?.weather_code;
-            if (t == null || wcode == null) throw new Error("Données météo invalides");
+            
             weatherEl.innerHTML = `<div class="row"><div id="weather-location" class="inline">${name}</div><div class="inline">•</div><div class="inline">${weatherCodeToFr(wcode)}</div><div class="inline">•</div><div class="inline">${Math.round(t)} °C</div></div>`;
         } catch (err) { console.error("Météo:", err); weatherEl.innerHTML = `<div class="inline">${err.message}</div>`; }
     }
     function weatherCodeToFr(code) { const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"}; return map[code] ?? "Météo"; }
     
+    // --- Météo détaillée (5 jours) ---
+    (function () {
+      const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
+      const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
+
+      async function getWeather5dCached() {
+        try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data, location } = JSON.parse(raw); const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels'; if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data; } } catch {}
+        
+        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
+        const geoData = await geoRes.json();
+        const { latitude, longitude } = geoData.results[0];
+        
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
+        const data = await weatherRes.json();
+        try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data, location: locationName })); } catch {}
+        return data;
+      }
+
+      function renderWeather5d(data) { 
+        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); 
+        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); 
+        details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div><div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`; 
+      }
+
+      async function toggleDetails() { 
+        const isHidden = details.hasAttribute("hidden"); 
+        if (isHidden && !loaded) { 
+            try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } 
+            catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } 
+        } 
+        details.toggleAttribute("hidden"); weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden"))); 
+      }
+      weatherCard.addEventListener("click", toggleDetails);
+      weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
+    })();
+
+    // --- Favoris ---
     function setupBookmarks() {
-      bookmarks.forEach(category => {
-        category.links.sort((a, b) => a.name.localeCompare(b.name));
-      });
+      if(typeof bookmarks === 'undefined') return;
+      bookmarks.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
       const el = $("#bookmark-container");
       el.innerHTML = bookmarks.map((b, index) => `
-        <section 
-            class='bookmark-set card glass' 
-            style="animation-delay: ${200 + (index * 100)}ms"
-        >
+        <section class='bookmark-set card glass' style="animation-delay: ${200 + (index * 100)}ms">
             <div class="bookmark-title">${b.title}</div>
             <div class="bookmark-inner-container">
                 ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}
@@ -134,85 +221,117 @@
         </section>`).join("");
     }
 
-    // MODIFICATION : Utilisation de rss2json pour charger le flux du Soir
+    // --- NEWS (Via API Vercel Locale) ---
     async function loadNews() {
         const container = $('#news-container');
         const list = $('#news-list');
         
-        // URL officielle du flux "À la Une" du Soir
-        const rssUrl = 'https://www.lesoir.be/rss/81851';
-        // On passe par rss2json pour éviter les problèmes CORS (sécurité navigateur)
-        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-        
         try {
-            const res = await fetch(apiUrl);
-            if (!res.ok) throw new Error('Erreur API News');
-            const data = await res.json();
+            // Appel vers notre API locale (créée dans api/news.js)
+            const res = await fetch('/api/news');
+            if (!res.ok) throw new Error('Erreur chargement API');
             
-            // Le service rss2json renvoie les articles dans 'items'
-            if (data.items && data.items.length > 0) {
+            // Parsing du XML brut
+            const xmlText = await res.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 6);
+
+            if (items.length > 0) {
                 container.style.display = 'block';
-                list.innerHTML = data.items.slice(0, 6).map(item => `
-                    <a href="${item.link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
+                list.innerHTML = items.map(item => {
+                    const title = item.querySelector("title")?.textContent || "Sans titre";
+                    const link = item.querySelector("link")?.textContent || "#";
+                    const pubDateRaw = item.querySelector("pubDate")?.textContent;
+                    
+                    let dateStr = "";
+                    if (pubDateRaw) {
+                        dateStr = new Date(pubDateRaw).toLocaleDateString('fr-BE', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
+                    }
+
+                    return `
+                    <a href="${link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
                         <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${item.title}</div>
-                            <div style="font-size: 0.8rem; color: var(--secondaryFg);">${new Date(item.pubDate).toLocaleDateString('fr-BE', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'})}</div>
+                            <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${title}</div>
+                            <div style="font-size: 0.8rem; color: var(--secondaryFg);">${dateStr}</div>
                         </article>
-                    </a>
-                `).join('');
+                    </a>`;
+                }).join('');
             }
         } catch (e) {
             console.error("News error:", e);
         }
     }
 
-    window.addEventListener("keydown", (e) => { const activeTag = document.activeElement.tagName.toLowerCase(), isInputFocused = activeTag === "input" || activeTag === "textarea"; if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $(".spotlight input[type='search']").focus(); } if (isInputFocused) return; if (e.key === "/") { e.preventDefault(); $(".spotlight input[type='search']").focus(); } if (e.altKey && e.key.toLowerCase() === 'c') { e.preventDefault(); const input = $('.chat-panel:not([hidden]) .chat-form input'); if (input) input.focus(); } });
+    // --- Barre de recherche intelligente ---
+    (function() {
+        const SEARCH_ENGINES = { 'y ': { url: 'https://www.youtube.com/results', queryParam: 'search_query', placeholder: 'Rechercher sur YouTube...' }, 'w ': { url: 'https://fr.wikipedia.org/w/index.php', queryParam: 'search', placeholder: 'Rechercher sur Wikipédia...' }, 'a ': { url: 'https://www.amazon.fr/s', queryParam: 'k', placeholder: 'Rechercher sur Amazon...' }, 'default': { url: 'https://www.google.com/search', queryParam: 'q', placeholder: 'Rechercher sur Google...' } };
+        const searchForm = $('#search-form'), searchInput = $('#search-input');
+        
+        function updateSearchEngine() { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); const engine = prefix ? SEARCH_ENGINES[prefix] : SEARCH_ENGINES['default']; searchForm.action = engine.url; searchInput.name = engine.queryParam; if (searchInput.placeholder !== engine.placeholder) { searchInput.placeholder = engine.placeholder; } }
+        searchInput.addEventListener('input', updateSearchEngine);
+        searchForm.addEventListener('submit', (e) => { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); if (prefix) { searchInput.value = query.substring(prefix.length); } });
+        
+        // Raccourcis clavier
+        window.addEventListener("keydown", (e) => { 
+            const activeTag = document.activeElement.tagName.toLowerCase(), isInputFocused = activeTag === "input" || activeTag === "textarea"; 
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); } 
+            if (isInputFocused) return; 
+            if (e.key === "/") { e.preventDefault(); searchInput.focus(); } 
+            if (e.altKey && e.key.toLowerCase() === 'c') { e.preventDefault(); const input = $('.chat-panel:not([hidden]) .chat-form input'); if (input) input.focus(); } 
+        });
+    })();
 
+    // --- Chat Logic ---
     (function() {
       let gptHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }], geminiHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }];
       function addBubble(container, text, who) { const bubble = document.createElement('div'); bubble.className = `msg ${who}`; bubble.textContent = text; container.appendChild(bubble); container.scrollTop = container.scrollHeight; return bubble; }
+      
       const tabs = $$('.chat-tab'), panels = $$('.chat-panel');
       tabs.forEach(tab => { tab.addEventListener('click', () => { const targetId = tab.dataset.target; tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); panels.forEach(p => p.hidden = (p.id !== `chat-panel-${targetId}`)); }); });
-      async function handleChatSubmit(e, history, messagesContainer, apiEndpoint) { e.preventDefault(); const form = e.target, input = form.querySelector('input'), prompt = input.value.trim(); if (!prompt) return; addBubble(messagesContainer, prompt, 'you'); history.push({ role: 'user', content: prompt }); input.value = ''; const botBubble = addBubble(messagesContainer, '…', 'bot'); botBubble.classList.add('pending'); try { const res = await fetch(apiEndpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ messages: history }) }); if (!res.ok) { const errText = await res.text(); throw new Error(JSON.parse(errText).error || errText); } const data = await res.json(); botBubble.textContent = data.text; history.push({ role: 'assistant', content: data.text }); } catch(err) { botBubble.textContent = `Erreur: ${err.message}`; } finally { botBubble.classList.remove('pending'); } }
+      
+      async function handleChatSubmit(e, history, messagesContainer, apiEndpoint) { 
+          e.preventDefault(); const form = e.target, input = form.querySelector('input'), prompt = input.value.trim(); 
+          if (!prompt) return; 
+          addBubble(messagesContainer, prompt, 'you'); history.push({ role: 'user', content: prompt }); input.value = ''; 
+          const botBubble = addBubble(messagesContainer, '…', 'bot'); botBubble.classList.add('pending'); 
+          try { 
+              const res = await fetch(apiEndpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ messages: history }) }); 
+              if (!res.ok) { const errText = await res.text(); throw new Error(JSON.parse(errText).error || errText); } 
+              const data = await res.json(); 
+              botBubble.textContent = data.text; history.push({ role: 'assistant', content: data.text }); 
+          } catch(err) { botBubble.textContent = `Erreur: ${err.message}`; } 
+          finally { botBubble.classList.remove('pending'); } 
+      }
       $('#gpt-form').addEventListener('submit', (e) => handleChatSubmit(e, gptHistory, $("#chat-panel-gpt .chat-messages"), '/api/chat'));
       $('#gemini-form').addEventListener('submit', (e) => handleChatSubmit(e, geminiHistory, $("#chat-panel-gemini .chat-messages"), '/api/gemini'));
     })();
     
-    (function () {
-      const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
-      async function getWeather5dCached() {
-        try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data, location } = JSON.parse(raw); const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels'; if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data; } } catch {}
-        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-        const geoData = await geoRes.json();
-        if (!geoData.results) throw new Error('Geocoding failed');
-        const { latitude, longitude } = geoData.results[0];
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
-        const data = await weatherRes.json();
-        try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data, location: locationName })); } catch {}
-        return data;
-      }
-      function renderWeather5d(data) { const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div><div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`; }
-      async function toggleDetails() { const isHidden = details.hasAttribute("hidden"); if (isHidden && !loaded) { try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } } details.toggleAttribute("hidden"); weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden"))); }
-      weatherCard.addEventListener("click", toggleDetails);
-      weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
-    })();
-    
+    // --- Panneau de configuration ---
     (function() {
         const panel = $('#control-panel'), overlay = $('#overlay'); const toggleBtn = $('#settings-toggle-btn'), closeBtn = $('#panel-close-btn');
         function openPanel() { panel.setAttribute('aria-hidden', 'false'); overlay.hidden = false; document.body.classList.add('panel-open'); }
         function closePanel() { panel.setAttribute('aria-hidden', 'true'); overlay.hidden = true; document.body.classList.remove('panel-open'); }
         toggleBtn.addEventListener('click', openPanel); closeBtn.addEventListener('click', closePanel); overlay.addEventListener('click', closePanel);
         window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel(); });
+        
+        // Météo Localisation
         const locationInput = $('#weather-location-input'), saveBtn = $('#weather-location-save'); locationInput.value = localStorage.getItem('weatherLocation') || '';
         const saveLocation = () => { const newLocation = locationInput.value.trim(); if (newLocation) { localStorage.setItem('weatherLocation', newLocation); getWeather(); closePanel(); } };
         saveBtn.addEventListener('click', saveLocation); locationInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLocation(); });
+        
+        // Paramètres Génériques
         const root = document.documentElement; function applySetting(key, value, action) { localStorage.setItem(key, value); action(value); }
-        function setupSelector(selectorId, storageKey, action, defaultValue) { const selector = $(selectorId), buttons = selector.querySelectorAll('button'); const savedValue = localStorage.getItem(storageKey) || defaultValue; action(savedValue); buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue)); selector.addEventListener('click', (e) => { const target = e.target.closest('button'); if (target?.dataset.value) { applySetting(storageKey, target.dataset.value, action); buttons.forEach(b => b.classList.remove('active')); target.classList.add('active'); } }); }
+        function setupSelector(selectorId, storageKey, action, defaultValue) { 
+            const selector = $(selectorId), buttons = selector.querySelectorAll('button'); 
+            const savedValue = localStorage.getItem(storageKey) || defaultValue; action(savedValue); 
+            buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue)); 
+            selector.addEventListener('click', (e) => { const target = e.target.closest('button'); if (target?.dataset.value) { applySetting(storageKey, target.dataset.value, action); buttons.forEach(b => b.classList.remove('active')); target.classList.add('active'); } }); 
+        }
         setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
         
-        // News Toggle Logic
+        // Toggle News
         const newsToggle = $('#news-toggle');
         const showNews = localStorage.getItem('showNews') !== 'false';
         newsToggle.checked = showNews;
@@ -221,21 +340,17 @@
             applySetting('showNews', newsToggle.checked, (val) => document.body.classList.toggle('news-hidden', !val)); 
         });
 
+        // Toggle Chat
         const chatToggle = $('#chat-toggle'); const showChat = localStorage.getItem('showChat') !== 'false'; chatToggle.checked = showChat; document.body.classList.toggle('chat-hidden', !showChat);
         chatToggle.addEventListener('change', () => { applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val)); });
     })();
-    
-    (function() {
-        const searchForm = $('#search-form'), searchInput = $('#search-input');
-        function updateSearchEngine() { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); const engine = prefix ? SEARCH_ENGINES[prefix] : SEARCH_ENGINES['default']; searchForm.action = engine.url; searchInput.name = engine.queryParam; if (searchInput.placeholder !== engine.placeholder) { searchInput.placeholder = engine.placeholder; } }
-        searchInput.addEventListener('input', updateSearchEngine);
-        searchForm.addEventListener('submit', (e) => { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); if (prefix) { searchInput.value = query.substring(prefix.length); } });
-    })();
 
+    // --- Init ---
     window.addEventListener("load", () => {
       updateGreeting(); $("#clock").textContent = getTime();
       setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
-      setupBookmarks(); getWeather();
+      setupBookmarks(); 
+      getWeather();
       loadNews();
     });
   </script>
