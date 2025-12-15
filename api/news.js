@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
-  // L'URL magique : On demande à Google News le flux RSS uniquement pour le site "lesoir.be"
-  // Paramètres : hl=fr (Français), gl=BE (Belgique)
-  const googleNewsUrl = 'https://news.google.com/rss/search?q=site:lesoir.be&hl=fr&gl=BE&ceid=BE:fr';
+  // L'URL magique : On demande à Google News les articles venant UNIQUEMENT de "macg.co"
+  // On utilise gl=FR car c'est un site français (donne souvent de meilleurs résultats que BE pour les sites tech fr)
+  const googleNewsUrl = 'https://news.google.com/rss/search?q=site:macg.co&hl=fr&gl=FR&ceid=FR:fr';
 
   try {
     const response = await fetch(googleNewsUrl);
@@ -12,13 +12,9 @@ export default async function handler(req, res) {
 
     const xmlData = await response.text();
 
-    // Vérification de sécurité
     if (!xmlData.includes('<rss') && !xmlData.includes('<feed')) {
          throw new Error("Le contenu reçu n'est pas un flux RSS valide.");
     }
-
-    // On nettoie un peu le XML si nécessaire (Google ajoute parfois des suffixes aux titres)
-    // Mais pour l'instant, on renvoie brut, votre index.html gère bien le standard RSS.
     
     res.setHeader('Content-Type', 'text/xml; charset=utf-8');
     res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate');
