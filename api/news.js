@@ -1,26 +1,30 @@
-// /api/news.js
 export default async function handler(req, res) {
-  const rssUrl = 'https://www.lesoir.be/rss/81851';
+  // L'URL cible (Le Soir)
+  const targetUrl = 'https://www.lesoir.be/rss/81851';
+  
+  // On passe par un service intermédiaire pour contourner le blocage IP de Vercel
+  // "AllOrigins" va chercher la page pour nous et nous renvoie le contenu brut
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
 
   try {
-    // On utilise un User-Agent pour simuler un navigateur et éviter le blocage
-    const response = await fetch(rssUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-      }
-    });
+    const response = await fetch(proxyUrl);
 
     if (!response.ok) {
-      throw new Error(`Erreur HTTP distante: ${response.status} ${response.statusText}`);
+      throw new Error(`Erreur Proxy: ${response.status}`);
     }
 
     const xmlData = await response.text();
 
-    // Headers pour indiquer que c'est du XML et gérer le cache (10 min)
+    // Vérification basique que nous avons bien reçu du XML et pas une page d'erreur du proxy
+    if (!xmlData.includes('<?xml') && !xmlData.includes('<rss')) {
+         throw new Error("Le contenu reçu n'est pas un flux RSS valide.");
+    }
+
+    // On renvoie le XML à votre site
     res.setHeader('Content-Type', 'text/xml; charset=utf-8');
+    // On garde un cache pour éviter de surcharger le proxy
     res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate');
     
-    // Envoi de la réponse
     res.status(200).send(xmlData);
 
   } catch (error) {
