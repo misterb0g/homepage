@@ -1,28 +1,26 @@
 export default async function handler(req, res) {
-  // L'URL cible (Le Soir)
-  const targetUrl = 'https://www.lesoir.be/rss/81851';
-  
-  // On passe par un service intermédiaire pour contourner le blocage IP de Vercel
-  // "AllOrigins" va chercher la page pour nous et nous renvoie le contenu brut
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+  // L'URL magique : On demande à Google News le flux RSS uniquement pour le site "lesoir.be"
+  // Paramètres : hl=fr (Français), gl=BE (Belgique)
+  const googleNewsUrl = 'https://news.google.com/rss/search?q=site:lesoir.be&hl=fr&gl=BE&ceid=BE:fr';
 
   try {
-    const response = await fetch(proxyUrl);
+    const response = await fetch(googleNewsUrl);
 
     if (!response.ok) {
-      throw new Error(`Erreur Proxy: ${response.status}`);
+      throw new Error(`Erreur Google News: ${response.status}`);
     }
 
     const xmlData = await response.text();
 
-    // Vérification basique que nous avons bien reçu du XML et pas une page d'erreur du proxy
-    if (!xmlData.includes('<?xml') && !xmlData.includes('<rss')) {
+    // Vérification de sécurité
+    if (!xmlData.includes('<rss') && !xmlData.includes('<feed')) {
          throw new Error("Le contenu reçu n'est pas un flux RSS valide.");
     }
 
-    // On renvoie le XML à votre site
+    // On nettoie un peu le XML si nécessaire (Google ajoute parfois des suffixes aux titres)
+    // Mais pour l'instant, on renvoie brut, votre index.html gère bien le standard RSS.
+    
     res.setHeader('Content-Type', 'text/xml; charset=utf-8');
-    // On garde un cache pour éviter de surcharger le proxy
     res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate');
     
     res.status(200).send(xmlData);
