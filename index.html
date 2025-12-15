@@ -13,7 +13,7 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
 
   <style>
-    /* Animations globales */
+    /* --- Animations globales --- */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(8px); }
       to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
@@ -30,9 +30,25 @@
       animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
-    /* Masquage conditionnel des news via les paramètres */
+    /* --- Gestion de l'affichage News --- */
+    /* Permet de masquer tout le bloc news via le panneau de contrôle */
     body.news-hidden #news-container {
         display: none !important;
+    }
+
+    /* Grille pour les 2 colonnes de news */
+    .news-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2 colonnes égales */
+        gap: 2rem;
+    }
+
+    /* Responsive : 1 seule colonne sur mobile */
+    @media (max-width: 768px) {
+        .news-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
     }
   </style>
 </head>
@@ -117,9 +133,22 @@
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
     </div>
 
-    <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1rem; display: none;">
-      <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg);">À la une - MacG </h3>
-      <div id="news-list" style="display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));"></div>
+    <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.5rem; display: none;">
+      <div class="news-grid">
+          <div id="macg-column">
+              <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
+                  MacGeneration
+              </h3>
+              <div id="macg-list" style="display: grid; gap: 0.8rem;"></div>
+          </div>
+
+          <div id="lesoir-column">
+              <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
+                  Le Soir
+              </h3>
+              <div id="lesoir-list" style="display: grid; gap: 0.8rem;"></div>
+          </div>
+      </div>
     </section>
     
     <div id="chat-container" class="card glass">
@@ -221,24 +250,29 @@
         </section>`).join("");
     }
 
-    // --- NEWS (Via API Vercel Locale) ---
-    async function loadNews() {
-        const container = $('#news-container');
-        const list = $('#news-list');
-        
+    // --- NEWS: Fonction générique pour charger un flux ---
+    async function fetchAndRenderNews(apiUrl, listId) {
+        const list = $(listId);
         try {
-            // Appel vers notre API locale (créée dans api/news.js)
-            const res = await fetch('/api/news');
-            if (!res.ok) throw new Error('Erreur chargement API');
+            const res = await fetch(apiUrl);
+            if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
             
-            // Parsing du XML brut
             const xmlText = await res.text();
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-            const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 6);
+            
+            // Récupération et tri des items (plus récent en haut)
+            let items = Array.from(xmlDoc.querySelectorAll("item"));
+            items.sort((a, b) => {
+                const dateA = new Date(a.querySelector("pubDate")?.textContent);
+                const dateB = new Date(b.querySelector("pubDate")?.textContent);
+                return dateB - dateA; // Décroissant
+            });
+
+            // On garde les 5 premiers pour chaque colonne
+            items = items.slice(0, 5);
 
             if (items.length > 0) {
-                container.style.display = 'block';
                 list.innerHTML = items.map(item => {
                     const title = item.querySelector("title")?.textContent || "Sans titre";
                     const link = item.querySelector("link")?.textContent || "#";
@@ -246,20 +280,39 @@
                     
                     let dateStr = "";
                     if (pubDateRaw) {
-                        dateStr = new Date(pubDateRaw).toLocaleDateString('fr-BE', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
+                        dateStr = new Date(pubDateRaw).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
                     }
 
                     return `
                     <a href="${link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
                         <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${title}</div>
-                            <div style="font-size: 0.8rem; color: var(--secondaryFg);">${dateStr}</div>
+                            <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; line-height: 1.4;">${title}</div>
+                            <div style="font-size: 0.75rem; color: var(--secondaryFg); text-align: right;">${dateStr}</div>
                         </article>
                     </a>`;
                 }).join('');
+            } else {
+                list.innerHTML = `<div style="font-size:0.8rem; opacity:0.7">Aucun article.</div>`;
             }
         } catch (e) {
-            console.error("News error:", e);
+            console.error(`Erreur chargement news (${apiUrl}):`, e);
+            list.innerHTML = `<div style="font-size:0.8rem; color:var(--errorFg)">Erreur chargement.</div>`;
+        }
+    }
+
+    // --- Chargement global des news ---
+    async function loadNews() {
+        const container = $('#news-container');
+        
+        // On lance les deux requêtes en parallèle pour la rapidité
+        await Promise.all([
+            fetchAndRenderNews('/api/news', '#macg-list'),    // MacGeneration
+            fetchAndRenderNews('/api/lesoir', '#lesoir-list') // Le Soir
+        ]);
+        
+        // Affichage du bloc si l'option est activée
+        if (localStorage.getItem('showNews') !== 'false') {
+            container.style.display = 'block';
         }
     }
 
