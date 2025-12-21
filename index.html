@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles-2.css" />
+  <link rel="stylesheet" href="styles.css" />
   
   <link rel="icon" href="/favicon.ico" sizes="any">
 
@@ -54,15 +54,12 @@
       </div>
 
       <div class="weather-container card glass" id="weather-card" onclick="document.getElementById('weather-details').hidden = !document.getElementById('weather-details').hidden">
-          <span id="weather-location">Chargement...</span> 
-          <span class="inline">|</span> 
-          <span id="weather-temp">--°C</span>
-          <span class="inline">|</span> 
+          <span id="weather-location">Chargement...</span> <span class="inline">|</span> 
+          <span id="weather-temp">--°C</span> <span class="inline">|</span> 
           <span id="weather-desc">...</span>
       </div>
 
-      <div id="weather-details" class="weather-details card glass" hidden>
-          </div>
+      <div id="weather-details" class="weather-details card glass" hidden></div>
 
       <div id="bookmark-container" class="bookmark-container"></div>
 
@@ -72,7 +69,7 @@
       </div>
 
       <div id="chat-container" class="card glass" style="width: min(820px, 94%); padding:1rem; display:flex; gap:0.5rem;">
-          <input type="text" placeholder="Poser une question à l'IA..." style="flex:1; background:transparent; border:1px solid var(--secondaryFg); padding:0.5rem; border-radius:8px; color:var(--fg);">
+          <input type="text" placeholder="Poser une question..." style="flex:1; background:transparent; border:1px solid var(--secondaryFg); padding:0.5rem; border-radius:8px; color:var(--fg);">
           <button style="background:var(--mac-brand); color:#fff; border:none; padding:0 1rem; border-radius:8px; cursor:pointer;">Go</button>
       </div>
   </div>
@@ -80,48 +77,33 @@
   <script src="bookmarks.js"></script>
 
   <script>
-    // --- Utilitaires ---
     const $ = (s) => document.querySelector(s);
-    const $$ = (s) => document.querySelectorAll(s);
 
-    // --- Heure & Salutation ---
-    function getTime() {
-        return new Date().toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
-    }
+    function getTime() { return new Date().toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' }); }
     function updateGreeting() {
         const h = new Date().getHours();
         const txt = h < 12 ? "Bonjour" : h < 18 ? "Bon après-midi" : "Bonsoir";
-        // Essaie de récupérer le prénom s'il est stocké, sinon juste le texte
-        const name = localStorage.getItem('username') || ""; 
-        $('#greeting').textContent = name ? `${txt}, ${name}` : txt;
+        $('#greeting').textContent = txt;
     }
 
-    // --- GESTION DES FAVORIS (AVEC DRAG & DROP) ---
+    // --- FONCTION FAVORIS AVEC DRAG & DROP & SAUVEGARDE ---
     function setupBookmarks() {
         const container = $('#bookmark-container');
         
-        // 1. Récupérer l'ordre sauvegardé
-        let savedOrder = null;
-        try {
-            savedOrder = JSON.parse(localStorage.getItem('bookmarksOrder'));
-        } catch(e) { console.error("Erreur lecture ordre", e); }
-
-        // 2. Préparer la liste à afficher
-        // On suppose que la variable 'bookmarks' vient du fichier bookmarks.js
+        // 1. Lire l'ordre sauvegardé
+        const savedOrder = JSON.parse(localStorage.getItem('bookmarksOrder'));
         let displayList = [...bookmarks]; 
 
-        if (savedOrder && Array.isArray(savedOrder)) {
+        // 2. Trier la liste selon l'ordre sauvegardé
+        if (savedOrder) {
             displayList.sort((a, b) => {
                 const indexA = savedOrder.indexOf(a.title);
                 const indexB = savedOrder.indexOf(b.title);
-                // Les éléments non trouvés vont à la fin (999)
-                const valA = indexA === -1 ? 999 : indexA;
-                const valB = indexB === -1 ? 999 : indexB;
-                return valA - valB;
+                return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
             });
         }
 
-        // 3. Générer le HTML
+        // 3. Afficher les cartes
         container.innerHTML = displayList.map(group => `
             <section class="bookmark-set card glass" data-id="${group.title}">
                 <h3>${group.title}</h3>
@@ -136,112 +118,61 @@
             </section>
         `).join('');
 
-        // 4. Activer SortableJS
+        // 4. Activer le déplacement
         new Sortable(container, {
             animation: 150,
-            ghostClass: 'sortable-ghost', // La classe CSS qu'on a ajoutée
-            handle: 'h3', // On déplace en attrapant le titre
+            ghostClass: 'sortable-ghost',
+            handle: 'h3', // On attrape la carte par son titre
             onEnd: function () {
-                // Sauvegarde du nouvel ordre des titres
+                // Sauvegarde le nouvel ordre
                 const newOrder = Array.from(container.children).map(el => el.getAttribute('data-id'));
                 localStorage.setItem('bookmarksOrder', JSON.stringify(newOrder));
             }
         });
     }
 
-    // --- MÉTÉO (Adapte l'URL si besoin) ---
-    async function getWeather() {
-        // EXEMPLE: Remplace par ton URL Vercel réelle si différente
-        // const apiUrl = '/api/weather?city=Zaventem'; 
-        // Pour l'instant, je mets un placeholder simple
-        try {
-           /* Insère ici ton appel API Vercel si tu en as un spécifique */
-           // const response = await fetch('/api/weather'); ...
-           
-           // Simulation pour l'exemple (à retirer si tu as ton API)
-           $('#weather-location').textContent = "Zaventem";
-           $('#weather-temp').textContent = "12°C";
-           $('#weather-desc').textContent = "Nuageux";
-        } catch (e) {
-            console.error("Erreur météo", e);
-            $('#weather-location').textContent = "Météo indisponible";
-        }
-    }
-
-    // --- NEWS (Adapte l'URL si besoin) ---
-    async function loadNews() {
-        try {
-            // Insère ici ton appel API Vercel pour les news
-            // const res = await fetch('/api/news');
-            // const data = await res.json();
-            // ... rendu des news ...
-        } catch (e) {
-            console.log("Pas de news chargées");
-        }
-    }
-
-    // --- PARAMÈTRES & INITIALISATION ---
+    // --- SETUP GENERAL ---
     (function initSettings() {
         const root = document.documentElement;
-        
-        // Toggle Settings Panel
-        $('#settings-toggle-btn').addEventListener('click', () => {
-            const panel = $('#settings-panel');
-            panel.hidden = !panel.hidden;
-        });
+        $('#settings-toggle-btn').addEventListener('click', () => { $('#settings-panel').hidden = !$('#settings-panel').hidden; });
 
-        // Helper settings
         const setupSelector = (id, key, action, def) => {
             const el = $(id);
             const saved = localStorage.getItem(key) || def;
-            if(el.type === "checkbox") {
-                el.checked = (saved === "true" || saved === "dark" || saved === "compact"); 
-            }
-            action(saved); // Appliquer au chargement
-            
+            if(el.type === "checkbox") el.checked = (saved === "true" || saved === "dark" || saved === "compact");
+            action(saved);
             el.addEventListener('change', () => {
-                const val = el.type === "checkbox" ? (el.checked ? (key === 'theme' ? 'dark' : (key==='density'?'compact':'true')) : (key === 'theme' ? 'light' : (key==='density'?'cozy':'false'))) : el.value;
+                const val = el.type === "checkbox" ? (el.checked ? (key==='theme'?'dark':(key==='density'?'compact':'true')) : (key==='theme'?'light':(key==='density'?'cozy':'false'))) : el.value;
                 localStorage.setItem(key, val);
                 action(val);
             });
         };
-
-        // Theme
         setupSelector('#theme-selector', 'theme', (v) => root.setAttribute('data-theme', v), 'dark');
-        // Densité
         setupSelector('#density-selector', 'density', (v) => root.setAttribute('data-density', v), 'cozy');
-        
-        // Toggle News & Chat visibility
-        const toggleVis = (id, storeKey, elementId) => {
-             const el = $(id);
-             const target = $(elementId);
-             const saved = localStorage.getItem(storeKey) !== 'false';
-             el.checked = saved;
-             target.style.display = saved ? 'block' : 'none'; // ou flex selon le cas
-             if(elementId.includes('chat')) target.style.display = saved ? 'flex' : 'none';
 
-             el.addEventListener('change', () => {
-                 localStorage.setItem(storeKey, el.checked);
-                 target.style.display = el.checked ? (elementId.includes('chat') ? 'flex' : 'block') : 'none';
-             });
+        // Toggle News/Chat
+        const toggleVis = (id, k, tId) => {
+             const el = $(id); const t = $(tId);
+             const s = localStorage.getItem(k) !== 'false';
+             el.checked = s; t.style.display = s ? 'flex' : 'none';
+             if(tId === '#news-container') t.style.display = s ? 'block' : 'none';
+             el.addEventListener('change', () => { localStorage.setItem(k, el.checked); t.style.display = el.checked ? (tId.includes('news')?'block':'flex') : 'none'; });
         };
         toggleVis('#news-toggle', 'showNews', '#news-container');
         toggleVis('#chat-toggle', 'showChat', '#chat-container');
-
     })();
 
-    // --- Lancer tout au chargement ---
+    // Lancement
     window.addEventListener("load", () => {
       updateGreeting(); 
       $("#clock").textContent = getTime();
-      setInterval(() => { 
-          $("#clock").textContent = getTime(); 
-          if (new Date().getSeconds() === 0) updateGreeting(); 
-      }, 1000);
-
-      setupBookmarks(); // Le nouveau script de favoris
-      getWeather();     // Ta fonction météo
-      loadNews();       // Ta fonction news
+      setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
+      
+      setupBookmarks(); // Génère les favoris déplaçables
+      
+      // Tes appels API (Remets ici le code de tes appels API si nécessaire)
+      // getWeather(); 
+      // loadNews();
     });
   </script>
 </body>
