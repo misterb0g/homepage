@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
+  <!-- Import de SortableJS pour le Drag & Drop -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+  <!-- IMPORTANT: Ce fichier doit s'appeler "styles.css" pour que le design fonctionne -->
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="/favicon.ico" sizes="any">
 
@@ -19,6 +23,7 @@
       to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
     
+    /* On garde l'animation mais on s'assure qu'elle ne gêne pas le drag & drop après */
     .bookmark-set, #news-container {
       opacity: 0; 
       animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -29,358 +34,375 @@
     #weather-details:not([hidden]) {
       animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
-
-    /* --- Gestion de l'affichage News --- */
-    /* Permet de masquer tout le bloc news via le panneau de contrôle */
-    body.news-hidden #news-container {
-        display: none !important;
-    }
-
-    /* Grille pour les 2 colonnes de news */
-    .news-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* 2 colonnes égales */
-        gap: 2rem;
-    }
-
-    /* Responsive : 1 seule colonne sur mobile */
-    @media (max-width: 768px) {
-        .news-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-    }
   </style>
 </head>
-<body>
-  <div class="liquid-background">
-    <div class="blob1"></div>
-    <div class="blob2"></div>
+<body data-theme="dark" data-density="cozy">
+
+  <!-- Background Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- Header / Top Bar -->
+  <header>
+    <div class="left-col">
+      <div id="greeting">Bonjour</div>
+      <div id="clock">00:00</div>
+    </div>
+    
+    <div class="right-col">
+       <!-- Weather Widget -->
+       <div id="weather-widget">
+        <span id="weather-icon">--</span>
+        <span id="weather-temp">--°</span>
+      </div>
+       <!-- Settings Toggle -->
+       <button id="settings-btn" aria-label="Settings">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Weather Details Overlay -->
+  <div id="weather-details" hidden>
+    <div class="weather-header">
+      <h3>Météo Locale</h3>
+      <button id="close-weather" aria-label="Fermer">✕</button>
+    </div>
+    <div class="weather-content">
+      <div class="main-temp">
+        <span id="detail-icon"></span>
+        <span id="detail-temp">--°</span>
+      </div>
+      <p id="detail-desc">Chargement...</p>
+      <div class="weather-grid">
+        <div class="w-item"><span>Humidité</span><strong id="detail-humidity">--%</strong></div>
+        <div class="w-item"><span>Vent</span><strong id="detail-wind">-- km/h</strong></div>
+        <div class="w-item"><span>Ressenti</span><strong id="detail-feels">--°</strong></div>
+      </div>
+    </div>
   </div>
 
-  <div class="top-controls">
-    <button id="settings-toggle-btn" class="btn-icon" title="Ouvrir les paramètres">
-      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.69-1.68-0.91L14.07,3.58 c-0.04-0.24-0.24-0.41-0.48-0.41H9.41c-0.24,0-0.43,0.17-0.48,0.41L8.62,5.7C8,5.92,7.44,6.23,6.94,6.61l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.04,9.19c-0.12,0.2-0.07,0.47,0.12,0.61l2.03,1.58C4.02,11.66,4,11.83,4,12 c0,0.17,0.02,0.34,0.07,0.5l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96 c0.5,0.38,1.06,0.69,1.68,0.91l0.31,2.12c0.04,0.24,0.24,0.41,0.48,0.41h3.18c0.24,0,0.43-0.17,0.48-0.41l0.31-2.12 c0.62-0.22,1.18-0.53,1.68-0.91l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12,0.2,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
-    </button>
-  </div>
-
-  <aside id="control-panel" class="glass" aria-hidden="true">
+  <!-- Settings Panel -->
+  <div id="settings-panel" class="glass-panel" hidden>
     <div class="panel-header">
-        <h3>Paramètres</h3>
-        <button id="panel-close-btn" class="btn-icon" title="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <h3>Préférences</h3>
+      <button id="close-settings">✕</button>
     </div>
-    <div class="panel-content">
-      <div class="panel-section">
-          <label for="weather-location-input">Lieu de la météo</label>
-          <div class="input-group">
-              <input type="text" id="weather-location-input" placeholder="Ex: Sterrebeek">
-              <button id="weather-location-save">OK</button>
-          </div>
-      </div>
-      <div class="panel-section">
-          <label>Thème</label>
-          <div class="segmented-control" id="theme-selector">
-              <button data-value="light" title="Thème clair">Jour</button>
-              <button data-value="dark" title="Thème sombre">Nuit</button>
-          </div>
-      </div>
-      <div class="panel-section">
-          <label>Densité des favoris</label>
-          <div class="segmented-control" id="density-selector">
-              <button data-value="cozy" title="Normal">Normal</button>
-              <button data-value="compact" title="Compact">Compact</button>
-          </div>
-      </div>
-      <div class="panel-section">
-          <label for="news-toggle">Afficher les actualités</label>
-          <label class="toggle-switch">
-              <input type="checkbox" id="news-toggle">
-              <span class="slider"></span>
-          </label>
-      </div>
-      <div class="panel-section">
-          <label for="chat-toggle">Afficher le module de chat</label>
-          <label class="toggle-switch">
-              <input type="checkbox" id="chat-toggle">
-              <span class="slider"></span>
-          </label>
-      </div>
-    </div>
-  </aside>
-  <div id="overlay" hidden></div>
-
-  <div class="container">
-    <div id="greeting-container">
-        <div id="greeting"></div>
-        <div id="clock"></div>
-    </div>
-
-    <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
-        <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
-    </section>
-    <section id="weather-details" class="card glass weather-details" hidden></section>
     
-    <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET">
-        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59,4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
-        <button type="submit" class="visually-hidden">Rechercher</button>
-    </form>
-    
-    <div id="bookmark-container">
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
+    <div class="setting-group">
+      <label>Thème</label>
+      <select id="theme-selector">
+        <option value="light">Clair</option>
+        <option value="dark">Sombre</option>
+      </select>
     </div>
 
-    <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.5rem; display: none;">
-      <div class="news-grid">
-          <div id="macg-column">
-              <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
-                  MacGeneration
-              </h3>
-              <div id="macg-list" style="display: grid; gap: 0.8rem;"></div>
-          </div>
+    <div class="setting-group">
+      <label>Densité</label>
+      <select id="density-selector">
+        <option value="cozy">Confortable</option>
+        <option value="compact">Compact</option>
+      </select>
+    </div>
 
-          <div id="lesoir-column">
-              <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
-                  Le Soir
-              </h3>
-              <div id="lesoir-list" style="display: grid; gap: 0.8rem;"></div>
-          </div>
+    <div class="setting-group checkbox-group">
+      <label>Afficher les News</label>
+      <label class="toggle-switch">
+        <input type="checkbox" id="news-toggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-group checkbox-group">
+        <label>Afficher le Chat</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chat-toggle" checked>
+          <span class="slider"></span>
+        </label>
       </div>
-    </section>
-    
-    <div id="chat-container" class="card glass">
-      <div class="chat-tabs">
-          <button class="chat-tab active" data-target="gpt">ChatGPT</button>
-          <button class="chat-tab" data-target="gemini">Gemini</button>
-      </div>
-      <section id="chat-panel-gpt" class="chat-panel">
-          <div class="chat-messages"></div>
-          <form class="chat-form" id="gpt-form"><input type="text" name="prompt" placeholder="Discuter avec ChatGPT…"/><button type="submit">Envoyer</button></form>
-      </section>
-      <section id="chat-panel-gemini" class="chat-panel" hidden>
-          <div class="chat-messages"></div>
-          <form class="chat-form" id="gemini-form"><input type="text" name="prompt" placeholder="Discuter avec Gemini…"/><button type="submit">Envoyer</button></form>
-      </section>
-      <p class="hint">Astuce : `/` ou `⌘K` → Recherche • `Alt+C` → Chat</p>
+      
+    <div class="panel-footer">
+      <button id="reset-settings">Réinitialiser</button>
     </div>
   </div>
 
-  <script src="bookmarks.js"></script>
-  <script>
-    // --- Utilitaires ---
-    const $ = (sel, root = document) => root.querySelector(sel);
-    const $$ = (sel, root = document) => root.querySelectorAll(sel);
-    function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
-    function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
+  <!-- Main Container -->
+  <main>
+    <!-- Bookmarks Grid -->
+    <div id="bookmarks-container"></div>
 
-    // --- Météo ---
+    <!-- News Section -->
+    <div id="news-container">
+      <h2>À la une</h2>
+      <div id="news-grid">Chargement des actualités...</div>
+    </div>
+  </main>
+
+  <!-- Chat Widget (Embed) -->
+  <iframe 
+    src="https://www.chatbase.co/chatbot-iframe/HuA2t4q1t4u6o6s6u2t5"
+    title="Chatbot"
+    width="100%"
+    style="height: 100%; min-height: 700px; border: none;"
+    frameborder="0"
+    id="chat-widget"
+  ></iframe>
+
+  <!-- Scripts -->
+  <script type="module">
+    // Données des favoris intégrées directement (remplace bookmarks.js pour éviter les erreurs de module local)
+    const bookmarks = [
+      {
+        title: "Ressources Humaines",
+        links: [
+          { name: "DinClock", url: "https://www.dinclock.com/silex/login/home.jsp" },
+          { name: "Partena", url: "https://my.partena-professional.be" },
+          { name: "Edenred", url: "https://www.myedenred.be/#/" },
+          { name: "My Actiris", url: "https://my.actiris.brussels/subsidized-jobs/dashboard/employeur/" },
+        ]
+      },
+      {
+        title: "Administration",
+        links: [
+          { name: "Dolibarr", url: "https://dolibarr.lesilex.be" },
+          { name: "Flow", url: "https://admin.joinflow.com/pbxservices.jsp" },
+          { name: "Odoo", url: "https://silex-asbl.odoo.com/odoo" },
+          { name: "Clé", url: "https://airkey.evva.com" },
+        ]
+      },
+      {
+        title: "Banques & Finance",
+        links: [
+          { name: "ING", url: "https://ebanking.ing.be/login" },
+          { name: "Winbooks", url: "https://app.winbooksconnect.be/" },
+          { name: "Fortis", url: "https://www.bnpparibasfortis.be/fr/generic/logon" },
+        ]
+      },
+      {
+        title: "Media",
+        links: [
+          { name: "Netflix", url: "https://netflix.com" },
+          { name: "Disney +", url: "https://www.disneyplus.com/fr-fr/home" },
+          { name: "Canal+", url: "https://pass.canalplus.com/" },
+        ]
+      },
+      {
+        title: "News",
+        links: [
+          { name: "Club MacG", url: "https://clubigen.fr" },
+          { name: "Courrier Inter", url: "https://www.courrierinternational.com" },
+          { name: "Le Soir", url: "https://www.lesoir.be" },
+          { name: "RTBF", url: "https://www.rtbf.be" },
+        ]
+      },
+      {
+        title: "Sport",
+        links: [
+          { name: "Strava", url: "https://www.strava.com/login" },
+          { name: "Garmin", url: "https://connect.garmin.com/modern/" },
+          { name: "Smashrun", url: "https://fr.smashrun.com/gilles.bogarts" },
+        ]
+      },
+      {
+        title: "Web-admin",
+        links: [
+          { name: "Silex", url: "http://lesilex.be/admin/login.php" },
+          { name: "Fleur d'Ô", url: "https://fleurdo.be/wp-login.php" },
+        ]
+      }
+    ];
+
+    // Utilitaires
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+    
+    // --- Gestion du temps ---
+    function getTime() {
+      const now = new Date();
+      return now.toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    function updateGreeting() {
+      const h = new Date().getHours();
+      const txt = h < 12 ? "Bonjour," : h < 18 ? "Bon après-midi," : "Bonsoir,";
+      $("#greeting").innerText = txt;
+    }
+
+    // --- Météo (OpenMeteo - Pas de clé API requise) ---
+    // Latitude/Longitude pour Bruxelles (Zaventem approx)
+    const LAT = 50.8503; 
+    const LON = 4.3517;
+
     async function getWeather() {
-        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-        const weatherEl = $('#weather');
-        weatherEl.innerHTML = `<div class="skeleton skeleton-text"></div>`;
-        try {
-            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-            if (!geoRes.ok) throw new Error('Erreur Geocoding');
-            const geoData = await geoRes.json();
-            if (!geoData.results || geoData.results.length === 0) throw new Error(`Ville '${locationName}' non trouvée`);
-            
-            const { latitude, longitude, name } = geoData.results[0];
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto&forecast_days=1`);
-            if (!weatherRes.ok) throw new Error('Erreur Météo');
-            
-            const data = await weatherRes.json();
-            let t = data?.current?.temperature_2m, wcode = data?.current?.weather_code;
-            
-            weatherEl.innerHTML = `<div class="row"><div id="weather-location" class="inline">${name}</div><div class="inline">•</div><div class="inline">${weatherCodeToFr(wcode)}</div><div class="inline">•</div><div class="inline">${Math.round(t)} °C</div></div>`;
-        } catch (err) { console.error("Météo:", err); weatherEl.innerHTML = `<div class="inline">${err.message}</div>`; }
-    }
-    function weatherCodeToFr(code) { const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"}; return map[code] ?? "Météo"; }
-    
-    // --- Météo détaillée (5 jours) ---
-    (function () {
-      const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
-      const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
-
-      async function getWeather5dCached() {
-        try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data, location } = JSON.parse(raw); const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels'; if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data; } } catch {}
+      try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true`);
+        const data = await res.json();
+        const w = data.current_weather;
         
-        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-        const geoData = await geoRes.json();
-        const { latitude, longitude } = geoData.results[0];
+        // Mapping codes WMO
+        const iconMap = {
+          0: '☀️', 1: '🌤', 2: '⛅️', 3: '☁️',
+          45: '🌫', 48: '🌫', 51: '🌧', 61: '🌧', 80: '🌧',
+          95: '⛈', 71: '❄️'
+        };
+        const icon = iconMap[w.weathercode] || '🌥';
         
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
-        const data = await weatherRes.json();
-        try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data, location: locationName })); } catch {}
-        return data;
-      }
+        // Widget Header
+        $("#weather-icon").innerText = icon;
+        $("#weather-temp").innerText = `${Math.round(w.temperature)}°`;
 
-      function renderWeather5d(data) { 
-        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); 
-        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); 
-        details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div><div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`; 
-      }
+        // Details Overlay
+        $("#detail-icon").innerText = icon;
+        $("#detail-temp").innerText = `${Math.round(w.temperature)}°`;
+        $("#detail-desc").innerText = "Météo actuelle"; 
+        $("#detail-wind").innerText = `${w.windspeed} km/h`;
+        
+        // Note: OpenMeteo basic free doesn't give humidity in current_weather easily without more params, 
+        // kept simple here or fetch hourly[0]
+        $("#detail-humidity").innerText = "-"; 
+        $("#detail-feels").innerText = `${Math.round(w.temperature)}°`; // Simplification
 
-      async function toggleDetails() { 
-        const isHidden = details.hasAttribute("hidden"); 
-        if (isHidden && !loaded) { 
-            try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } 
-            catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } 
-        } 
-        details.toggleAttribute("hidden"); weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden"))); 
+      } catch (e) {
+        console.error("Météo error", e);
       }
-      weatherCard.addEventListener("click", toggleDetails);
-      weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
-    })();
-
-    // --- Favoris ---
-    function setupBookmarks() {
-      if(typeof bookmarks === 'undefined') return;
-      bookmarks.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
-      const el = $("#bookmark-container");
-      el.innerHTML = bookmarks.map((b, index) => `
-        <section class='bookmark-set card glass' style="animation-delay: ${200 + (index * 100)}ms">
-            <div class="bookmark-title">${b.title}</div>
-            <div class="bookmark-inner-container">
-                ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}
-            </div>
-        </section>`).join("");
     }
 
-    // --- NEWS: Fonction générique pour charger un flux ---
-    async function fetchAndRenderNews(apiUrl, listId) {
-        const list = $(listId);
-        try {
-            const res = await fetch(apiUrl);
-            if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
-            
-            const xmlText = await res.text();
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-            
-            // Récupération et tri des items (plus récent en haut)
-            let items = Array.from(xmlDoc.querySelectorAll("item"));
-            items.sort((a, b) => {
-                const dateA = new Date(a.querySelector("pubDate")?.textContent);
-                const dateB = new Date(b.querySelector("pubDate")?.textContent);
-                return dateB - dateA; // Décroissant
-            });
-
-            // On garde les 5 premiers pour chaque colonne
-            items = items.slice(0, 5);
-
-            if (items.length > 0) {
-                list.innerHTML = items.map(item => {
-                    const title = item.querySelector("title")?.textContent || "Sans titre";
-                    const link = item.querySelector("link")?.textContent || "#";
-                    const pubDateRaw = item.querySelector("pubDate")?.textContent;
-                    
-                    let dateStr = "";
-                    if (pubDateRaw) {
-                        dateStr = new Date(pubDateRaw).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
-                    }
-
-                    return `
-                    <a href="${link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
-                        <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; line-height: 1.4;">${title}</div>
-                            <div style="font-size: 0.75rem; color: var(--secondaryFg); text-align: right;">${dateStr}</div>
-                        </article>
-                    </a>`;
-                }).join('');
-            } else {
-                list.innerHTML = `<div style="font-size:0.8rem; opacity:0.7">Aucun article.</div>`;
-            }
-        } catch (e) {
-            console.error(`Erreur chargement news (${apiUrl}):`, e);
-            list.innerHTML = `<div style="font-size:0.8rem; color:var(--errorFg)">Erreur chargement.</div>`;
-        }
-    }
-
-    // --- Chargement global des news ---
+    // --- News (RSS via un proxy ou API) ---
+    // Pour l'exemple static, on mock ou on utilise un service RSS to JSON public
     async function loadNews() {
-        const container = $('#news-container');
-        
-        // On lance les deux requêtes en parallèle pour la rapidité
-        await Promise.all([
-            fetchAndRenderNews('/api/news', '#macg-list'),    // MacGeneration
-            fetchAndRenderNews('/api/lesoir', '#lesoir-list') // Le Soir
-        ]);
-        
-        // Affichage du bloc si l'option est activée
-        if (localStorage.getItem('showNews') !== 'false') {
-            container.style.display = 'block';
+      const container = $("#news-grid");
+      // Exemple : Utilisation de rss2json pour Le Soir ou RTBF
+      const RSS_URL = "https://rss.lesoir.be/belgique"; 
+      const API = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+      
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        if(data.status === 'ok') {
+          container.innerHTML = data.items.slice(0, 4).map(item => `
+            <a href="${item.link}" target="_blank" class="news-card">
+              <div class="news-content">
+                <h3>${item.title}</h3>
+                <p>${new Date(item.pubDate).toLocaleDateString('fr-BE')}</p>
+              </div>
+            </a>
+          `).join('');
         }
+      } catch(e) {
+        container.innerHTML = '<p class="error">Impossible de charger les news.</p>';
+      }
     }
 
-    // --- Barre de recherche intelligente ---
-    (function() {
-        const SEARCH_ENGINES = { 'y ': { url: 'https://www.youtube.com/results', queryParam: 'search_query', placeholder: 'Rechercher sur YouTube...' }, 'w ': { url: 'https://fr.wikipedia.org/w/index.php', queryParam: 'search', placeholder: 'Rechercher sur Wikipédia...' }, 'a ': { url: 'https://www.amazon.fr/s', queryParam: 'k', placeholder: 'Rechercher sur Amazon...' }, 'default': { url: 'https://www.google.com/search', queryParam: 'q', placeholder: 'Rechercher sur Google...' } };
-        const searchForm = $('#search-form'), searchInput = $('#search-input');
-        
-        function updateSearchEngine() { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); const engine = prefix ? SEARCH_ENGINES[prefix] : SEARCH_ENGINES['default']; searchForm.action = engine.url; searchInput.name = engine.queryParam; if (searchInput.placeholder !== engine.placeholder) { searchInput.placeholder = engine.placeholder; } }
-        searchInput.addEventListener('input', updateSearchEngine);
-        searchForm.addEventListener('submit', (e) => { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); if (prefix) { searchInput.value = query.substring(prefix.length); } });
-        
-        // Raccourcis clavier
-        window.addEventListener("keydown", (e) => { 
-            const activeTag = document.activeElement.tagName.toLowerCase(), isInputFocused = activeTag === "input" || activeTag === "textarea"; 
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); } 
-            if (isInputFocused) return; 
-            if (e.key === "/") { e.preventDefault(); searchInput.focus(); } 
-            if (e.altKey && e.key.toLowerCase() === 'c') { e.preventDefault(); const input = $('.chat-panel:not([hidden]) .chat-form input'); if (input) input.focus(); } 
-        });
-    })();
+    // --- Bookmarks & Drag and Drop ---
+    function setupBookmarks() {
+      const container = $("#bookmarks-container");
+      container.innerHTML = "";
 
-    // --- Chat Logic ---
-    (function() {
-      let gptHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }], geminiHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }];
-      function addBubble(container, text, who) { const bubble = document.createElement('div'); bubble.className = `msg ${who}`; bubble.textContent = text; container.appendChild(bubble); container.scrollTop = container.scrollHeight; return bubble; }
+      // 1. Récupérer l'ordre sauvegardé
+      const savedOrder = JSON.parse(localStorage.getItem('bookmarksOrder'));
       
-      const tabs = $$('.chat-tab'), panels = $$('.chat-panel');
-      tabs.forEach(tab => { tab.addEventListener('click', () => { const targetId = tab.dataset.target; tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); panels.forEach(p => p.hidden = (p.id !== `chat-panel-${targetId}`)); }); });
-      
-      async function handleChatSubmit(e, history, messagesContainer, apiEndpoint) { 
-          e.preventDefault(); const form = e.target, input = form.querySelector('input'), prompt = input.value.trim(); 
-          if (!prompt) return; 
-          addBubble(messagesContainer, prompt, 'you'); history.push({ role: 'user', content: prompt }); input.value = ''; 
-          const botBubble = addBubble(messagesContainer, '…', 'bot'); botBubble.classList.add('pending'); 
-          try { 
-              const res = await fetch(apiEndpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ messages: history }) }); 
-              if (!res.ok) { const errText = await res.text(); throw new Error(JSON.parse(errText).error || errText); } 
-              const data = await res.json(); 
-              botBubble.textContent = data.text; history.push({ role: 'assistant', content: data.text }); 
-          } catch(err) { botBubble.textContent = `Erreur: ${err.message}`; } 
-          finally { botBubble.classList.remove('pending'); } 
+      let displayList = [];
+
+      if (savedOrder && savedOrder.length > 0) {
+        // Trier les favoris selon l'ordre sauvegardé
+        // Note: bookmarks est maintenant la variable locale définie ci-dessus
+        displayList = savedOrder.map(title => bookmarks.find(b => b.title === title)).filter(Boolean);
+        
+        // Ajouter les nouveaux favoris qui ne seraient pas dans le stockage (cas où tu ajoutes une cat dans le JS)
+        bookmarks.forEach(b => {
+            if (!savedOrder.includes(b.title)) {
+                displayList.push(b);
+            }
+        });
+      } else {
+        // Pas de sauvegarde, on utilise l'ordre par défaut
+        displayList = [...bookmarks];
       }
-      $('#gpt-form').addEventListener('submit', (e) => handleChatSubmit(e, gptHistory, $("#chat-panel-gpt .chat-messages"), '/api/chat'));
-      $('#gemini-form').addEventListener('submit', (e) => handleChatSubmit(e, geminiHistory, $("#chat-panel-gemini .chat-messages"), '/api/gemini'));
-    })();
-    
-    // --- Panneau de configuration ---
-    (function() {
-        const panel = $('#control-panel'), overlay = $('#overlay'); const toggleBtn = $('#settings-toggle-btn'), closeBtn = $('#panel-close-btn');
-        function openPanel() { panel.setAttribute('aria-hidden', 'false'); overlay.hidden = false; document.body.classList.add('panel-open'); }
-        function closePanel() { panel.setAttribute('aria-hidden', 'true'); overlay.hidden = true; document.body.classList.remove('panel-open'); }
-        toggleBtn.addEventListener('click', openPanel); closeBtn.addEventListener('click', closePanel); overlay.addEventListener('click', closePanel);
-        window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel(); });
+
+      // 2. Générer le HTML
+      displayList.forEach((group, index) => {
+        const div = document.createElement("div");
+        div.className = "bookmark-set";
+        // On ajoute un data-id pour identifier la catégorie lors du tri
+        div.setAttribute('data-id', group.title);
         
-        // Météo Localisation
-        const locationInput = $('#weather-location-input'), saveBtn = $('#weather-location-save'); locationInput.value = localStorage.getItem('weatherLocation') || '';
-        const saveLocation = () => { const newLocation = locationInput.value.trim(); if (newLocation) { localStorage.setItem('weatherLocation', newLocation); getWeather(); closePanel(); } };
-        saveBtn.addEventListener('click', saveLocation); locationInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLocation(); });
-        
-        // Paramètres Génériques
-        const root = document.documentElement; function applySetting(key, value, action) { localStorage.setItem(key, value); action(value); }
-        function setupSelector(selectorId, storageKey, action, defaultValue) { 
-            const selector = $(selectorId), buttons = selector.querySelectorAll('button'); 
-            const savedValue = localStorage.getItem(storageKey) || defaultValue; action(savedValue); 
-            buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue)); 
-            selector.addEventListener('click', (e) => { const target = e.target.closest('button'); if (target?.dataset.value) { applySetting(storageKey, target.dataset.value, action); buttons.forEach(b => b.classList.remove('active')); target.classList.add('active'); } }); 
+        // Ajout d'un petit délai d'animation (stagger)
+        div.style.animationDelay = `${index * 0.05}s`;
+
+        div.innerHTML = `
+          <h3>${group.title}</h3>
+          <div class="links-list">
+            ${group.links.map(l => `
+              <a href="${l.url}" target="_blank" class="link-item">
+                <img src="https://www.google.com/s2/favicons?domain=${new URL(l.url).hostname}&sz=32" alt="" loading="lazy"/>
+                <span>${l.name}</span>
+              </a>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      // 3. Activer SortableJS (Drag and Drop)
+      Sortable.create(container, {
+        animation: 150,
+        handle: 'h3', // On ne peut attraper que par le titre (meilleur UX pour sélectionner le texte en dessous)
+        ghostClass: 'sortable-ghost', // Classe CSS pendant le déplacement (voir styles.css)
+        dragClass: 'sortable-drag',   // Classe CSS de l'élément en mouvement
+        delay: 0, // Pas de délai sur desktop
+        delayOnTouchOnly: true, // Délai sur mobile pour ne pas gêner le scroll
+        onEnd: function (evt) {
+            saveOrder(); // Sauvegarde quand on lâche
         }
+      });
+    }
+
+    // Fonction pour sauvegarder l'ordre actuel dans le LocalStorage
+    function saveOrder() {
+        const order = [];
+        const items = document.querySelectorAll('#bookmarks-container .bookmark-set');
+        items.forEach(item => {
+            order.push(item.getAttribute('data-id'));
+        });
+        localStorage.setItem('bookmarksOrder', JSON.stringify(order));
+    }
+
+    // --- UI & Settings Logic ---
+    (function initSettings() {
+        const root = document.documentElement;
+        
+        // Panel Toggle
+        $("#settings-btn").onclick = () => $("#settings-panel").hidden = false;
+        $("#close-settings").onclick = () => $("#settings-panel").hidden = true;
+        
+        // Weather Details Toggle
+        $("#weather-widget").onclick = () => $("#weather-details").hidden = false;
+        $("#close-weather").onclick = () => $("#weather-details").hidden = true;
+        
+        // Reset
+        $("#reset-settings").onclick = () => {
+            localStorage.clear();
+            location.reload();
+        }
+
+        // Generic setting handler
+        const applySetting = (key, val, action) => {
+            localStorage.setItem(key, val);
+            action(val);
+        };
+
+        const setupSelector = (id, key, action, defaultVal) => {
+            const el = $(id);
+            const saved = localStorage.getItem(key) || defaultVal;
+            el.value = saved;
+            action(saved);
+            el.addEventListener('change', () => applySetting(key, el.value, action));
+        };
+
+        // Theme & Density
         setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
         
@@ -406,6 +428,7 @@
       getWeather();
       loadNews();
     });
+
   </script>
 </body>
 </html>
