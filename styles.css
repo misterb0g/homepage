@@ -218,8 +218,8 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
   border:0;
 }
 
-body:not(.edit-mode) .tile-handle{display:none;}
-
+body:not(.edit-mode) .tile-handle{opacity:0; pointer-events:none; transform: scale(.96); filter: blur(.2px);}
+body.edit-mode .tile-handle{opacity:1; pointer-events:auto; transform: scale(1); filter:none;}
 .tile-handle{
   display:inline-flex;
   align-items:center;
@@ -230,6 +230,7 @@ body:not(.edit-mode) .tile-handle{display:none;}
   border:1px solid color-mix(in srgb, var(--fg) 10%, transparent);
   background: color-mix(in srgb, var(--glass-bg) 75%, transparent);
   box-shadow: 0 6px 18px rgba(0,0,0,.10);
+  transition: opacity .18s ease, transform .18s ease, filter .18s ease;
   cursor: grab;
   user-select:none;
   -webkit-user-select:none;
