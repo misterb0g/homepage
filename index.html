@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles-rev.css" />
+  <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="/favicon.ico" sizes="any">
 
   <style>
@@ -91,16 +91,6 @@
               <button data-value="compact" title="Compact">Compact</button>
           </div>
       </div>
-
-      <div class="panel-section">
-          <label for="editmode-toggle">Mode “Édition”</label>
-          <label class="toggle-switch">
-              <input type="checkbox" id="editmode-toggle">
-              <span class="slider"></span>
-          </label>
-          <p class="help-text">Affiche les poignées de déplacement et active ⌥ + flèches. Zéro drag accidentel, promis juré.</p>
-      </div>
-
       <div class="panel-section">
           <label for="news-toggle">Afficher les actualités</label>
           <label class="toggle-switch">
@@ -117,11 +107,23 @@
       </div>
 
       <div class="panel-section">
-          <label>Ordre des tuiles</label>
-          <div class="input-group">
-              <button id="tiles-reset" class="btn-secondary" type="button">Réinitialiser l’ordre des tuiles</button>
-          </div>
-          <p class="help-text">Astuce : attrape l’icône “grip” sur une tuile et glisse-la. (Oui, c’est légal.)</p>
+          <label for="edit-mode-toggle">Mode édition</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="edit-mode-toggle">
+              <span class="slider"></span>
+          </label>
+          <p class="help-text">Quand c’est activé, les poignées apparaissent et tu peux réordonner les tuiles (sinon, zéro déplacement accidentel).</p>
+      </div>
+
+      <div class="panel-section">
+          <label for="tiles-reset-toggle">Rétablir l’ordre des tuiles</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="tiles-reset-toggle">
+              <span class="slider"></span>
+          </label>
+          <p class="help-text">Action ponctuelle : remet l’ordre par défaut, puis se coupe tout seul.</p>
+      </div>
+
       </div>
 
     </div>
@@ -139,11 +141,8 @@
     </section>
     <section id="weather-details" class="card glass weather-details" hidden></section>
     
-    <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
-        <button id="engine-btn" class="search-engine" type="button" aria-haspopup="true" aria-expanded="false" title="Choisir le moteur">G</button>
-        <div id="engine-menu" class="engine-menu glass" role="menu" aria-label="Moteurs de recherche">
-          <!-- Rempli en JS -->
-        </div>
+    <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET">
+        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59,4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
         <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
@@ -190,719 +189,7 @@
     </div>
   </div>
 
-  <script src="/bookmarks.js?v=1">
-
-    // --- Utilitaires ---
-    const $ = (sel, root = document) => root.querySelector(sel);
-    const $$ = (sel, root = document) => root.querySelectorAll(sel);
-    
-    function waitForGlobal(name, { interval = 80, timeout = 3000 } = {}) {
-      return new Promise((resolve, reject) => {
-        const start = Date.now();
-        const tick = () => {
-          const val = window[name];
-          if (typeof val !== "undefined") return resolve(val);
-          if (Date.now() - start > timeout) return reject(new Error(`${name} introuvable (timeout)`));
-          setTimeout(tick, interval);
-        };
-        tick();
-      });
-    }
-function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
-    function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
-
-    
-
-    // --- Ré-ordonnancement des tuiles (Drag & Drop style macOS) ---
-    const TILE_ORDER_KEY = "startpage_tile_order_v1";
-
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, (m) => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-      }[m]));
-    }
-
-    function loadTileOrder() {
-      try {
-        const raw = localStorage.getItem(TILE_ORDER_KEY);
-        return raw ? JSON.parse(raw) : null;
-      } catch { return null; }
-    }
-
-    function saveTileOrderFromDOM() {
-      const titles = Array.from($$("#bookmark-container .bookmark-set"))
-        .map(el => el.getAttribute("data-tile-title"))
-        .filter(Boolean);
-      try { localStorage.setItem(TILE_ORDER_KEY, JSON.stringify(titles)); } catch {}
-    }
-
-    function resetTileOrder() {
-      try { localStorage.removeItem(TILE_ORDER_KEY); } catch {}
-    }
-
-    function initTileDnD() {
-      const container = $("#bookmark-container");
-      if (!container) return;
-
-      // Nettoyage (si re-render)
-      $$(".bookmark-set", container).forEach(tile => {
-        tile.classList.remove("tile-dragging", "tile-peek");
-        tile.style.removeProperty("--drag-x");
-        tile.style.removeProperty("--drag-y");
-      });
-
-      let active = null; // {tile, placeholder, startX, startY, offsetX, offsetY, pointerId, lastX, lastY}
-      let raf = null;
-
-      const tiles = () => Array.from($$(".bookmark-set", container));
-      const isHandle = (el) => el && (el.classList?.contains("tile-handle") || el.closest?.(".tile-handle"));
-
-      function makePlaceholder(fromTile) {
-        const ph = document.createElement("section");
-        ph.className = "bookmark-set card glass tile-placeholder";
-        const r = fromTile.getBoundingClientRect();
-        ph.style.width = r.width + "px";
-        ph.style.height = r.height + "px";
-        ph.innerHTML = `<div class="tile-placeholder-inner"></div>`;
-        return ph;
-      }
-
-      function setDraggingStyles(tile, x, y) {
-        tile.style.setProperty("--drag-x", `${x}px`);
-        tile.style.setProperty("--drag-y", `${y}px`);
-      }
-
-      function getInsertionIndex(x, y, draggingTile) {
-        const others = tiles().filter(t => t !== draggingTile && !t.classList.contains("tile-placeholder"));
-        if (!others.length) return 0;
-
-        // On cherche l’élément le plus proche (centre)
-        let best = { idx: others.length, dist: Infinity, before: null };
-        others.forEach((t, i) => {
-          const r = t.getBoundingClientRect();
-          const cx = r.left + r.width / 2;
-          const cy = r.top + r.height / 2;
-          const d = (cx - x) ** 2 + (cy - y) ** 2;
-          if (d < best.dist) best = { idx: i, dist: d, before: t };
-        });
-
-        if (!best.before) return others.length;
-
-        // Décide avant/après selon la position relative (plus stable en flex-wrap)
-        const r = best.before.getBoundingClientRect();
-        const before = (y < r.top + r.height / 2) || (x < r.left + r.width / 2);
-        return before ? others.indexOf(best.before) : others.indexOf(best.before) + 1;
-      }
-
-      function placePlaceholderAt(index, draggingTile) {
-        const ph = active?.placeholder;
-        if (!ph) return;
-
-        const current = tiles().filter(t => t !== draggingTile && t !== ph);
-        const clamped = Math.max(0, Math.min(index, current.length));
-
-        // Insère au bon endroit
-        if (clamped >= current.length) {
-          container.appendChild(ph);
-        } else {
-          container.insertBefore(ph, current[clamped]);
-        }
-      }
-
-      function onPointerMove(e) {
-        if (!active) return;
-        active.lastX = e.clientX;
-        active.lastY = e.clientY;
-
-        if (!raf) {
-          raf = requestAnimationFrame(() => {
-            raf = null;
-            const { tile, startX, startY, offsetX, offsetY, lastX, lastY } = active;
-            const dx = lastX - startX - offsetX;
-            const dy = lastY - startY - offsetY;
-            setDraggingStyles(tile, dx, dy);
-
-            const idx = getInsertionIndex(lastX, lastY, tile);
-            placePlaceholderAt(idx, tile);
-
-            // Petit "peek" sur la tuile sous le curseur (effet macOS-ish)
-            tiles().forEach(t => t.classList.toggle("tile-peek", t !== tile && t !== active.placeholder && t.getBoundingClientRect().left < lastX && t.getBoundingClientRect().right > lastX && t.getBoundingClientRect().top < lastY && t.getBoundingClientRect().bottom > lastY));
-          });
-        }
-      }
-
-      function endDrag(commit = true) {
-        if (!active) return;
-
-        const { tile, placeholder, pointerId } = active;
-
-        try { tile.releasePointerCapture(pointerId); } catch {}
-        document.removeEventListener("pointermove", onPointerMove, { passive: true });
-        document.removeEventListener("pointerup", onPointerUp, { passive: true });
-
-        // Replace tile at placeholder position
-        tile.classList.add("tile-dropping");
-        tile.classList.remove("tile-dragging");
-        tile.style.pointerEvents = "";
-
-        const phRect = placeholder.getBoundingClientRect();
-        const tRect = tile.getBoundingClientRect();
-        // Ajuste l’animation de "snap"
-        const snapX = (phRect.left - tRect.left);
-        const snapY = (phRect.top - tRect.top);
-        setDraggingStyles(tile, parseFloat(tile.style.getPropertyValue("--drag-x") || 0) + snapX, parseFloat(tile.style.getPropertyValue("--drag-y") || 0) + snapY);
-
-        // Après un tick, on remet le tile dans le flux
-        requestAnimationFrame(() => {
-          placeholder.replaceWith(tile);
-          // reset transform vars
-          tile.style.removeProperty("--drag-x");
-          tile.style.removeProperty("--drag-y");
-          tile.classList.remove("tile-dropping");
-          tiles().forEach(t => t.classList.remove("tile-peek"));
-          if (commit) saveTileOrderFromDOM();
-        });
-
-        active = null;
-      }
-
-      function onPointerUp() { endDrag(true); }
-
-      container.addEventListener("pointerdown", (e) => {
-        const target = e.target;
-        if (!document.body.classList.contains("edit-mode")) return;
-        if (!isHandle(target)) return;
-
-        const tile = target.closest(".bookmark-set");
-        if (!tile) return;
-
-        // Empêche sélection / click
-        e.preventDefault();
-
-        const r = tile.getBoundingClientRect();
-        const ph = makePlaceholder(tile);
-
-        // Position initiale
-        const startX = e.clientX;
-        const startY = e.clientY;
-        const offsetX = startX - r.left;
-        const offsetY = startY - r.top;
-
-        // Placeholders + style
-        tile.classList.add("tile-dragging");
-        tile.style.pointerEvents = "none"; // évite hover/click pendant le drag
-        setDraggingStyles(tile, 0, 0);
-
-        tile.after(ph);
-
-        active = {
-          tile,
-          placeholder: ph,
-          startX, startY,
-          offsetX, offsetY,
-          pointerId: e.pointerId,
-          lastX: startX,
-          lastY: startY,
-        };
-
-        // Fixe la largeur pour éviter les "reflow surprises"
-        tile.style.width = r.width + "px";
-        tile.style.height = r.height + "px";
-
-        tile.setPointerCapture(e.pointerId);
-        document.addEventListener("pointermove", onPointerMove, { passive: true });
-        document.addEventListener("pointerup", onPointerUp, { passive: true });
-      });
-
-      // Bouton reset (si présent)
-      const resetBtn = $("#tiles-reset");
-      if (resetBtn && !resetBtn.dataset.bound) {
-        resetBtn.dataset.bound = "1";
-        resetBtn.addEventListener("click", () => {
-          resetTileOrder();
-          waitForGlobal('bookmarks', {timeout: 5000}).then(() => { setupBookmarks(); applyCollapsedStates(); }).catch(() => { /* bookmarks.js absent */ });
-        });
-      }
-    }
-
-// --- Météo ---
-    async function getWeather() {
-        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-        const weatherEl = $('#weather');
-        weatherEl.innerHTML = `<div class="skeleton skeleton-text"></div>`;
-        try {
-            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-            if (!geoRes.ok) throw new Error('Erreur Geocoding');
-            const geoData = await geoRes.json();
-            if (!geoData.results || geoData.results.length === 0) throw new Error(`Ville '${locationName}' non trouvée`);
-            
-            const { latitude, longitude, name } = geoData.results[0];
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto&forecast_days=1`);
-            if (!weatherRes.ok) throw new Error('Erreur Météo');
-            
-            const data = await weatherRes.json();
-            let t = data?.current?.temperature_2m, wcode = data?.current?.weather_code;
-            
-            weatherEl.innerHTML = `<div class="row"><div id="weather-location" class="inline">${name}</div><div class="inline">•</div><div class="inline">${weatherCodeToFr(wcode)}</div><div class="inline">•</div><div class="inline">${Math.round(t)} °C</div></div>`;
-        } catch (err) { console.error("Météo:", err); weatherEl.innerHTML = `<div class="inline">${err.message}</div>`; }
-    }
-    function weatherCodeToFr(code) { const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"}; return map[code] ?? "Météo"; }
-    
-    // --- Météo détaillée (5 jours) ---
-    (function () {
-      const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
-      const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
-
-      async function getWeather5dCached() {
-        try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data, location } = JSON.parse(raw); const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels'; if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data; } } catch {}
-        
-        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-        const geoData = await geoRes.json();
-        const { latitude, longitude } = geoData.results[0];
-        
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
-        const data = await weatherRes.json();
-        try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data, location: locationName })); } catch {}
-        return data;
-      }
-
-      function renderWeather5d(data) { 
-        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); 
-        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); 
-        details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div><div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`; 
-      }
-
-      async function toggleDetails() { 
-        const isHidden = details.hasAttribute("hidden"); 
-        if (isHidden && !loaded) { 
-            try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } 
-            catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } 
-        } 
-        details.toggleAttribute("hidden"); weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden"))); 
-      }
-      weatherCard.addEventListener("click", toggleDetails);
-      weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
-    })();
-
-    // --- Favoris ---
-    function setupBookmarks() {
-      // Supporte plusieurs conventions de nommage (au cas où)
-      const data = (typeof bookmarksRef !== 'undefined') ? bookmarksRef
-                : (typeof BOOKMARKS !== 'undefined') ? BOOKMARKS
-                : (window && (window.bookmarksRef || window.BOOKMARKS || window.favorites || window.FAVORITES))
-                ? (window.bookmarksRef || window.BOOKMARKS || window.favorites || window.FAVORITES)
-                : undefined;
-
-      if (!data || !Array.isArray(data)) {
-        const el = $("#bookmark-container");
-        if (el) {
-          el.innerHTML = `
-            <section class="bookmark-set card glass empty-state">
-              <div class="bookmark-header">
-                <div class="bookmark-title">Favoris indisponibles</div>
-              </div>
-              <div class="bookmark-inner-container">
-                <div class="empty-note">
-                  Je ne trouve pas <code>bookmarksRef</code> côté navigateur. Vérifie que <code>/bookmarksRef.js</code> est bien servi (404 = tuiles fantômes).
-                </div>
-              </div>
-            </section>
-          `;
-        }
-        return;
-      }
-
-      const bookmarksRef = data;
-
-      // Tri A→Z des liens dans chaque tuile
-      bookmarksRef.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
-(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
-
-      // Applique l’ordre mémorisé (si présent)
-      const order = loadTileOrder();
-      if (order && order.length) {
-        const byTitle = new Map(bookmarksRef.map(b => [b.title, b]));
-        const ordered = [];
-        order.forEach(t => { if (byTitle.has(t)) ordered.push(byTitle.get(t)); });
-        // Ajoute ce qui n’est pas encore dans l’ordre (nouvelles tuiles)
-        bookmarksRef.forEach(b => { if (!order.includes(b.title)) ordered.push(b); });
-        // Remplace en place (pour éviter de casser les refs ailleurs)
-        bookmarksRef.length = 0;
-        ordered.forEach(b => bookmarksRef.push(b));
-      }
-
-      const el = $("#bookmark-container");
-      el.innerHTML = bookmarksRef.map((b, index) => `
-        <section tabindex="0" class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
-          <div class="bookmark-header">
-            <div class="bookmark-title">${escapeHtml(b.title)}</div>
-            <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 5.5A1.5 1.5 0 1 1 7.5 4 1.5 1.5 0 0 1 9 5.5Zm0 6A1.5 1.5 0 1 1 7.5 10 1.5 1.5 0 0 1 9 11.5Zm0 6A1.5 1.5 0 1 1 7.5 16 1.5 1.5 0 0 1 9 17.5ZM16.5 7A1.5 1.5 0 1 1 18 5.5 1.5 1.5 0 0 1 16.5 7Zm0 6A1.5 1.5 0 1 1 18 11.5 1.5 1.5 0 0 1 16.5 13Zm0 6A1.5 1.5 0 1 1 18 17.5 1.5 1.5 0 0 1 16.5 19Z"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="bookmark-inner-container">
-            ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.name)}</a>`).join("")}
-          </div>
-        </section>`).join("");
-
-      initTileDnD();
-    }
-
-    // --- NEWS: Fonction générique pour charger un flux ---
-    async function fetchAndRenderNews(apiUrl, listId) {
-        const list = $(listId);
-        try {
-            const res = await fetch(apiUrl);
-            if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
-            
-            const xmlText = await res.text();
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-            
-            // Récupération et tri des items (plus récent en haut)
-            let items = Array.from(xmlDoc.querySelectorAll("item"));
-            items.sort((a, b) => {
-                const dateA = new Date(a.querySelector("pubDate")?.textContent);
-                const dateB = new Date(b.querySelector("pubDate")?.textContent);
-                return dateB - dateA; // Décroissant
-            });
-
-            // On garde les 5 premiers pour chaque colonne
-            items = items.slice(0, 5);
-
-            if (items.length > 0) {
-                list.innerHTML = items.map(item => {
-                    const title = item.querySelector("title")?.textContent || "Sans titre";
-                    const link = item.querySelector("link")?.textContent || "#";
-                    const pubDateRaw = item.querySelector("pubDate")?.textContent;
-                    
-                    let dateStr = "";
-                    if (pubDateRaw) {
-                        dateStr = new Date(pubDateRaw).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
-                    }
-
-                    return `
-                    <a href="${link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
-                        <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; line-height: 1.4;">${title}</div>
-                            <div style="font-size: 0.75rem; color: var(--secondaryFg); text-align: right;">${dateStr}</div>
-                        </article>
-                    </a>`;
-                }).join('');
-            } else {
-                list.innerHTML = `<div style="font-size:0.8rem; opacity:0.7">Aucun article.</div>`;
-            }
-        } catch (e) {
-            console.error(`Erreur chargement news (${apiUrl}):`, e);
-            list.innerHTML = `<div style="font-size:0.8rem; color:var(--errorFg)">Erreur chargement.</div>`;
-        }
-    }
-
-    // --- Chargement global des news ---
-    async function loadNews() {
-        const container = $('#news-container');
-        
-        // On lance les deux requêtes en parallèle pour la rapidité
-        await Promise.all([
-            fetchAndRenderNews('/api/news', '#macg-list'),    // MacGeneration
-            fetchAndRenderNews('/api/lesoir', '#lesoir-list') // Le Soir
-        ]);
-        
-        // Affichage du bloc si l'option est activée
-        if (localStorage.getItem('showNews') !== 'false') {
-            container.style.display = 'block';
-        }
-    }
-
-    // --- Barre de recherche intelligente ---
-    (function() {
-        const SEARCH_ENGINES = { 'y ': { url: 'https://www.youtube.com/results', queryParam: 'search_query', placeholder: 'Rechercher sur YouTube...' }, 'w ': { url: 'https://fr.wikipedia.org/w/index.php', queryParam: 'search', placeholder: 'Rechercher sur Wikipédia...' }, 'a ': { url: 'https://www.amazon.fr/s', queryParam: 'k', placeholder: 'Rechercher sur Amazon...' }, 'default': { url: 'https://www.google.com/search', queryParam: 'q', placeholder: 'Rechercher sur Google...' } };
-        const searchForm = $('#search-form'), searchInput = $('#search-input');
-        
-        function updateSearchEngine() { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); const engine = prefix ? SEARCH_ENGINES[prefix] : SEARCH_ENGINES['default']; searchForm.action = engine.url; searchInput.name = engine.queryParam; if (searchInput.placeholder !== engine.placeholder) { searchInput.placeholder = engine.placeholder; } }
-        searchInput.addEventListener('input', updateSearchEngine);
-        searchForm.addEventListener('submit', (e) => { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); if (prefix) { searchInput.value = query.substring(prefix.length); } });
-        
-        // Raccourcis clavier
-        window.addEventListener("keydown", (e) => { 
-            const activeTag = document.activeElement.tagName.toLowerCase(), isInputFocused = activeTag === "input" || activeTag === "textarea"; 
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); } 
-            if (isInputFocused) return; 
-            if (e.key === "/") { e.preventDefault(); searchInput.focus(); } 
-            if (e.altKey && e.key.toLowerCase() === 'c') { e.preventDefault(); const input = $('.chat-panel:not([hidden]) .chat-form input'); if (input) input.focus(); } 
-        });
-    })();
-
-    // --- Chat Logic ---
-    (function() {
-      let gptHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }], geminiHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }];
-      function addBubble(container, text, who) { const bubble = document.createElement('div'); bubble.className = `msg ${who}`; bubble.textContent = text; container.appendChild(bubble); container.scrollTop = container.scrollHeight; return bubble; }
-      
-      const tabs = $$('.chat-tab'), panels = $$('.chat-panel');
-      tabs.forEach(tab => { tab.addEventListener('click', () => { const targetId = tab.dataset.target; tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); panels.forEach(p => p.hidden = (p.id !== `chat-panel-${targetId}`)); }); });
-      
-      async function handleChatSubmit(e, history, messagesContainer, apiEndpoint) { 
-          e.preventDefault(); const form = e.target, input = form.querySelector('input'), prompt = input.value.trim(); 
-          if (!prompt) return; 
-          addBubble(messagesContainer, prompt, 'you'); history.push({ role: 'user', content: prompt }); input.value = ''; 
-          const botBubble = addBubble(messagesContainer, '…', 'bot'); botBubble.classList.add('pending'); 
-          try { 
-              const res = await fetch(apiEndpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ messages: history }) }); 
-              if (!res.ok) { const errText = await res.text(); throw new Error(JSON.parse(errText).error || errText); } 
-              const data = await res.json(); 
-              botBubble.textContent = data.text; history.push({ role: 'assistant', content: data.text }); 
-          } catch(err) { botBubble.textContent = `Erreur: ${err.message}`; } 
-          finally { botBubble.classList.remove('pending'); } 
-      }
-      $('#gpt-form').addEventListener('submit', (e) => handleChatSubmit(e, gptHistory, $("#chat-panel-gpt .chat-messages"), '/api/chat'));
-      $('#gemini-form').addEventListener('submit', (e) => handleChatSubmit(e, geminiHistory, $("#chat-panel-gemini .chat-messages"), '/api/gemini'));
-    })();
-    
-    // --- Panneau de configuration ---
-    (function() {
-        const panel = $('#control-panel'), overlay = $('#overlay'); const toggleBtn = $('#settings-toggle-btn'), closeBtn = $('#panel-close-btn');
-        function openPanel() { panel.setAttribute('aria-hidden', 'false'); overlay.hidden = false; document.body.classList.add('panel-open'); }
-        function closePanel() { panel.setAttribute('aria-hidden', 'true'); overlay.hidden = true; document.body.classList.remove('panel-open'); }
-        toggleBtn.addEventListener('click', openPanel); closeBtn.addEventListener('click', closePanel); overlay.addEventListener('click', closePanel);
-        window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel(); });
-        
-        // Météo Localisation
-        const locationInput = $('#weather-location-input'), saveBtn = $('#weather-location-save'); locationInput.value = localStorage.getItem('weatherLocation') || '';
-        const saveLocation = () => { const newLocation = locationInput.value.trim(); if (newLocation) { localStorage.setItem('weatherLocation', newLocation); getWeather(); closePanel(); } };
-        saveBtn.addEventListener('click', saveLocation); locationInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLocation(); });
-        
-        // Paramètres Génériques
-        const root = document.documentElement; function applySetting(key, value, action) { localStorage.setItem(key, value); action(value); }
-        function setupSelector(selectorId, storageKey, action, defaultValue) { 
-            const selector = $(selectorId), buttons = selector.querySelectorAll('button'); 
-            const savedValue = localStorage.getItem(storageKey) || defaultValue; action(savedValue); 
-            buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue)); 
-            selector.addEventListener('click', (e) => { const target = e.target.closest('button'); if (target?.dataset.value) { applySetting(storageKey, target.dataset.value, action); buttons.forEach(b => b.classList.remove('active')); target.classList.add('active'); } }); 
-        }
-        setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
-
-        // Toggle Mode Édition (poignées + ⌥ flèches)
-        const editToggle = $('#editmode-toggle');
-        const editMode = localStorage.getItem('editMode') === 'true';
-        if (editToggle) {
-          editToggle.checked = editMode;
-          document.body.classList.toggle('edit-mode', editMode);
-          editToggle.addEventListener('change', () => {
-            applySetting('editMode', editToggle.checked, (val) => document.body.classList.toggle('edit-mode', !!val));
-          });
-        }
-
-        
-        // Toggle News
-        const newsToggle = $('#news-toggle');
-        const showNews = localStorage.getItem('showNews') !== 'false';
-        newsToggle.checked = showNews;
-        document.body.classList.toggle('news-hidden', !showNews);
-        newsToggle.addEventListener('change', () => { 
-            applySetting('showNews', newsToggle.checked, (val) => document.body.classList.toggle('news-hidden', !val)); 
-        });
-
-        // Toggle Chat
-        const chatToggle = $('#chat-toggle'); const showChat = localStorage.getItem('showChat') !== 'false'; chatToggle.checked = showChat; document.body.classList.toggle('chat-hidden', !showChat);
-        chatToggle.addEventListener('change', () => { applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val)); });
-    })();
-
-    
-    // --- Favoris : pliage des groupes (clic titre) + réorg clavier (⌥/Alt + flèches) ---
-    const COLLAPSE_KEY = "tileCollapsed:";
-    function isEditMode() { return document.body.classList.contains("edit-mode"); }
-
-    function applyCollapsedStates() {
-      $$("#bookmark-container .bookmark-set").forEach(tile => {
-        const title = tile.getAttribute("data-tile-title") || "";
-        const collapsed = localStorage.getItem(COLLAPSE_KEY + title) === "1";
-        tile.classList.toggle("is-collapsed", collapsed);
-      });
-    }
-
-    function persistCollapsed(title, collapsed) {
-      localStorage.setItem(COLLAPSE_KEY + title, collapsed ? "1" : "0");
-    }
-
-    function bounce(tile) {
-      if (!tile) return;
-      tile.classList.remove("drop-bounce");
-      // Force reflow
-      void tile.offsetWidth;
-      tile.classList.add("drop-bounce");
-      setTimeout(() => tile.classList.remove("drop-bounce"), 220);
-    }
-
-    function moveTargetByDirection(activeTile, dir) {
-      const tiles = Array.from($$("#bookmark-container .bookmark-set"));
-      if (!tiles.length) return null;
-
-      const a = activeTile.getBoundingClientRect();
-      const ax = a.left + a.width / 2;
-      const ay = a.top + a.height / 2;
-
-      const v = ({left:[-1,0], right:[1,0], up:[0,-1], down:[0,1]})[dir];
-      if (!v) return null;
-
-      let best = null;
-      let bestScore = Infinity;
-
-      for (const t of tiles) {
-        if (t === activeTile) continue;
-        const r = t.getBoundingClientRect();
-        const tx = r.left + r.width / 2;
-        const ty = r.top + r.height / 2;
-        const dx = tx - ax;
-        const dy = ty - ay;
-
-        // Doit être "dans" la direction
-        if (dir === "left" && dx >= -4) continue;
-        if (dir === "right" && dx <= 4) continue;
-        if (dir === "up" && dy >= -4) continue;
-        if (dir === "down" && dy <= 4) continue;
-
-        const dist = Math.hypot(dx, dy);
-        // Pénalise les diagonales hors axe
-        const offAxis = dir === "left" || dir === "right" ? Math.abs(dy) : Math.abs(dx);
-        const score = dist + offAxis * 0.35;
-
-        if (score < bestScore) { bestScore = score; best = t; }
-      }
-      return best;
-    }
-
-    function swapTiles(tileA, tileB) {
-      const container = $("#bookmark-container");
-      const tiles = Array.from(container.children);
-      const aIndex = tiles.indexOf(tileA);
-      const bIndex = tiles.indexOf(tileB);
-      if (aIndex === -1 || bIndex === -1) return;
-
-      if (aIndex < bIndex) container.insertBefore(tileB, tileA);
-      else container.insertBefore(tileA, tileB);
-
-      // Persiste l’ordre
-      const newOrder = Array.from(container.querySelectorAll(".bookmark-set")).map(t => t.getAttribute("data-tile-title"));
-      saveTileOrder(newOrder);
-
-      bounce(tileA);
-      tileA.focus({ preventScroll: true });
-    }
-
-    // Gestion déléguée (supporte le re-render)
-    $("#bookmark-container")?.addEventListener("click", (e) => {
-      const titleEl = e.target.closest(".bookmark-title");
-      if (!titleEl) return;
-      const tile = e.target.closest(".bookmark-set");
-      if (!tile) return;
-      const title = tile.getAttribute("data-tile-title") || "";
-      const next = !tile.classList.contains("is-collapsed");
-      tile.classList.toggle("is-collapsed", next);
-      persistCollapsed(title, next);
-    });
-
-    // Réorg clavier (mode édition uniquement)
-    document.addEventListener("keydown", (e) => {
-      if (!(e.altKey || e.metaKey && e.key === "Alt")) { /* noop */ }
-      if (!isEditMode()) return;
-      const active = document.activeElement;
-      if (!active || !active.classList || !active.classList.contains("bookmark-set")) return;
-
-      let dir = null;
-      if (e.altKey && e.key === "ArrowLeft") dir = "left";
-      if (e.altKey && e.key === "ArrowRight") dir = "right";
-      if (e.altKey && e.key === "ArrowUp") dir = "up";
-      if (e.altKey && e.key === "ArrowDown") dir = "down";
-      if (!dir) return;
-
-      e.preventDefault();
-      const target = moveTargetByDirection(active, dir);
-      if (target) swapTiles(active, target);
-    });
-
-    // --- Recherche : menu de moteurs (clic sur le “G”) ---
-    (function() {
-      const btn = $("#engine-btn");
-      const menu = $("#engine-menu");
-      const form = $("#search-form");
-      const input = $("#search-input");
-      if (!btn || !menu || !form || !input) return;
-
-      // On réutilise la table existante (prefixes) + on expose quelques moteurs en menu.
-      const MENU_ENGINES = [
-        { key: "default", label: "Google", hint: "↵" },
-        { key: "d ", label: "DuckDuckGo", hint: "d + espace" },
-        { key: "b ", label: "Bing", hint: "b + espace" },
-        { key: "y ", label: "YouTube", hint: "y + espace" },
-        { key: "w ", label: "Wikipedia", hint: "w + espace" },
-        { key: "a ", label: "Amazon", hint: "a + espace" },
-      ].filter(x => SEARCH_ENGINES[x.key]);
-
-      function setEngine(key) {
-        const engine = SEARCH_ENGINES[key] || SEARCH_ENGINES["default"];
-        localStorage.setItem("searchEngineKey", key);
-        form.setAttribute("action", engine.url);
-        btn.textContent = (engine.badge || (engine.label || "G")).slice(0, 2).toUpperCase();
-        input.placeholder = engine.placeholder || "Rechercher…";
-      }
-
-      function renderMenu() {
-        const current = localStorage.getItem("searchEngineKey") || "default";
-        menu.innerHTML = MENU_ENGINES.map(e => {
-          const isActive = e.key === current;
-          return `<button type="button" class="engine-item" role="menuitem" data-key="${e.key}">
-            <span>${e.label}${isActive ? " ✓" : ""}</span>
-            <span class="hint">${e.hint || ""}</span>
-          </button>`;
-        }).join("");
-      }
-
-      function openMenu() {
-        renderMenu();
-        menu.classList.add("open");
-        btn.setAttribute("aria-expanded", "true");
-      }
-      function closeMenu() {
-        menu.classList.remove("open");
-        btn.setAttribute("aria-expanded", "false");
-      }
-      function toggleMenu() {
-        menu.classList.contains("open") ? closeMenu() : openMenu();
-      }
-
-      btn.addEventListener("click", toggleMenu);
-      menu.addEventListener("click", (e) => {
-        const item = e.target.closest(".engine-item");
-        if (!item) return;
-        setEngine(item.dataset.key);
-        closeMenu();
-        input.focus();
-      });
-      document.addEventListener("click", (e) => {
-        if (e.target === btn) return;
-        if (menu.contains(e.target)) return;
-        closeMenu();
-      });
-      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenu(); });
-
-      // Init
-      setEngine(localStorage.getItem("searchEngineKey") || "default");
-    })();
-
-// --- Init ---
-    window.addEventListener("load", () => {
-      updateGreeting(); $("#clock").textContent = getTime();
-      setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
-      waitForGlobal('bookmarks', {timeout: 5000}).then(() => { setupBookmarks(); applyCollapsedStates(); }).catch(() => { /* bookmarks.js absent */ }); 
-      getWeather();
-      loadNews();
-    });
-  
-</script>
+  <script src="bookmarks.js"></script>
   <script>
 
     // --- Utilitaires ---
@@ -951,7 +238,7 @@ function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); 
         tile.style.removeProperty("--drag-y");
       });
 
-      let active = null; // {tile, placeholder, startX, startY, offsetX, offsetY, pointerId, lastX, lastY}
+      let active = null; // {tile, placeholder, startX, startY, offsetX, offsetY, pointerId, lastX, lastY, baseLeft, baseTop}
       let raf = null;
 
       const tiles = () => Array.from($$(".bookmark-set", container));
@@ -1055,9 +342,17 @@ function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); 
         // Après un tick, on remet le tile dans le flux
         requestAnimationFrame(() => {
           placeholder.replaceWith(tile);
+          tile.classList.add("tile-bounce");
+          setTimeout(() => tile.classList.remove("tile-bounce"), 180);
           // reset transform vars
           tile.style.removeProperty("--drag-x");
           tile.style.removeProperty("--drag-y");
+          // remet l’élément dans le flux normal
+          tile.style.position = "";
+          tile.style.left = "";
+          tile.style.top = "";
+          tile.style.width = "";
+          tile.style.height = "";
           tile.classList.remove("tile-dropping");
           tiles().forEach(t => t.classList.remove("tile-peek"));
           if (commit) saveTileOrderFromDOM();
@@ -1069,8 +364,8 @@ function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); 
       function onPointerUp() { endDrag(true); }
 
       container.addEventListener("pointerdown", (e) => {
-        const target = e.target;
         if (!document.body.classList.contains("edit-mode")) return;
+        const target = e.target;
         if (!isHandle(target)) return;
 
         const tile = target.closest(".bookmark-set");
@@ -1093,7 +388,18 @@ function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); 
         tile.style.pointerEvents = "none"; // évite hover/click pendant le drag
         setDraggingStyles(tile, 0, 0);
 
-        tile.after(ph);
+        // Remplace la tuile par un placeholder (évite le « double espace » en flex-wrap)
+        tile.replaceWith(ph);
+
+        // La tuile devient un élément flottant (plus “macOS-like”)
+        tile.style.position = "fixed";
+        tile.style.left = `${r.left}px`;
+        tile.style.top = `${r.top}px`;
+        tile.style.width = `${r.width}px`;
+        tile.style.height = `${r.height}px`;
+        tile.style.margin = "0";
+        tile.style.zIndex = "9999";
+        document.body.appendChild(tile);
 
         active = {
           tile,
@@ -1105,24 +411,13 @@ function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); 
           lastY: startY,
         };
 
-        // Fixe la largeur pour éviter les "reflow surprises"
-        tile.style.width = r.width + "px";
-        tile.style.height = r.height + "px";
 
         tile.setPointerCapture(e.pointerId);
         document.addEventListener("pointermove", onPointerMove, { passive: true });
         document.addEventListener("pointerup", onPointerUp, { passive: true });
       });
 
-      // Bouton reset (si présent)
-      const resetBtn = $("#tiles-reset");
-      if (resetBtn && !resetBtn.dataset.bound) {
-        resetBtn.dataset.bound = "1";
-        resetBtn.addEventListener("click", () => {
-          resetTileOrder();
-          setupBookmarks();
-        });
-      }
+      // Le reset est géré via le panneau de paramètres (toggle)
     }
 
 // --- Météo ---
@@ -1187,53 +482,26 @@ function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); 
 
     // --- Favoris ---
     function setupBookmarks() {
-      // Supporte plusieurs conventions de nommage (au cas où)
-      const data = (typeof bookmarksRef !== 'undefined') ? bookmarksRef
-                : (typeof BOOKMARKS !== 'undefined') ? BOOKMARKS
-                : (window && (window.bookmarksRef || window.BOOKMARKS || window.favorites || window.FAVORITES))
-                ? (window.bookmarksRef || window.BOOKMARKS || window.favorites || window.FAVORITES)
-                : undefined;
-
-      if (!data || !Array.isArray(data)) {
-        const el = $("#bookmark-container");
-        if (el) {
-          el.innerHTML = `
-            <section class="bookmark-set card glass empty-state">
-              <div class="bookmark-header">
-                <div class="bookmark-title">Favoris indisponibles</div>
-              </div>
-              <div class="bookmark-inner-container">
-                <div class="empty-note">
-                  Je ne trouve pas <code>bookmarksRef</code> côté navigateur. Vérifie que <code>/bookmarksRef.js</code> est bien servi (404 = tuiles fantômes).
-                </div>
-              </div>
-            </section>
-          `;
-        }
-        return;
-      }
-
-      const bookmarksRef = data;
+      if (typeof bookmarks === 'undefined') return;
 
       // Tri A→Z des liens dans chaque tuile
-      bookmarksRef.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
-(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
+      bookmarks.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
 
       // Applique l’ordre mémorisé (si présent)
       const order = loadTileOrder();
       if (order && order.length) {
-        const byTitle = new Map(bookmarksRef.map(b => [b.title, b]));
+        const byTitle = new Map(bookmarks.map(b => [b.title, b]));
         const ordered = [];
         order.forEach(t => { if (byTitle.has(t)) ordered.push(byTitle.get(t)); });
         // Ajoute ce qui n’est pas encore dans l’ordre (nouvelles tuiles)
-        bookmarksRef.forEach(b => { if (!order.includes(b.title)) ordered.push(b); });
+        bookmarks.forEach(b => { if (!order.includes(b.title)) ordered.push(b); });
         // Remplace en place (pour éviter de casser les refs ailleurs)
-        bookmarksRef.length = 0;
-        ordered.forEach(b => bookmarksRef.push(b));
+        bookmarks.length = 0;
+        ordered.forEach(b => bookmarks.push(b));
       }
 
       const el = $("#bookmark-container");
-      el.innerHTML = bookmarksRef.map((b, index) => `
+      el.innerHTML = bookmarks.map((b, index) => `
         <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
           <div class="bookmark-header">
             <div class="bookmark-title">${escapeHtml(b.title)}</div>
@@ -1385,17 +653,38 @@ function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); 
         setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
 
-        // Toggle Mode Édition (poignées + ⌥ flèches)
-        const editToggle = $('#editmode-toggle');
-        const editMode = localStorage.getItem('editMode') === 'true';
-        if (editToggle) {
-          editToggle.checked = editMode;
-          document.body.classList.toggle('edit-mode', editMode);
-          editToggle.addEventListener('change', () => {
-            applySetting('editMode', editToggle.checked, (val) => document.body.classList.toggle('edit-mode', !!val));
-          });
+
+        // Mode édition (affiche/masque les poignées de drag, et bloque tout déplacement hors édition)
+        const EDIT_MODE_KEY = "startpage_edit_mode_v1";
+        function applyEditMode(on) {
+          document.body.classList.toggle("edit-mode", !!on);
+          try { localStorage.setItem(EDIT_MODE_KEY, on ? "1" : "0"); } catch {}
+        }
+        const editModeToggle = $('#edit-mode-toggle');
+        if (editModeToggle) {
+          const saved = (() => { try { return localStorage.getItem(EDIT_MODE_KEY); } catch { return null; } })();
+          const initial = saved === "1";
+          editModeToggle.checked = initial;
+          applyEditMode(initial);
+          editModeToggle.addEventListener('change', () => applyEditMode(editModeToggle.checked));
+        } else {
+          applyEditMode(false);
         }
 
+        // Action : rétablir l’ordre des tuiles
+        const tilesResetToggle = $('#tiles-reset-toggle');
+        if (tilesResetToggle) {
+          tilesResetToggle.checked = false;
+          tilesResetToggle.addEventListener('change', () => {
+            if (!tilesResetToggle.checked) return;
+            // Reset + re-render
+            resetTileOrder();
+            setupBookmarks();
+            // On remet le toggle à OFF (c’est une action, pas une préférence)
+            setTimeout(() => { tilesResetToggle.checked = false; }, 150);
+            closePanel();
+          });
+        }
         
         // Toggle News
         const newsToggle = $('#news-toggle');
