@@ -1,6 +1,4 @@
-/
-body.edit-mode .tile-handle{ display:inline-flex; }
-* =========================
+/* =========================
    Typo : Inter
    ========================= */
 :root { --fontFamily: 'Inter', system-ui, sans-serif; }
@@ -146,6 +144,15 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .bookmark-set { padding: 0.7rem; flex: 0 1 280px; }
 .bookmark-inner-container { overflow-y: auto; overflow-x: hidden; max-height: 60vh; }
 
+/* Header de tuile (titre + poignée drag) */
+.bookmark-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.6rem;
+  margin:0 0 .35rem 0;
+}
+
 .bookmark-title { 
   font-size: 0.95rem; font-weight: 600; color: var(--fg); 
   text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.85;
@@ -161,6 +168,26 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
   
   transition: all .2s ease;
   border: 1px solid transparent; 
+}
+
+/* Sécurité : si jamais un lien n’a pas la classe .bookmark */
+.bookmark-inner-container a{
+  display:block;
+  text-decoration:none;
+  color: var(--secondaryFg);
+  margin: var(--bookmark-margin);
+  font-size: 0.95rem;
+  padding: var(--bookmark-padding);
+  border-radius: 14px;
+  border: 1px solid transparent;
+  transition: all .2s ease;
+}
+.bookmark-inner-container a:hover{
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 5%, var(--glass-bg));
+  border-color: color-mix(in srgb, var(--fg) 10%, transparent);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  transform: translateX(3px);
 }
 
 .bookmark:hover { 
@@ -191,8 +218,10 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
   border:0;
 }
 
+body:not(.edit-mode) .tile-handle{display:none;}
+
 .tile-handle{
-  display:none;
+  display:inline-flex;
   align-items:center;
   justify-content:center;
   width:34px;
@@ -233,6 +262,17 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
   transition: transform .18s cubic-bezier(.2,.9,.2,1);
 }
 
+
+
+/* Mini rebond façon Finder au drop */
+.bookmark-set.tile-bounce{
+  animation: tileBounce .15s cubic-bezier(.2,.9,.2,1);
+}
+@keyframes tileBounce{
+  0%{ transform: translateY(0) scale(1); }
+  55%{ transform: translateY(-2px) scale(1.02); }
+  100%{ transform: translateY(0) scale(1); }
+}
 .bookmark-set.tile-peek:not(.tile-dragging):not(.tile-placeholder){
   transform: translateY(-2px);
   transition: transform .12s ease;
@@ -337,12 +377,3 @@ input:checked + .slider:before { transform: translateX(20px); }
   animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   animation-delay: 0.1s; /* Apparaît juste après la barre de recherche */
 }
-
-
-.bookmark-set.drop-bounce{ animation: dropBounce 150ms ease-out; }
-@keyframes dropBounce{ 0%{ transform: scale(1);} 60%{ transform: scale(1.02);} 100%{ transform: scale(1);} }
-
-
-.empty-state .bookmark-inner-container{ padding: 14px 16px 18px; }
-.empty-state .empty-note{ opacity: .8; font-size: 0.95rem; line-height: 1.35; }
-.empty-state code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: .9em; }

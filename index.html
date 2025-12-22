@@ -91,16 +91,6 @@
               <button data-value="compact" title="Compact">Compact</button>
           </div>
       </div>
-
-      <div class="panel-section">
-          <label for="editmode-toggle">Mode “Édition”</label>
-          <label class="toggle-switch">
-              <input type="checkbox" id="editmode-toggle">
-              <span class="slider"></span>
-          </label>
-          <p class="help-text">Affiche les poignées de déplacement et active ⌥ + flèches. Zéro drag accidentel, promis juré.</p>
-      </div>
-
       <div class="panel-section">
           <label for="news-toggle">Afficher les actualités</label>
           <label class="toggle-switch">
@@ -117,11 +107,23 @@
       </div>
 
       <div class="panel-section">
-          <label>Ordre des tuiles</label>
-          <div class="input-group">
-              <button id="tiles-reset" class="btn-secondary" type="button">Réinitialiser l’ordre des tuiles</button>
-          </div>
-          <p class="help-text">Astuce : attrape l’icône “grip” sur une tuile et glisse-la. (Oui, c’est légal.)</p>
+          <label for="edit-mode-toggle">Mode édition</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="edit-mode-toggle">
+              <span class="slider"></span>
+          </label>
+          <p class="help-text">Quand c’est activé, les poignées apparaissent et tu peux réordonner les tuiles (sinon, zéro déplacement accidentel).</p>
+      </div>
+
+      <div class="panel-section">
+          <label for="tiles-reset-toggle">Rétablir l’ordre des tuiles</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="tiles-reset-toggle">
+              <span class="slider"></span>
+          </label>
+          <p class="help-text">Action ponctuelle : remet l’ordre par défaut, puis se coupe tout seul.</p>
+      </div>
+
       </div>
 
     </div>
@@ -187,7 +189,7 @@
     </div>
   </div>
 
-  <script src="/bookmarks.js?v=1"></script>
+  <script src="bookmarks.js"></script>
   <script>
 
     // --- Utilitaires ---
@@ -236,7 +238,7 @@
         tile.style.removeProperty("--drag-y");
       });
 
-      let active = null; // {tile, placeholder, startX, startY, offsetX, offsetY, pointerId, lastX, lastY}
+      let active = null; // {tile, placeholder, startX, startY, offsetX, offsetY, pointerId, lastX, lastY, baseLeft, baseTop}
       let raf = null;
 
       const tiles = () => Array.from($$(".bookmark-set", container));
@@ -340,9 +342,17 @@
         // Après un tick, on remet le tile dans le flux
         requestAnimationFrame(() => {
           placeholder.replaceWith(tile);
+          tile.classList.add("tile-bounce");
+          setTimeout(() => tile.classList.remove("tile-bounce"), 180);
           // reset transform vars
           tile.style.removeProperty("--drag-x");
           tile.style.removeProperty("--drag-y");
+          // remet l’élément dans le flux normal
+          tile.style.position = "";
+          tile.style.left = "";
+          tile.style.top = "";
+          tile.style.width = "";
+          tile.style.height = "";
           tile.classList.remove("tile-dropping");
           tiles().forEach(t => t.classList.remove("tile-peek"));
           if (commit) saveTileOrderFromDOM();
@@ -354,8 +364,8 @@
       function onPointerUp() { endDrag(true); }
 
       container.addEventListener("pointerdown", (e) => {
-        const target = e.target;
         if (!document.body.classList.contains("edit-mode")) return;
+        const target = e.target;
         if (!isHandle(target)) return;
 
         const tile = target.closest(".bookmark-set");
@@ -378,7 +388,18 @@
         tile.style.pointerEvents = "none"; // évite hover/click pendant le drag
         setDraggingStyles(tile, 0, 0);
 
-        tile.after(ph);
+        // Remplace la tuile par un placeholder (évite le « double espace » en flex-wrap)
+        tile.replaceWith(ph);
+
+        // La tuile devient un élément flottant (plus “macOS-like”)
+        tile.style.position = "fixed";
+        tile.style.left = `${r.left}px`;
+        tile.style.top = `${r.top}px`;
+        tile.style.width = `${r.width}px`;
+        tile.style.height = `${r.height}px`;
+        tile.style.margin = "0";
+        tile.style.zIndex = "9999";
+        document.body.appendChild(tile);
 
         active = {
           tile,
@@ -390,24 +411,13 @@
           lastY: startY,
         };
 
-        // Fixe la largeur pour éviter les "reflow surprises"
-        tile.style.width = r.width + "px";
-        tile.style.height = r.height + "px";
 
         tile.setPointerCapture(e.pointerId);
         document.addEventListener("pointermove", onPointerMove, { passive: true });
         document.addEventListener("pointerup", onPointerUp, { passive: true });
       });
 
-      // Bouton reset (si présent)
-      const resetBtn = $("#tiles-reset");
-      if (resetBtn && !resetBtn.dataset.bound) {
-        resetBtn.dataset.bound = "1";
-        resetBtn.addEventListener("click", () => {
-          resetTileOrder();
-          setupBookmarks();
-        });
-      }
+      // Le reset est géré via le panneau de paramètres (toggle)
     }
 
 // --- Météo ---
@@ -472,53 +482,26 @@
 
     // --- Favoris ---
     function setupBookmarks() {
-      // Supporte plusieurs conventions de nommage (au cas où)
-      const data = (typeof bookmarksRef !== 'undefined') ? bookmarksRef
-                : (typeof BOOKMARKS !== 'undefined') ? BOOKMARKS
-                : (window && (window.bookmarksRef || window.BOOKMARKS || window.favorites || window.FAVORITES))
-                ? (window.bookmarksRef || window.BOOKMARKS || window.favorites || window.FAVORITES)
-                : undefined;
-
-      if (!data || !Array.isArray(data)) {
-        const el = $("#bookmark-container");
-        if (el) {
-          el.innerHTML = `
-            <section class="bookmark-set card glass empty-state">
-              <div class="bookmark-header">
-                <div class="bookmark-title">Favoris indisponibles</div>
-              </div>
-              <div class="bookmark-inner-container">
-                <div class="empty-note">
-                  Je ne trouve pas <code>bookmarksRef</code> côté navigateur. Vérifie que <code>/bookmarksRef.js</code> est bien servi (404 = tuiles fantômes).
-                </div>
-              </div>
-            </section>
-          `;
-        }
-        return;
-      }
-
-      const bookmarksRef = data;
+      if (typeof bookmarks === 'undefined') return;
 
       // Tri A→Z des liens dans chaque tuile
-      bookmarksRef.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
-(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
+      bookmarks.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
 
       // Applique l’ordre mémorisé (si présent)
       const order = loadTileOrder();
       if (order && order.length) {
-        const byTitle = new Map(bookmarksRef.map(b => [b.title, b]));
+        const byTitle = new Map(bookmarks.map(b => [b.title, b]));
         const ordered = [];
         order.forEach(t => { if (byTitle.has(t)) ordered.push(byTitle.get(t)); });
         // Ajoute ce qui n’est pas encore dans l’ordre (nouvelles tuiles)
-        bookmarksRef.forEach(b => { if (!order.includes(b.title)) ordered.push(b); });
+        bookmarks.forEach(b => { if (!order.includes(b.title)) ordered.push(b); });
         // Remplace en place (pour éviter de casser les refs ailleurs)
-        bookmarksRef.length = 0;
-        ordered.forEach(b => bookmarksRef.push(b));
+        bookmarks.length = 0;
+        ordered.forEach(b => bookmarks.push(b));
       }
 
       const el = $("#bookmark-container");
-      el.innerHTML = bookmarksRef.map((b, index) => `
+      el.innerHTML = bookmarks.map((b, index) => `
         <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
           <div class="bookmark-header">
             <div class="bookmark-title">${escapeHtml(b.title)}</div>
@@ -670,17 +653,38 @@
         setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
 
-        // Toggle Mode Édition (poignées + ⌥ flèches)
-        const editToggle = $('#editmode-toggle');
-        const editMode = localStorage.getItem('editMode') === 'true';
-        if (editToggle) {
-          editToggle.checked = editMode;
-          document.body.classList.toggle('edit-mode', editMode);
-          editToggle.addEventListener('change', () => {
-            applySetting('editMode', editToggle.checked, (val) => document.body.classList.toggle('edit-mode', !!val));
-          });
+
+        // Mode édition (affiche/masque les poignées de drag, et bloque tout déplacement hors édition)
+        const EDIT_MODE_KEY = "startpage_edit_mode_v1";
+        function applyEditMode(on) {
+          document.body.classList.toggle("edit-mode", !!on);
+          try { localStorage.setItem(EDIT_MODE_KEY, on ? "1" : "0"); } catch {}
+        }
+        const editModeToggle = $('#edit-mode-toggle');
+        if (editModeToggle) {
+          const saved = (() => { try { return localStorage.getItem(EDIT_MODE_KEY); } catch { return null; } })();
+          const initial = saved === "1";
+          editModeToggle.checked = initial;
+          applyEditMode(initial);
+          editModeToggle.addEventListener('change', () => applyEditMode(editModeToggle.checked));
+        } else {
+          applyEditMode(false);
         }
 
+        // Action : rétablir l’ordre des tuiles
+        const tilesResetToggle = $('#tiles-reset-toggle');
+        if (tilesResetToggle) {
+          tilesResetToggle.checked = false;
+          tilesResetToggle.addEventListener('change', () => {
+            if (!tilesResetToggle.checked) return;
+            // Reset + re-render
+            resetTileOrder();
+            setupBookmarks();
+            // On remet le toggle à OFF (c’est une action, pas une préférence)
+            setTimeout(() => { tilesResetToggle.checked = false; }, 150);
+            closePanel();
+          });
+        }
         
         // Toggle News
         const newsToggle = $('#news-toggle');
