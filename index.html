@@ -18,9 +18,8 @@
       from { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(8px); }
       to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
-    
     .bookmark-set, #news-container {
-      opacity: 0; 
+      opacity: 0;
       animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       will-change: transform, opacity, filter;
     }
@@ -31,24 +30,15 @@
     }
 
     /* --- Gestion de l'affichage News --- */
-    /* Permet de masquer tout le bloc news via le panneau de contrôle */
-    body.news-hidden #news-container {
-        display: none !important;
-    }
+    body.news-hidden #news-container { display: none !important; }
 
-    /* Grille pour les 2 colonnes de news */
     .news-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* 2 colonnes égales */
-        gap: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
     }
-
-    /* Responsive : 1 seule colonne sur mobile */
     @media (max-width: 768px) {
-        .news-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
+      .news-grid { grid-template-columns: 1fr; gap: 1.5rem; }
     }
   </style>
 </head>
@@ -66,103 +56,128 @@
 
   <aside id="control-panel" class="glass" aria-hidden="true">
     <div class="panel-header">
-        <h3>Paramètres</h3>
-        <button id="panel-close-btn" class="btn-icon" title="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <h3>Paramètres</h3>
+      <button id="panel-close-btn" class="btn-icon" title="Fermer">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
     </div>
+
     <div class="panel-content">
       <div class="panel-section">
-          <label for="weather-location-input">Lieu de la météo</label>
-          <div class="input-group">
-              <input type="text" id="weather-location-input" placeholder="Ex: Sterrebeek">
-              <button id="weather-location-save">OK</button>
-          </div>
+        <label for="weather-location-input">Lieu de la météo</label>
+        <div class="input-group">
+          <input type="text" id="weather-location-input" placeholder="Ex: Sterrebeek">
+          <button id="weather-location-save">OK</button>
+        </div>
       </div>
+
       <div class="panel-section">
-          <label>Thème</label>
-          <div class="segmented-control" id="theme-selector">
-              <button data-value="light" title="Thème clair">Jour</button>
-              <button data-value="dark" title="Thème sombre">Nuit</button>
-          </div>
+        <label>Thème</label>
+        <div class="segmented-control" id="theme-selector">
+          <button data-value="light" title="Thème clair">Jour</button>
+          <button data-value="dark" title="Thème sombre">Nuit</button>
+        </div>
       </div>
+
       <div class="panel-section">
-          <label>Densité des favoris</label>
-          <div class="segmented-control" id="density-selector">
-              <button data-value="cozy" title="Normal">Normal</button>
-              <button data-value="compact" title="Compact">Compact</button>
-          </div>
+        <label>Densité des favoris</label>
+        <div class="segmented-control" id="density-selector">
+          <button data-value="cozy" title="Normal">Normal</button>
+          <button data-value="compact" title="Compact">Compact</button>
+        </div>
       </div>
+
       <div class="panel-section">
-          <label for="news-toggle">Afficher les actualités</label>
-          <label class="toggle-switch">
-              <input type="checkbox" id="news-toggle">
-              <span class="slider"></span>
-          </label>
+        <label for="news-toggle">Afficher les actualités</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="news-toggle">
+          <span class="slider"></span>
+        </label>
       </div>
+
       <div class="panel-section">
-          <label for="chat-toggle">Afficher le module de chat</label>
-          <label class="toggle-switch">
-              <input type="checkbox" id="chat-toggle">
-              <span class="slider"></span>
-          </label>
+        <label for="chat-toggle">Afficher le module de chat</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chat-toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="panel-section">
+        <label>Ordre des tuiles</label>
+        <button id="reset-tiles-order" class="panel-danger-btn" type="button">
+          Réinitialiser l’ordre des tuiles
+        </button>
+        <p class="panel-help">
+          Astuce : attrape l’icône “grip” sur une tuile et glisse-la. (Oui, c’est légal.)
+        </p>
       </div>
     </div>
   </aside>
+
   <div id="overlay" hidden></div>
 
   <div class="container">
     <div id="greeting-container">
-        <div id="greeting"></div>
-        <div id="clock"></div>
+      <div id="greeting"></div>
+      <div id="clock"></div>
     </div>
 
     <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
-        <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
+      <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
     </section>
+
     <section id="weather-details" class="card glass weather-details" hidden></section>
-    
+
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET">
-        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59,4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
-        <button type="submit" class="visually-hidden">Rechercher</button>
+      <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
+      <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
-    
+
     <div id="bookmark-container">
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
-        <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
+      <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
+      <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
+      <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
+      <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
     </div>
 
     <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.5rem; display: none;">
       <div class="news-grid">
-          <div id="macg-column">
-              <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
-                  MacGeneration
-              </h3>
-              <div id="macg-list" style="display: grid; gap: 0.8rem;"></div>
-          </div>
+        <div id="macg-column">
+          <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
+            MacGeneration
+          </h3>
+          <div id="macg-list" style="display: grid; gap: 0.8rem;"></div>
+        </div>
 
-          <div id="lesoir-column">
-              <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
-                  Le Soir
-              </h3>
-              <div id="lesoir-list" style="display: grid; gap: 0.8rem;"></div>
-          </div>
+        <div id="lesoir-column">
+          <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
+            Le Soir
+          </h3>
+          <div id="lesoir-list" style="display: grid; gap: 0.8rem;"></div>
+        </div>
       </div>
     </section>
-    
+
     <div id="chat-container" class="card glass">
       <div class="chat-tabs">
-          <button class="chat-tab active" data-target="gpt">ChatGPT</button>
-          <button class="chat-tab" data-target="gemini">Gemini</button>
+        <button class="chat-tab active" data-target="gpt">ChatGPT</button>
+        <button class="chat-tab" data-target="gemini">Gemini</button>
       </div>
       <section id="chat-panel-gpt" class="chat-panel">
-          <div class="chat-messages"></div>
-          <form class="chat-form" id="gpt-form"><input type="text" name="prompt" placeholder="Discuter avec ChatGPT…"/><button type="submit">Envoyer</button></form>
+        <div class="chat-messages"></div>
+        <form class="chat-form" id="gpt-form">
+          <input type="text" name="prompt" placeholder="Discuter avec ChatGPT…"/>
+          <button type="submit">Envoyer</button>
+        </form>
       </section>
       <section id="chat-panel-gemini" class="chat-panel" hidden>
-          <div class="chat-messages"></div>
-          <form class="chat-form" id="gemini-form"><input type="text" name="prompt" placeholder="Discuter avec Gemini…"/><button type="submit">Envoyer</button></form>
+        <div class="chat-messages"></div>
+        <form class="chat-form" id="gemini-form">
+          <input type="text" name="prompt" placeholder="Discuter avec Gemini…"/>
+          <button type="submit">Envoyer</button>
+        </form>
       </section>
       <p class="hint">Astuce : `/` ou `⌘K` → Recherche • `Alt+C` → Chat</p>
     </div>
@@ -178,231 +193,449 @@
 
     // --- Météo ---
     async function getWeather() {
-        const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-        const weatherEl = $('#weather');
-        weatherEl.innerHTML = `<div class="skeleton skeleton-text"></div>`;
-        try {
-            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-            if (!geoRes.ok) throw new Error('Erreur Geocoding');
-            const geoData = await geoRes.json();
-            if (!geoData.results || geoData.results.length === 0) throw new Error(`Ville '${locationName}' non trouvée`);
-            
-            const { latitude, longitude, name } = geoData.results[0];
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto&forecast_days=1`);
-            if (!weatherRes.ok) throw new Error('Erreur Météo');
-            
-            const data = await weatherRes.json();
-            let t = data?.current?.temperature_2m, wcode = data?.current?.weather_code;
-            
-            weatherEl.innerHTML = `<div class="row"><div id="weather-location" class="inline">${name}</div><div class="inline">•</div><div class="inline">${weatherCodeToFr(wcode)}</div><div class="inline">•</div><div class="inline">${Math.round(t)} °C</div></div>`;
-        } catch (err) { console.error("Météo:", err); weatherEl.innerHTML = `<div class="inline">${err.message}</div>`; }
+      const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
+      const weatherEl = $('#weather');
+      weatherEl.innerHTML = `<div class="skeleton skeleton-text"></div>`;
+      try {
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
+        if (!geoRes.ok) throw new Error('Erreur Geocoding');
+        const geoData = await geoRes.json();
+        if (!geoData.results || geoData.results.length === 0) throw new Error(`Ville '${locationName}' non trouvée`);
+
+        const { latitude, longitude, name } = geoData.results[0];
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto&forecast_days=1`);
+        if (!weatherRes.ok) throw new Error('Erreur Météo');
+
+        const data = await weatherRes.json();
+        let t = data?.current?.temperature_2m, wcode = data?.current?.weather_code;
+
+        weatherEl.innerHTML = `<div class="row"><div id="weather-location" class="inline">${name}</div><div class="inline">•</div><div class="inline">${weatherCodeToFr(wcode)}</div><div class="inline">•</div><div class="inline">${Math.round(t)} °C</div></div>`;
+      } catch (err) {
+        console.error("Météo:", err);
+        weatherEl.innerHTML = `<div class="inline">${err.message}</div>`;
+      }
     }
-    function weatherCodeToFr(code) { const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"}; return map[code] ?? "Météo"; }
-    
+
+    function weatherCodeToFr(code) {
+      const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"};
+      return map[code] ?? "Météo";
+    }
+
     // --- Météo détaillée (5 jours) ---
     (function () {
-      const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
+      const weatherCard = $("#weather"), details = $("#weather-details");
+      let loaded = false;
       const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
 
       async function getWeather5dCached() {
-        try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data, location } = JSON.parse(raw); const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels'; if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data; } } catch {}
-        
+        try {
+          const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+          if (raw) {
+            const { ts, data, location } = JSON.parse(raw);
+            const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels';
+            if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data;
+          }
+        } catch {}
+
         const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
         const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
         const geoData = await geoRes.json();
         const { latitude, longitude } = geoData.results[0];
-        
+
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
         const data = await weatherRes.json();
         try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data, location: locationName })); } catch {}
         return data;
       }
 
-      function renderWeather5d(data) { 
-        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); 
-        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); 
-        details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div><div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`; 
+      function renderWeather5d(data) {
+        const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) }));
+        const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' });
+        details.innerHTML = `<div class='weather5d'>${days.map(day => `
+          <div class="weather-day">
+            <div class="wd-date">${df.format(new Date(day.date))}</div>
+            <div class="wd-desc">${weatherCodeToFr(day.code)}</div>
+            <div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div>
+          </div>`).join("")}</div>`;
       }
 
-      async function toggleDetails() { 
-        const isHidden = details.hasAttribute("hidden"); 
-        if (isHidden && !loaded) { 
-            try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } 
-            catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } 
-        } 
-        details.toggleAttribute("hidden"); weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden"))); 
+      async function toggleDetails() {
+        const isHidden = details.hasAttribute("hidden");
+        if (isHidden && !loaded) {
+          try {
+            details.innerHTML = "Chargement…";
+            const data = await getWeather5dCached();
+            renderWeather5d(data);
+            loaded = true;
+          } catch (e) {
+            details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`;
+          }
+        }
+        details.toggleAttribute("hidden");
+        weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden")));
       }
+
       weatherCard.addEventListener("click", toggleDetails);
       weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
     })();
 
-    // --- Favoris ---
+    // --- Favoris (avec ordre persistant des tuiles) ---
+    const TILE_ORDER_KEY = 'bookmarkCategoryOrder_v1';
+
+    function getSavedTileOrder() {
+      try {
+        const raw = localStorage.getItem(TILE_ORDER_KEY);
+        const arr = raw ? JSON.parse(raw) : null;
+        return Array.isArray(arr) ? arr : null;
+      } catch { return null; }
+    }
+
+    function saveTileOrderFromDOM() {
+      const el = $("#bookmark-container");
+      const keys = Array.from(el.querySelectorAll(".bookmark-set")).map(s => s.dataset.key).filter(Boolean);
+      try { localStorage.setItem(TILE_ORDER_KEY, JSON.stringify(keys)); } catch {}
+    }
+
     function setupBookmarks() {
       if(typeof bookmarks === 'undefined') return;
+
+      // Tri des liens A→Z dans chaque catégorie (on garde ton comportement)
       bookmarks.forEach(category => { category.links.sort((a, b) => a.name.localeCompare(b.name)); });
+
+      const savedOrder = getSavedTileOrder();
+
+      // On crée une copie et on applique l’ordre sauvegardé si présent
+      let categories = [...bookmarks];
+      if (savedOrder?.length) {
+        const rank = new Map(savedOrder.map((k, i) => [k, i]));
+        categories.sort((a, b) => {
+          const ra = rank.has(a.title) ? rank.get(a.title) : Number.POSITIVE_INFINITY;
+          const rb = rank.has(b.title) ? rank.get(b.title) : Number.POSITIVE_INFINITY;
+          return ra - rb;
+        });
+      }
+
       const el = $("#bookmark-container");
-      el.innerHTML = bookmarks.map((b, index) => `
-        <section class='bookmark-set card glass' style="animation-delay: ${200 + (index * 100)}ms">
-            <div class="bookmark-title">${b.title}</div>
-            <div class="bookmark-inner-container">
-                ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${l.name}</a>`).join("")}
-            </div>
-        </section>`).join("");
+      el.innerHTML = categories.map((b, index) => `
+        <section class="bookmark-set card glass" draggable="true" data-key="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
+          <div class="bookmark-title-row">
+            <div class="bookmark-title">${escapeHtml(b.title)}</div>
+            <button class="tile-grip" type="button" aria-label="Déplacer la tuile ${escapeHtml(b.title)}" title="Glisser pour réorganiser">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 5h2v2H9V5zm4 0h2v2h-2V5zM9 9h2v2H9V9zm4 0h2v2h-2V9zM9 13h2v2H9v-2zm4 0h2v2h-2v-2zM9 17h2v2H9v-2zm4 0h2v2h-2v-2z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="bookmark-inner-container">
+            ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.name)}</a>`).join("")}
+          </div>
+        </section>
+      `).join("");
+
+      enableTileDnD();
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function enableTileDnD() {
+      const container = $("#bookmark-container");
+      let dragging = null;
+
+      function getClosestCardFromPoint(x, y) {
+        const cards = Array.from(container.querySelectorAll(".bookmark-set:not(.dragging)"));
+        let best = null;
+        let bestDist = Infinity;
+        for (const card of cards) {
+          const r = card.getBoundingClientRect();
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const d = (cx - x) ** 2 + (cy - y) ** 2;
+          if (d < bestDist) { bestDist = d; best = card; }
+        }
+        return best;
+      }
+
+      container.addEventListener("dragstart", (e) => {
+        const card = e.target.closest(".bookmark-set");
+        if (!card) return;
+
+        dragging = card;
+        card.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", card.dataset.key || "");
+      });
+
+      container.addEventListener("dragend", () => {
+        if (dragging) dragging.classList.remove("dragging");
+        dragging = null;
+        container.querySelectorAll(".drop-target").forEach(el => el.classList.remove("drop-target"));
+        saveTileOrderFromDOM();
+      });
+
+      container.addEventListener("dragover", (e) => {
+        if (!dragging) return;
+        e.preventDefault();
+
+        const target = getClosestCardFromPoint(e.clientX, e.clientY);
+        container.querySelectorAll(".drop-target").forEach(el => el.classList.remove("drop-target"));
+        if (!target) return;
+
+        target.classList.add("drop-target");
+        const rect = target.getBoundingClientRect();
+        const after = (e.clientX - rect.left) > (rect.width / 2);
+
+        if (after) {
+          if (target.nextSibling !== dragging) container.insertBefore(dragging, target.nextSibling);
+        } else {
+          if (target !== dragging) container.insertBefore(dragging, target);
+        }
+      });
+
+      // Petite astuce : on force le drag via la poignée, c’est plus propre.
+      container.querySelectorAll(".tile-grip").forEach(btn => {
+        btn.addEventListener("mousedown", (e) => {
+          const card = btn.closest(".bookmark-set");
+          if (card) card.draggable = true;
+        });
+        btn.addEventListener("touchstart", (e) => {
+          // Sur iOS/Safari, le DnD natif est capricieux : on ne promet pas la lune.
+          // On garde au moins un feedback visuel.
+        }, { passive: true });
+      });
     }
 
     // --- NEWS: Fonction générique pour charger un flux ---
     async function fetchAndRenderNews(apiUrl, listId) {
-        const list = $(listId);
-        try {
-            const res = await fetch(apiUrl);
-            if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
-            
-            const xmlText = await res.text();
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-            
-            // Récupération et tri des items (plus récent en haut)
-            let items = Array.from(xmlDoc.querySelectorAll("item"));
-            items.sort((a, b) => {
-                const dateA = new Date(a.querySelector("pubDate")?.textContent);
-                const dateB = new Date(b.querySelector("pubDate")?.textContent);
-                return dateB - dateA; // Décroissant
-            });
+      const list = $(listId);
+      try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
 
-            // On garde les 5 premiers pour chaque colonne
-            items = items.slice(0, 5);
+        const xmlText = await res.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
 
-            if (items.length > 0) {
-                list.innerHTML = items.map(item => {
-                    const title = item.querySelector("title")?.textContent || "Sans titre";
-                    const link = item.querySelector("link")?.textContent || "#";
-                    const pubDateRaw = item.querySelector("pubDate")?.textContent;
-                    
-                    let dateStr = "";
-                    if (pubDateRaw) {
-                        dateStr = new Date(pubDateRaw).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
-                    }
+        let items = Array.from(xmlDoc.querySelectorAll("item"));
+        items.sort((a, b) => {
+          const dateA = new Date(a.querySelector("pubDate")?.textContent);
+          const dateB = new Date(b.querySelector("pubDate")?.textContent);
+          return dateB - dateA;
+        });
+        items = items.slice(0, 5);
 
-                    return `
-                    <a href="${link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
-                        <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; line-height: 1.4;">${title}</div>
-                            <div style="font-size: 0.75rem; color: var(--secondaryFg); text-align: right;">${dateStr}</div>
-                        </article>
-                    </a>`;
-                }).join('');
-            } else {
-                list.innerHTML = `<div style="font-size:0.8rem; opacity:0.7">Aucun article.</div>`;
+        if (items.length > 0) {
+          list.innerHTML = items.map(item => {
+            const title = item.querySelector("title")?.textContent || "Sans titre";
+            const link = item.querySelector("link")?.textContent || "#";
+            const pubDateRaw = item.querySelector("pubDate")?.textContent;
+
+            let dateStr = "";
+            if (pubDateRaw) {
+              dateStr = new Date(pubDateRaw).toLocaleDateString('fr-FR', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
             }
-        } catch (e) {
-            console.error(`Erreur chargement news (${apiUrl}):`, e);
-            list.innerHTML = `<div style="font-size:0.8rem; color:var(--errorFg)">Erreur chargement.</div>`;
+
+            return `
+              <a href="${link}" target="_blank" rel="noopener" style="text-decoration: none; color: inherit; display: block;">
+                <article class="bookmark" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; line-height: 1.4;">${escapeHtml(title)}</div>
+                  <div style="font-size: 0.75rem; color: var(--secondaryFg); text-align: right;">${escapeHtml(dateStr)}</div>
+                </article>
+              </a>`;
+          }).join('');
+        } else {
+          list.innerHTML = `<div style="font-size:0.8rem; opacity:0.7">Aucun article.</div>`;
         }
+      } catch (e) {
+        console.error(`Erreur chargement news (${apiUrl}):`, e);
+        list.innerHTML = `<div style="font-size:0.8rem; color:var(--errorFg)">Erreur chargement.</div>`;
+      }
     }
 
-    // --- Chargement global des news ---
     async function loadNews() {
-        const container = $('#news-container');
-        
-        // On lance les deux requêtes en parallèle pour la rapidité
-        await Promise.all([
-            fetchAndRenderNews('/api/news', '#macg-list'),    // MacGeneration
-            fetchAndRenderNews('/api/lesoir', '#lesoir-list') // Le Soir
-        ]);
-        
-        // Affichage du bloc si l'option est activée
-        if (localStorage.getItem('showNews') !== 'false') {
-            container.style.display = 'block';
-        }
+      const container = $('#news-container');
+      await Promise.all([
+        fetchAndRenderNews('/api/news', '#macg-list'),
+        fetchAndRenderNews('/api/lesoir', '#lesoir-list')
+      ]);
+      if (localStorage.getItem('showNews') !== 'false') container.style.display = 'block';
     }
 
     // --- Barre de recherche intelligente ---
     (function() {
-        const SEARCH_ENGINES = { 'y ': { url: 'https://www.youtube.com/results', queryParam: 'search_query', placeholder: 'Rechercher sur YouTube...' }, 'w ': { url: 'https://fr.wikipedia.org/w/index.php', queryParam: 'search', placeholder: 'Rechercher sur Wikipédia...' }, 'a ': { url: 'https://www.amazon.fr/s', queryParam: 'k', placeholder: 'Rechercher sur Amazon...' }, 'default': { url: 'https://www.google.com/search', queryParam: 'q', placeholder: 'Rechercher sur Google...' } };
-        const searchForm = $('#search-form'), searchInput = $('#search-input');
-        
-        function updateSearchEngine() { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); const engine = prefix ? SEARCH_ENGINES[prefix] : SEARCH_ENGINES['default']; searchForm.action = engine.url; searchInput.name = engine.queryParam; if (searchInput.placeholder !== engine.placeholder) { searchInput.placeholder = engine.placeholder; } }
-        searchInput.addEventListener('input', updateSearchEngine);
-        searchForm.addEventListener('submit', (e) => { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); if (prefix) { searchInput.value = query.substring(prefix.length); } });
-        
-        // Raccourcis clavier
-        window.addEventListener("keydown", (e) => { 
-            const activeTag = document.activeElement.tagName.toLowerCase(), isInputFocused = activeTag === "input" || activeTag === "textarea"; 
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); } 
-            if (isInputFocused) return; 
-            if (e.key === "/") { e.preventDefault(); searchInput.focus(); } 
-            if (e.altKey && e.key.toLowerCase() === 'c') { e.preventDefault(); const input = $('.chat-panel:not([hidden]) .chat-form input'); if (input) input.focus(); } 
-        });
+      const SEARCH_ENGINES = {
+        'y ': { url: 'https://www.youtube.com/results', queryParam: 'search_query', placeholder: 'Rechercher sur YouTube...' },
+        'w ': { url: 'https://fr.wikipedia.org/w/index.php', queryParam: 'search', placeholder: 'Rechercher sur Wikipédia...' },
+        'a ': { url: 'https://www.amazon.fr/s', queryParam: 'k', placeholder: 'Rechercher sur Amazon...' },
+        'default': { url: 'https://www.google.com/search', queryParam: 'q', placeholder: 'Rechercher sur Google...' }
+      };
+      const searchForm = $('#search-form'), searchInput = $('#search-input');
+
+      function updateSearchEngine() {
+        const query = searchInput.value;
+        const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default');
+        const engine = prefix ? SEARCH_ENGINES[prefix] : SEARCH_ENGINES['default'];
+        searchForm.action = engine.url;
+        searchInput.name = engine.queryParam;
+        if (searchInput.placeholder !== engine.placeholder) searchInput.placeholder = engine.placeholder;
+      }
+
+      searchInput.addEventListener('input', updateSearchEngine);
+      searchForm.addEventListener('submit', (e) => {
+        const query = searchInput.value;
+        const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default');
+        if (prefix) searchInput.value = query.substring(prefix.length);
+      });
+
+      window.addEventListener("keydown", (e) => {
+        const activeTag = document.activeElement.tagName.toLowerCase();
+        const isInputFocused = activeTag === "input" || activeTag === "textarea";
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); }
+        if (isInputFocused) return;
+        if (e.key === "/") { e.preventDefault(); searchInput.focus(); }
+        if (e.altKey && e.key.toLowerCase() === 'c') {
+          e.preventDefault();
+          const input = $('.chat-panel:not([hidden]) .chat-form input');
+          if (input) input.focus();
+        }
+      });
     })();
 
     // --- Chat Logic ---
     (function() {
-      let gptHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }], geminiHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }];
-      function addBubble(container, text, who) { const bubble = document.createElement('div'); bubble.className = `msg ${who}`; bubble.textContent = text; container.appendChild(bubble); container.scrollTop = container.scrollHeight; return bubble; }
-      
-      const tabs = $$('.chat-tab'), panels = $$('.chat-panel');
-      tabs.forEach(tab => { tab.addEventListener('click', () => { const targetId = tab.dataset.target; tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); panels.forEach(p => p.hidden = (p.id !== `chat-panel-${targetId}`)); }); });
-      
-      async function handleChatSubmit(e, history, messagesContainer, apiEndpoint) { 
-          e.preventDefault(); const form = e.target, input = form.querySelector('input'), prompt = input.value.trim(); 
-          if (!prompt) return; 
-          addBubble(messagesContainer, prompt, 'you'); history.push({ role: 'user', content: prompt }); input.value = ''; 
-          const botBubble = addBubble(messagesContainer, '…', 'bot'); botBubble.classList.add('pending'); 
-          try { 
-              const res = await fetch(apiEndpoint, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ messages: history }) }); 
-              if (!res.ok) { const errText = await res.text(); throw new Error(JSON.parse(errText).error || errText); } 
-              const data = await res.json(); 
-              botBubble.textContent = data.text; history.push({ role: 'assistant', content: data.text }); 
-          } catch(err) { botBubble.textContent = `Erreur: ${err.message}`; } 
-          finally { botBubble.classList.remove('pending'); } 
+      let gptHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }];
+      let geminiHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }];
+
+      function addBubble(container, text, who) {
+        const bubble = document.createElement('div');
+        bubble.className = `msg ${who}`;
+        bubble.textContent = text;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+        return bubble;
       }
+
+      const tabs = $$('.chat-tab'), panels = $$('.chat-panel');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetId = tab.dataset.target;
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          panels.forEach(p => p.hidden = (p.id !== `chat-panel-${targetId}`));
+        });
+      });
+
+      async function handleChatSubmit(e, history, messagesContainer, apiEndpoint) {
+        e.preventDefault();
+        const form = e.target, input = form.querySelector('input');
+        const prompt = input.value.trim();
+        if (!prompt) return;
+
+        addBubble(messagesContainer, prompt, 'you');
+        history.push({ role: 'user', content: prompt });
+        input.value = '';
+
+        const botBubble = addBubble(messagesContainer, '…', 'bot');
+        botBubble.classList.add('pending');
+
+        try {
+          const res = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ messages: history })
+          });
+          if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(JSON.parse(errText).error || errText);
+          }
+          const data = await res.json();
+          botBubble.textContent = data.text;
+          history.push({ role: 'assistant', content: data.text });
+        } catch(err) {
+          botBubble.textContent = `Erreur: ${err.message}`;
+        } finally {
+          botBubble.classList.remove('pending');
+        }
+      }
+
       $('#gpt-form').addEventListener('submit', (e) => handleChatSubmit(e, gptHistory, $("#chat-panel-gpt .chat-messages"), '/api/chat'));
       $('#gemini-form').addEventListener('submit', (e) => handleChatSubmit(e, geminiHistory, $("#chat-panel-gemini .chat-messages"), '/api/gemini'));
     })();
-    
+
     // --- Panneau de configuration ---
     (function() {
-        const panel = $('#control-panel'), overlay = $('#overlay'); const toggleBtn = $('#settings-toggle-btn'), closeBtn = $('#panel-close-btn');
-        function openPanel() { panel.setAttribute('aria-hidden', 'false'); overlay.hidden = false; document.body.classList.add('panel-open'); }
-        function closePanel() { panel.setAttribute('aria-hidden', 'true'); overlay.hidden = true; document.body.classList.remove('panel-open'); }
-        toggleBtn.addEventListener('click', openPanel); closeBtn.addEventListener('click', closePanel); overlay.addEventListener('click', closePanel);
-        window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel(); });
-        
-        // Météo Localisation
-        const locationInput = $('#weather-location-input'), saveBtn = $('#weather-location-save'); locationInput.value = localStorage.getItem('weatherLocation') || '';
-        const saveLocation = () => { const newLocation = locationInput.value.trim(); if (newLocation) { localStorage.setItem('weatherLocation', newLocation); getWeather(); closePanel(); } };
-        saveBtn.addEventListener('click', saveLocation); locationInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLocation(); });
-        
-        // Paramètres Génériques
-        const root = document.documentElement; function applySetting(key, value, action) { localStorage.setItem(key, value); action(value); }
-        function setupSelector(selectorId, storageKey, action, defaultValue) { 
-            const selector = $(selectorId), buttons = selector.querySelectorAll('button'); 
-            const savedValue = localStorage.getItem(storageKey) || defaultValue; action(savedValue); 
-            buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue)); 
-            selector.addEventListener('click', (e) => { const target = e.target.closest('button'); if (target?.dataset.value) { applySetting(storageKey, target.dataset.value, action); buttons.forEach(b => b.classList.remove('active')); target.classList.add('active'); } }); 
-        }
-        setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
-        
-        // Toggle News
-        const newsToggle = $('#news-toggle');
-        const showNews = localStorage.getItem('showNews') !== 'false';
-        newsToggle.checked = showNews;
-        document.body.classList.toggle('news-hidden', !showNews);
-        newsToggle.addEventListener('change', () => { 
-            applySetting('showNews', newsToggle.checked, (val) => document.body.classList.toggle('news-hidden', !val)); 
-        });
+      const panel = $('#control-panel'), overlay = $('#overlay');
+      const toggleBtn = $('#settings-toggle-btn'), closeBtn = $('#panel-close-btn');
 
-        // Toggle Chat
-        const chatToggle = $('#chat-toggle'); const showChat = localStorage.getItem('showChat') !== 'false'; chatToggle.checked = showChat; document.body.classList.toggle('chat-hidden', !showChat);
-        chatToggle.addEventListener('change', () => { applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val)); });
+      function openPanel() { panel.setAttribute('aria-hidden', 'false'); overlay.hidden = false; document.body.classList.add('panel-open'); }
+      function closePanel() { panel.setAttribute('aria-hidden', 'true'); overlay.hidden = true; document.body.classList.remove('panel-open'); }
+
+      toggleBtn.addEventListener('click', openPanel);
+      closeBtn.addEventListener('click', closePanel);
+      overlay.addEventListener('click', closePanel);
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel(); });
+
+      // Météo Localisation
+      const locationInput = $('#weather-location-input'), saveBtn = $('#weather-location-save');
+      locationInput.value = localStorage.getItem('weatherLocation') || '';
+      const saveLocation = () => { const newLocation = locationInput.value.trim(); if (newLocation) { localStorage.setItem('weatherLocation', newLocation); getWeather(); closePanel(); } };
+      saveBtn.addEventListener('click', saveLocation);
+      locationInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLocation(); });
+
+      // Paramètres Génériques
+      const root = document.documentElement;
+      function applySetting(key, value, action) { localStorage.setItem(key, value); action(value); }
+      function setupSelector(selectorId, storageKey, action, defaultValue) {
+        const selector = $(selectorId), buttons = selector.querySelectorAll('button');
+        const savedValue = localStorage.getItem(storageKey) || defaultValue;
+        action(savedValue);
+        buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue));
+        selector.addEventListener('click', (e) => {
+          const target = e.target.closest('button');
+          if (target?.dataset.value) {
+            applySetting(storageKey, target.dataset.value, action);
+            buttons.forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+          }
+        });
+      }
+      setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
+
+      // Toggle News
+      const newsToggle = $('#news-toggle');
+      const showNews = localStorage.getItem('showNews') !== 'false';
+      newsToggle.checked = showNews;
+      document.body.classList.toggle('news-hidden', !showNews);
+      newsToggle.addEventListener('change', () => {
+        applySetting('showNews', newsToggle.checked, (val) => document.body.classList.toggle('news-hidden', !val));
+      });
+
+      // Toggle Chat
+      const chatToggle = $('#chat-toggle');
+      const showChat = localStorage.getItem('showChat') !== 'false';
+      chatToggle.checked = showChat;
+      document.body.classList.toggle('chat-hidden', !showChat);
+      chatToggle.addEventListener('change', () => {
+        applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val));
+      });
+
+      // Reset ordre des tuiles
+      const resetBtn = $('#reset-tiles-order');
+      resetBtn.addEventListener('click', () => {
+        try { localStorage.removeItem(TILE_ORDER_KEY); } catch {}
+        setupBookmarks();
+        closePanel();
+      });
     })();
 
     // --- Init ---
     window.addEventListener("load", () => {
       updateGreeting(); $("#clock").textContent = getTime();
       setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
-      setupBookmarks(); 
+
+      setupBookmarks();
       getWeather();
       loadNews();
     });
