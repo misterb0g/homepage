@@ -142,8 +142,15 @@
     <section id="weather-details" class="card glass weather-details" hidden></section>
     
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET">
-        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59,4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
+        <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" title="Choisir le moteur">G</button>
+        <div id="engine-popover" class="engine-popover glass" role="listbox" aria-label="Moteur de recherche" hidden>
+          <button type="button" class="engine-option" data-engine="google">Google</button>
+          <button type="button" class="engine-option" data-engine="duckduckgo">DuckDuckGo</button>
+          <button type="button" class="engine-option" data-engine="bing">Bing</button>
+          <button type="button" class="engine-option" data-engine="brave">Brave</button>
+          <button type="button" class="engine-option" data-engine="qwant">Qwant</button>
+        </div>
+<input type="search" id="search-input" name="q" placeholder="Rechercher… (Google, DuckDuckGo, etc.)" required>
         <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
@@ -201,9 +208,18 @@
     
 
     // --- Ré-ordonnancement des tuiles (Drag & Drop style macOS) ---
-    const TILE_ORDER_KEY = "startpage_tile_order_v1";
+    \1
 
-    function escapeHtml(str) {
+    const TILE_COLLAPSE_KEY = "startpage_tile_collapsed_v1";
+    const SEARCH_ENGINE_KEY = "startpage_search_engine_v1";
+
+    function loadJson(key, fallback) {
+      try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; }
+    }
+    function saveJson(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+    }
+function escapeHtml(str) {
       return String(str).replace(/[&<>"']/g, (m) => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
       }[m]));
@@ -420,6 +436,197 @@
       // Le reset est géré via le panneau de paramètres (toggle)
     }
 
+
+
+    // --- Tuiles : repli (clic sur le titre) ---
+    function setTileCollapsed(tile, collapsed, persist = true) {
+      const title = tile.getAttribute("data-tile-title") || "";
+      const btn = $(".bookmark-title", tile);
+      const inner = $(".bookmark-inner-container", tile);
+      if (!inner || !btn) return;
+
+      tile.classList.toggle("tile-collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+      inner.toggleAttribute("hidden", collapsed);
+
+      if (persist && title) {
+        const state = loadJson(TILE_COLLAPSE_KEY, {});
+        state[title] = !!collapsed;
+        saveJson(TILE_COLLAPSE_KEY, state);
+      }
+    }
+
+    function applyCollapsedState() {
+      const container = $("#bookmark-container");
+      if (!container) return;
+      const state = loadJson(TILE_COLLAPSE_KEY, {});
+      $$(".bookmark-set", container).forEach(tile => {
+        const title = tile.getAttribute("data-tile-title") || "";
+        const collapsed = !!state[title];
+        setTileCollapsed(tile, collapsed, false);
+      });
+    }
+
+    function initTileCollapse() {
+      const container = $("#bookmark-container");
+      if (!container) return;
+      if (container.dataset.collapseBound === "1") return;
+      container.dataset.collapseBound = "1";
+
+      container.addEventListener("click", (e) => {
+        const titleBtn = e.target.closest(".bookmark-title");
+        if (!titleBtn) return;
+        const tile = titleBtn.closest(".bookmark-set");
+        if (!tile) return;
+        // Evite que le clic déclenche autre chose
+        e.preventDefault();
+        const isCollapsed = tile.classList.contains("tile-collapsed");
+        setTileCollapsed(tile, !isCollapsed, true);
+      });
+    }
+
+    // --- Tuiles : réorganisation clavier (⌥ + flèches) ---
+    function initTileKeyboardReorder() {
+      if (document.body.dataset.kbdReorderBound === "1") return;
+      document.body.dataset.kbdReorderBound = "1";
+
+      function snap(tile) {
+        tile.classList.remove("tile-key-snap");
+        // force reflow
+        void tile.offsetWidth;
+        tile.classList.add("tile-key-snap");
+        setTimeout(() => tile.classList.remove("tile-key-snap"), 220);
+      }
+
+      function moveTileLinear(tile, delta) {
+        const container = $("#bookmark-container");
+        if (!container) return;
+        const all = Array.from($$(".bookmark-set", container));
+        const idx = all.indexOf(tile);
+        if (idx < 0) return;
+        const nextIdx = Math.max(0, Math.min(all.length - 1, idx + delta));
+        if (nextIdx === idx) return;
+
+        const ref = all[nextIdx];
+        // Si on avance, on insère après la cible; sinon avant
+        if (delta > 0) {
+          container.insertBefore(tile, ref.nextSibling);
+        } else {
+          container.insertBefore(tile, ref);
+        }
+        saveTileOrderFromDOM();
+        snap(tile);
+        tile.focus({ preventScroll: true });
+        tile.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (!document.body.classList.contains("edit-mode")) return;
+        if (!e.altKey) return;
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+
+        // Pas de hijack quand on tape dans un champ
+        const ae = document.activeElement;
+        if (ae && (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA" || ae.isContentEditable)) return;
+
+        const tile = ae ? ae.closest?.(".bookmark-set") : null;
+        if (!tile) return;
+
+        e.preventDefault();
+        const delta = (e.key === "ArrowLeft" || e.key === "ArrowUp") ? -1 : 1;
+        moveTileLinear(tile, delta);
+      });
+    }
+
+    // --- Barre de recherche : choix du moteur ---
+    function initSearchEnginePicker() {
+      const form = $("#search-form");
+      const input = $("#search-input");
+      const btn = $("#engine-button");
+      const pop = $("#engine-popover");
+      if (!form || !input || !btn || !pop) return;
+
+      const engines = {
+        google: { label: "Google", badge: "G", action: "https://www.google.com/search", param: "q", extra: {} },
+        duckduckgo: { label: "DuckDuckGo", badge: "D", action: "https://duckduckgo.com/", param: "q", extra: {} },
+        bing: { label: "Bing", badge: "B", action: "https://www.bing.com/search", param: "q", extra: {} },
+        brave: { label: "Brave", badge: "Br", action: "https://search.brave.com/search", param: "q", extra: {} },
+        qwant: { label: "Qwant", badge: "Q", action: "https://www.qwant.com/", param: "q", extra: { t: "web" } }
+      };
+
+      function setEngine(key, persist = true) {
+        const e = engines[key] || engines.google;
+        // action + param
+        form.setAttribute("action", e.action);
+        input.setAttribute("name", e.param);
+
+        // nettoie extras
+        $$("#search-form input[data-engine-extra]").forEach(n => n.remove());
+        Object.entries(e.extra || {}).forEach(([k, v]) => {
+          const h = document.createElement("input");
+          h.type = "hidden";
+          h.name = k;
+          h.value = v;
+          h.setAttribute("data-engine-extra", "1");
+          form.appendChild(h);
+        });
+
+        btn.textContent = e.badge;
+        btn.setAttribute("aria-label", `Moteur : ${e.label}. Cliquer pour changer`);
+        btn.title = `Moteur : ${e.label} (cliquer pour changer)`;
+
+        if (persist) {
+          try { localStorage.setItem(SEARCH_ENGINE_KEY, key); } catch {}
+        }
+      }
+
+      function openPop(open) {
+        const isOpen = !pop.hasAttribute("hidden");
+        const next = (typeof open === "boolean") ? open : !isOpen;
+        pop.toggleAttribute("hidden", !next);
+        btn.setAttribute("aria-expanded", String(next));
+        if (next) {
+          // focus le premier item pour clavier
+          const first = $(".engine-option", pop);
+          first?.focus?.({ preventScroll: true });
+        } else {
+          btn.focus?.({ preventScroll: true });
+        }
+      }
+
+      // init
+      const saved = (() => { try { return localStorage.getItem(SEARCH_ENGINE_KEY); } catch { return null; } })();
+      setEngine(saved || "google", false);
+
+      // UI events
+      btn.addEventListener("click", () => openPop());
+      btn.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPop(true); }
+      });
+
+      pop.addEventListener("click", (e) => {
+        const opt = e.target.closest(".engine-option");
+        if (!opt) return;
+        const key = opt.getAttribute("data-engine");
+        setEngine(key, true);
+        openPop(false);
+        input.focus({ preventScroll: true });
+      });
+
+      document.addEventListener("click", (e) => {
+        if (e.target === btn || btn.contains(e.target) || pop.contains(e.target)) return;
+        if (!pop.hasAttribute("hidden")) openPop(false);
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !pop.hasAttribute("hidden")) {
+          e.preventDefault();
+          openPop(false);
+        }
+      });
+    }
+
+
 // --- Météo ---
     async function getWeather() {
         const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
@@ -504,7 +711,7 @@
       el.innerHTML = bookmarks.map((b, index) => `
         <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
           <div class="bookmark-header">
-            <div class="bookmark-title">${escapeHtml(b.title)}</div>
+            <button class="bookmark-title" type="button" aria-expanded="true" title="Replier / déplier">${escapeHtml(b.title)}</button>
             <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M9 5.5A1.5 1.5 0 1 1 7.5 4 1.5 1.5 0 0 1 9 5.5Zm0 6A1.5 1.5 0 1 1 7.5 10 1.5 1.5 0 0 1 9 11.5Zm0 6A1.5 1.5 0 1 1 7.5 16 1.5 1.5 0 0 1 9 17.5ZM16.5 7A1.5 1.5 0 1 1 18 5.5 1.5 1.5 0 0 1 16.5 7Zm0 6A1.5 1.5 0 1 1 18 11.5 1.5 1.5 0 0 1 16.5 13Zm0 6A1.5 1.5 0 1 1 18 17.5 1.5 1.5 0 0 1 16.5 19Z"></path>
@@ -517,6 +724,8 @@
         </section>`).join("");
 
       initTileDnD();
+      initTileCollapse();
+      applyCollapsedState();
     }
 
     // --- NEWS: Fonction générique pour charger un flux ---
@@ -704,7 +913,9 @@
     window.addEventListener("load", () => {
       updateGreeting(); $("#clock").textContent = getTime();
       setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
-      setupBookmarks(); 
+      setupBookmarks();
+      initTileKeyboardReorder();
+      initSearchEnginePicker();
       getWeather();
       loadNews();
     });
