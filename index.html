@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
-  
   <link rel="icon" href="/favicon.ico" sizes="any">
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
@@ -58,7 +57,6 @@
           <span id="weather-temp">--°C</span> <span class="inline">|</span> 
           <span id="weather-desc">...</span>
       </div>
-
       <div id="weather-details" class="weather-details card glass" hidden></div>
 
       <div id="bookmark-container" class="bookmark-container"></div>
@@ -86,15 +84,12 @@
         $('#greeting').textContent = txt;
     }
 
-    // --- FONCTION FAVORIS CORRIGÉE (VERSION ÉPURÉE) ---
+    // --- FAVORIS (Déplaçables & Sauvegardés) ---
     function setupBookmarks() {
         const container = $('#bookmark-container');
-        
-        // 1. Lire l'ordre
         const savedOrder = JSON.parse(localStorage.getItem('bookmarksOrder'));
         let displayList = [...bookmarks]; 
 
-        // 2. Trier
         if (savedOrder) {
             displayList.sort((a, b) => {
                 const indexA = savedOrder.indexOf(a.title);
@@ -103,22 +98,18 @@
             });
         }
 
-        // 3. Afficher (SANS FAVICON)
-        // Note: La classe 'bookmark-set card glass' assure le look "Liquid"
+        // Rendu HTML simple (sans icônes, style liquid)
         container.innerHTML = displayList.map(group => `
             <section class="bookmark-set card glass" data-id="${group.title}">
                 <h3>${group.title}</h3>
                 <div class="bookmark-list">
                     ${group.links.map(link => `
-                        <a href="${link.url}" target="_blank">
-                            <span>${link.name}</span>
-                        </a>
+                        <a href="${link.url}" target="_blank"><span>${link.name}</span></a>
                     `).join('')}
                 </div>
             </section>
         `).join('');
 
-        // 4. Drag & Drop
         new Sortable(container, {
             animation: 150,
             ghostClass: 'sortable-ghost',
@@ -130,13 +121,78 @@
         });
     }
 
-    // --- SETUP GENERAL ---
-    (function initSettings() {
-        const root = document.documentElement;
-        $('#settings-toggle-btn').addEventListener('click', () => { $('#settings-panel').hidden = !$('#settings-panel').hidden; });
+    // --- MÉTÉO RESTAURÉE ---
+    async function getWeather() {
+        const card = $('#weather-card');
+        const details = $('#weather-details');
+        
+        try {
+            // Remets ici ton URL d'API Vercel. 
+            // Si tu utilises le localhost, c'est peut-être '/api/weather'
+            const response = await fetch('/api/weather'); 
+            if (!response.ok) throw new Error("API inaccessible");
+            const data = await response.json();
 
+            // Mise à jour de l'affichage
+            $('#weather-location').textContent = data.city || 'Météo';
+            $('#weather-temp').textContent = Math.round(data.temp) + '°C';
+            $('#weather-desc').textContent = data.description || '';
+            
+            // Si tu as des détails dans ta réponse API, tu peux les injecter ici
+            // details.innerHTML = ... 
+        } catch (e) {
+            console.error("Météo erreur:", e);
+            $('#weather-location').textContent = "Météo";
+            $('#weather-temp').textContent = "--";
+            $('#weather-desc').textContent = "Indisponible";
+        }
+    }
+
+    // --- NEWS ---
+    async function loadNews() {
+        try {
+            const res = await fetch('/api/news');
+            if(!res.ok) throw new Error("Erreur news");
+            const data = await res.json();
+            // Logique d'affichage des news ici...
+        } catch (e) {
+            $('#news-list').innerHTML = "<li>Impossible de charger les actualités.</li>";
+        }
+    }
+
+    // --- INIT ---
+    window.addEventListener("load", () => {
+        // Horloge
+        updateGreeting(); 
+        $("#clock").textContent = getTime();
+        setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
+        
+        // Composants
+        setupBookmarks();
+        getWeather();
+        loadNews();
+
+        // Gestion du panneau Paramètres (Toggle)
+        const btn = $('#settings-toggle-btn');
+        const panel = $('#settings-panel');
+        if(btn && panel) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                panel.hidden = !panel.hidden;
+            });
+            // Fermer si on clique ailleurs
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                    panel.hidden = true;
+                }
+            });
+        }
+
+        // Restauration des préférences utilisateur (Thème, densité, etc.)
+        const root = document.documentElement;
         const setupSelector = (id, key, action, def) => {
             const el = $(id);
+            if(!el) return;
             const saved = localStorage.getItem(key) || def;
             if(el.type === "checkbox") el.checked = (saved === "true" || saved === "dark" || saved === "compact");
             action(saved);
@@ -148,28 +204,20 @@
         };
         setupSelector('#theme-selector', 'theme', (v) => root.setAttribute('data-theme', v), 'dark');
         setupSelector('#density-selector', 'density', (v) => root.setAttribute('data-density', v), 'cozy');
-
+        
+        // Toggle News/Chat visibilité
         const toggleVis = (id, k, tId) => {
              const el = $(id); const t = $(tId);
+             if(!el || !t) return;
              const s = localStorage.getItem(k) !== 'false';
-             el.checked = s; t.style.display = s ? 'flex' : 'none';
-             if(tId === '#news-container') t.style.display = s ? 'block' : 'none';
-             el.addEventListener('change', () => { localStorage.setItem(k, el.checked); t.style.display = el.checked ? (tId.includes('news')?'block':'flex') : 'none'; });
+             el.checked = s; t.style.display = s ? (tId.includes('chat')?'flex':'block') : 'none';
+             el.addEventListener('change', () => { 
+                 localStorage.setItem(k, el.checked); 
+                 t.style.display = el.checked ? (tId.includes('chat')?'flex':'block') : 'none'; 
+             });
         };
         toggleVis('#news-toggle', 'showNews', '#news-container');
         toggleVis('#chat-toggle', 'showChat', '#chat-container');
-    })();
-
-    window.addEventListener("load", () => {
-      updateGreeting(); 
-      $("#clock").textContent = getTime();
-      setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
-      
-      setupBookmarks();
-      
-      // Tes appels API (à décommenter si besoin)
-      // getWeather(); 
-      // loadNews();
     });
   </script>
 </body>
