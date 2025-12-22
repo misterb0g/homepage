@@ -1,4 +1,6 @@
-/* =========================
+/
+body.edit-mode .tile-handle{ display:inline-flex; }
+* =========================
    Typo : Inter
    ========================= */
 :root { --fontFamily: 'Inter', system-ui, sans-serif; }
@@ -113,8 +115,7 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .wd-temps .min { color: var(--secondaryFg); }
 
 /* SPOTLIGHT (Barre de recherche) - AMÉLIORÉ */
-.spotlight {
-    position: relative; 
+.spotlight { 
     width: min(920px, 94%); 
     height: var(--spot-h); 
     margin: 0.6rem auto 2.2rem; 
@@ -139,61 +140,6 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 .spotlight:focus-within .search-icon { fill: var(--mac-brand); }
 .spotlight input { width: 100%; height: 100%; border: none; background: transparent; color: var(--fg); font-size: 1.1rem; outline: none; padding: 0; }
 .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); }
-
-/* =========================
-   Choix moteur de recherche
-   ========================= */
-.engine-button{
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  margin-right: .65rem;
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
-  background: color-mix(in srgb, var(--glass-bg) 75%, transparent);
-  color: var(--fg);
-  font-weight: 700;
-  letter-spacing: .2px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
-  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
-}
-.engine-button:hover{
-  border-color: color-mix(in srgb, var(--fg) 18%, transparent);
-  background: color-mix(in srgb, var(--glass-bg) 90%, transparent);
-}
-.engine-button:active{ transform: scale(.96); }
-
-.engine-popover{
-  position: absolute;
-  margin-top: 12px;
-  left: 18px;
-  top: 100%;
-  z-index: 1200;
-  padding: .4rem;
-  border-radius: 14px;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), 0 18px 45px rgba(0,0,0,.18);
-  min-width: 210px;
-}
-.engine-option{
-  width: 100%;
-  text-align: left;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--fg);
-  padding: .55rem .65rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.engine-option:hover{
-  background: color-mix(in srgb, var(--fg) 6%, transparent);
-  border-color: color-mix(in srgb, var(--fg) 10%, transparent);
-}
 
 /* FAVORIS - AMÉLIORÉ */
 #bookmark-container { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--card-gap); width: min(1400px, 94%); margin: 0 auto 2.2rem; }
@@ -245,65 +191,8 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
   border:0;
 }
 
-/* Titre cliquable (replier / déplier) */
-.tile-title-btn{
-  appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--fg);
-  font: inherit;
-  text-transform: inherit;
-  letter-spacing: inherit;
-  padding: 0;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-}
-.tile-title-btn::after{
-  content: "▾";
-  font-size: .9em;
-  opacity: .55;
-  transform: translateY(-1px);
-  transition: transform .15s ease, opacity .15s ease;
-}
-.bookmark-set.collapsed .tile-title-btn::after{
-  transform: rotate(-90deg) translateX(-1px);
-  opacity: .7;
-}
-.bookmark-set.collapsed .bookmark-inner-container{
-  display: none;
-}
-
-/* Mode édition : poignées visibles, sinon invisibles (anti-déplacements accidentels) */
-body:not(.edit-mode) .tile-handle{
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(.92);
-}
-body.edit-mode .tile-handle{
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Focus clavier sur tuile (mode édition) */
-body.edit-mode .bookmark-set:focus{
-  outline: none;
-  box-shadow: var(--glass-shadow), 0 0 0 3px color-mix(in srgb, var(--mac-brand) 35%, transparent);
-}
-
-/* Mini rebond au drop (Finder-ish) */
-@keyframes tileBounce {
-  0% { transform: translate3d(var(--drag-x, 0px), var(--drag-y, 0px), 0) scale(1); }
-  45% { transform: translate3d(var(--drag-x, 0px), var(--drag-y, 0px), 0) scale(1.03); }
-  100% { transform: translate3d(var(--drag-x, 0px), var(--drag-y, 0px), 0) scale(1); }
-}
-.bookmark-set.tile-bounce{
-  animation: tileBounce 180ms cubic-bezier(.2,.9,.2,1);
-}
-
 .tile-handle{
-  display:inline-flex;
+  display:none;
   align-items:center;
   justify-content:center;
   width:34px;
@@ -448,3 +337,12 @@ input:checked + .slider:before { transform: translateX(20px); }
   animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   animation-delay: 0.1s; /* Apparaît juste après la barre de recherche */
 }
+
+
+.bookmark-set.drop-bounce{ animation: dropBounce 150ms ease-out; }
+@keyframes dropBounce{ 0%{ transform: scale(1);} 60%{ transform: scale(1.02);} 100%{ transform: scale(1);} }
+
+
+.empty-state .bookmark-inner-container{ padding: 14px 16px 18px; }
+.empty-state .empty-note{ opacity: .8; font-size: 0.95rem; line-height: 1.35; }
+.empty-state code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: .9em; }
