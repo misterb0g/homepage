@@ -335,3 +335,53 @@ input:checked + .slider:before { transform: translateX(20px); }
   animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   animation-delay: 0.1s; /* Apparaît juste après la barre de recherche */
 }
+
+
+/* =========================
+   Drag & Drop (macOS-ish)
+   (SortableJS)
+   ========================= */
+#bookmark-container.is-sorting {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grabbing;
+}
+
+#bookmark-container.is-sorting .tile-handle {
+  cursor: grabbing;
+}
+
+.tile-handle {
+  cursor: grab;
+}
+
+/* Tuile sélectionnée (lift) */
+.bookmark-set.tile-chosen {
+  transform: translateZ(0) scale(1.03);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+  filter: saturate(1.02);
+}
+
+/* Élément réellement déplacé (fallback) */
+.bookmark-set.tile-fallback,
+.bookmark-set.tile-drag {
+  transform: translateZ(0) scale(1.05) rotate(0.6deg);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* Emplacement fantôme (où ça va atterrir) */
+.bookmark-set.tile-ghost {
+  opacity: 0.28;
+  filter: blur(1.2px) saturate(0.9);
+  transform: scale(0.98);
+  box-shadow: none;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+}
+
+/* Micro-animation pour rendre le réordonnancement plus “mac” */
+#bookmark-container .bookmark-set {
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
