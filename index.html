@@ -107,11 +107,23 @@
       </div>
 
       <div class="panel-section">
-          <label>Ordre des tuiles</label>
-          <div class="input-group">
-              <button id="tiles-reset" class="btn-secondary" type="button">Réinitialiser l’ordre des tuiles</button>
-          </div>
-          <p class="help-text">Astuce : attrape l’icône “grip” sur une tuile et glisse-la. (Oui, c’est légal.)</p>
+          <label for="edit-mode-toggle">Mode édition</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="edit-mode-toggle">
+              <span class="slider"></span>
+          </label>
+          <p class="help-text">Quand c’est activé, les poignées apparaissent et tu peux réordonner les tuiles (sinon, zéro déplacement accidentel).</p>
+      </div>
+
+      <div class="panel-section">
+          <label for="tiles-reset-toggle">Rétablir l’ordre des tuiles</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="tiles-reset-toggle">
+              <span class="slider"></span>
+          </label>
+          <p class="help-text">Action ponctuelle : remet l’ordre par défaut, puis se coupe tout seul.</p>
+      </div>
+
       </div>
 
     </div>
@@ -330,6 +342,8 @@
         // Après un tick, on remet le tile dans le flux
         requestAnimationFrame(() => {
           placeholder.replaceWith(tile);
+          tile.classList.add("tile-bounce");
+          setTimeout(() => tile.classList.remove("tile-bounce"), 180);
           // reset transform vars
           tile.style.removeProperty("--drag-x");
           tile.style.removeProperty("--drag-y");
@@ -350,6 +364,7 @@
       function onPointerUp() { endDrag(true); }
 
       container.addEventListener("pointerdown", (e) => {
+        if (!document.body.classList.contains("edit-mode")) return;
         const target = e.target;
         if (!isHandle(target)) return;
 
@@ -637,6 +652,24 @@
         }
         setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
+
+
+        // Mode édition (affiche/masque les poignées de drag, et bloque tout déplacement hors édition)
+        const EDIT_MODE_KEY = "startpage_edit_mode_v1";
+        function applyEditMode(on) {
+          document.body.classList.toggle("edit-mode", !!on);
+          try { localStorage.setItem(EDIT_MODE_KEY, on ? "1" : "0"); } catch {}
+        }
+        const editModeToggle = $('#edit-mode-toggle');
+        if (editModeToggle) {
+          const saved = (() => { try { return localStorage.getItem(EDIT_MODE_KEY); } catch { return null; } })();
+          const initial = saved === "1";
+          editModeToggle.checked = initial;
+          applyEditMode(initial);
+          editModeToggle.addEventListener('change', () => applyEditMode(editModeToggle.checked));
+        } else {
+          applyEditMode(false);
+        }
 
         // Action : rétablir l’ordre des tuiles
         const tilesResetToggle = $('#tiles-reset-toggle');

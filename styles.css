@@ -218,6 +218,8 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
   border:0;
 }
 
+body:not(.edit-mode) .tile-handle{display:none;}
+
 .tile-handle{
   display:inline-flex;
   align-items:center;
@@ -260,6 +262,17 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
   transition: transform .18s cubic-bezier(.2,.9,.2,1);
 }
 
+
+
+/* Mini rebond façon Finder au drop */
+.bookmark-set.tile-bounce{
+  animation: tileBounce .15s cubic-bezier(.2,.9,.2,1);
+}
+@keyframes tileBounce{
+  0%{ transform: translateY(0) scale(1); }
+  55%{ transform: translateY(-2px) scale(1.02); }
+  100%{ transform: translateY(0) scale(1); }
+}
 .bookmark-set.tile-peek:not(.tile-dragging):not(.tile-placeholder){
   transform: translateY(-2px);
   transition: transform .12s ease;
