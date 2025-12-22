@@ -106,15 +106,6 @@
               <span class="slider"></span>
           </label>
       </div>
-
-      <div class="panel-section">
-          <label>Ordre des tuiles</label>
-          <div class="input-group">
-              <button id="tiles-reset" class="btn-secondary" type="button">Réinitialiser l’ordre des tuiles</button>
-          </div>
-          <p class="help-text">Astuce : attrape l’icône “grip” sur une tuile et glisse-la. (Oui, c’est légal.)</p>
-      </div>
-
     </div>
   </aside>
   <div id="overlay" hidden></div>
@@ -180,33 +171,36 @@
 
   <script src="bookmarks.js"></script>
   <script>
-
     // --- Utilitaires ---
     const $ = (sel, root = document) => root.querySelector(sel);
-    const $$ = (sel, root = document) => root.querySelectorAll(sel);
-    function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
-    function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
 
-    
 
-    // --- Ré-ordonnancement des tuiles (Drag & Drop style macOS) ---
-    // Implémentation basée sur SortableJS (UX fluide + moins de bugs que le DnD “maison”)
-    const TILE_ORDER_KEY = "startpage_tile_order_v2";
+    // --- Helpers (sécurité HTML) ---
+    const escapeHtml = (s) => String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+    const escapeHtmlAttr = (s) => escapeHtml(s).replaceAll("`", "&#96;");
+
+    // --- Ordre des tuiles (drag & drop) ---
+    const TILE_ORDER_KEY = "startpage_tile_order_v1";
 
     function saveTileOrder() {
       const container = $("#bookmark-container");
       if (!container) return;
-      const order = Array.from(container.querySelectorAll(".bookmark-set"))
-        .map(t => t.dataset.tileTitle)
+      const titles = [...container.querySelectorAll(".bookmark-set[data-title]")]
+        .map(el => el.getAttribute("data-title"))
         .filter(Boolean);
-      try { localStorage.setItem(TILE_ORDER_KEY, JSON.stringify(order)); } catch {}
+      try { localStorage.setItem(TILE_ORDER_KEY, JSON.stringify(titles)); } catch {}
     }
 
     function loadTileOrder() {
       try {
         const raw = localStorage.getItem(TILE_ORDER_KEY);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
+        const parsed = raw ? JSON.parse(raw) : null;
         return Array.isArray(parsed) ? parsed : null;
       } catch { return null; }
     }
@@ -220,7 +214,6 @@
       if (!container) return;
       if (container.dataset.sortableBound === "1") return;
 
-      // Si Sortable n'est pas chargé, on ne casse rien.
       if (typeof Sortable === "undefined") {
         console.warn("SortableJS non chargé — drag & drop désactivé.");
         return;
@@ -228,21 +221,15 @@
 
       container.dataset.sortableBound = "1";
 
-      // Curseur + sélection de texte
-      container.addEventListener("pointerdown", (e) => {
-        if (e.target.closest?.(".tile-handle")) container.classList.add("is-sorting");
-      });
-      window.addEventListener("pointerup", () => container.classList.remove("is-sorting"));
-
       new Sortable(container, {
-        animation: 200,
+        animation: 160,
         easing: "cubic-bezier(0.22, 1, 0.36, 1)",
         draggable: ".bookmark-set",
         handle: ".tile-handle",
         ghostClass: "tile-ghost",
         chosenClass: "tile-chosen",
         dragClass: "tile-drag",
-        forceFallback: true,        // “macOS-like” : le drag reste sous le pointeur, plus stable cross-browser
+        forceFallback: true,
         fallbackOnBody: true,
         fallbackClass: "tile-fallback",
         swapThreshold: 0.65,
@@ -263,8 +250,11 @@
         });
       }
     }
+    const $$ = (sel, root = document) => root.querySelectorAll(sel);
+    function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+    function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
 
-// --- Météo ---
+    // --- Météo ---
     async function getWeather() {
         const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
         const weatherEl = $('#weather');
@@ -337,32 +327,30 @@
         const byTitle = new Map(bookmarks.map(b => [b.title, b]));
         const ordered = [];
         order.forEach(t => { if (byTitle.has(t)) ordered.push(byTitle.get(t)); });
-        // Ajoute ce qui n’est pas encore dans l’ordre (nouvelles tuiles)
+        // Ajoute les tuiles nouvelles/non listées
         bookmarks.forEach(b => { if (!order.includes(b.title)) ordered.push(b); });
-        // Remplace en place (pour éviter de casser les refs ailleurs)
         bookmarks.length = 0;
         ordered.forEach(b => bookmarks.push(b));
       }
 
       const el = $("#bookmark-container");
       el.innerHTML = bookmarks.map((b, index) => `
-        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
-          <div class="bookmark-header">
-            <div class="bookmark-title">${escapeHtml(b.title)}</div>
-            <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 5.5A1.5 1.5 0 1 1 7.5 4 1.5 1.5 0 0 1 9 5.5Zm0 6A1.5 1.5 0 1 1 7.5 10 1.5 1.5 0 0 1 9 11.5Zm0 6A1.5 1.5 0 1 1 7.5 16 1.5 1.5 0 0 1 9 17.5ZM16.5 7A1.5 1.5 0 1 1 18 5.5 1.5 1.5 0 0 1 16.5 7Zm0 6A1.5 1.5 0 1 1 18 11.5 1.5 1.5 0 0 1 16.5 13Zm0 6A1.5 1.5 0 1 1 18 17.5 1.5 1.5 0 0 1 16.5 19Z"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="bookmark-inner-container">
-            ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.name)}</a>`).join("")}
-          </div>
+        <section class='bookmark-set card glass' data-title="${escapeHtmlAttr(b.title)}" style="animation-delay: ${200 + (index * 80)}ms">
+            <div class="bookmark-title">
+              <span class="bookmark-title-text">${escapeHtml(b.title)}</span>
+              <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M7 3a1 1 0 10-2 0 1 1 0 002 0zm0 4a1 1 0 10-2 0 1 1 0 002 0zm0 4a1 1 0 10-2 0 1 1 0 002 0zm0 4a1 1 0 10-2 0 1 1 0 002 0zm8-12a1 1 0 10-2 0 1 1 0 002 0zm0 4a1 1 0 10-2 0 1 1 0 002 0zm0 4a1 1 0 10-2 0 1 1 0 002 0zm0 4a1 1 0 10-2 0 1 1 0 002 0z"/>
+                </svg>
+              </button>
+            </div>
+            <div class="bookmark-inner-container">
+                ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.name)}</a>`).join("")}
+            </div>
         </section>`).join("");
 
       initTileDnD();
     }
-
     // --- NEWS: Fonction générique pour charger un flux ---
     async function fetchAndRenderNews(apiUrl, listId) {
         const list = $(listId);
@@ -519,7 +507,6 @@
       getWeather();
       loadNews();
     });
-  
-</script>
+  </script>
 </body>
 </html>
