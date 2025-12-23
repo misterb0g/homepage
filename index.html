@@ -141,10 +141,21 @@
     </section>
     <section id="weather-details" class="card glass weather-details" hidden></section>
     
-    <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET">
-        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5a6.5 6.5 0 10-6.5 6.5c1.61 0 3.09-.59,4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
-        <button type="submit" class="visually-hidden">Rechercher</button>
+    <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
+      <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir le moteur de recherche">
+        <span id="engine-letter" aria-hidden="true">G</span>
+        <span class="engine-caret" aria-hidden="true">▾</span>
+      </button>
+      <div id="engine-menu" class="engine-menu" role="listbox" aria-label="Moteurs de recherche" hidden>
+        <button type="button" class="engine-option" role="option" data-engine="google"><span class="engine-dot">G</span>Google</button>
+        <button type="button" class="engine-option" role="option" data-engine="duckduckgo"><span class="engine-dot">D</span>DuckDuckGo</button>
+        <button type="button" class="engine-option" role="option" data-engine="bing"><span class="engine-dot">B</span>Bing</button>
+        <button type="button" class="engine-option" role="option" data-engine="brave"><span class="engine-dot">Br</span>Brave Search</button>
+      </div>
+
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l.3.3v.8l5 5 1.4-1.4-5-5h-.8l-.3-.3A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
+      <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
+      <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
     <div id="bookmark-container">
@@ -587,14 +598,138 @@
 
     // --- Barre de recherche intelligente ---
     (function() {
-        const SEARCH_ENGINES = { 'y ': { url: 'https://www.youtube.com/results', queryParam: 'search_query', placeholder: 'Rechercher sur YouTube...' }, 'w ': { url: 'https://fr.wikipedia.org/w/index.php', queryParam: 'search', placeholder: 'Rechercher sur Wikipédia...' }, 'a ': { url: 'https://www.amazon.fr/s', queryParam: 'k', placeholder: 'Rechercher sur Amazon...' }, 'default': { url: 'https://www.google.com/search', queryParam: 'q', placeholder: 'Rechercher sur Google...' } };
-        const searchForm = $('#search-form'), searchInput = $('#search-input');
         
-        function updateSearchEngine() { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); const engine = prefix ? SEARCH_ENGINES[prefix] : SEARCH_ENGINES['default']; searchForm.action = engine.url; searchInput.name = engine.queryParam; if (searchInput.placeholder !== engine.placeholder) { searchInput.placeholder = engine.placeholder; } }
-        searchInput.addEventListener('input', updateSearchEngine);
-        searchForm.addEventListener('submit', (e) => { const query = searchInput.value; const prefix = Object.keys(SEARCH_ENGINES).find(p => query.startsWith(p) && p !== 'default'); if (prefix) { searchInput.value = query.substring(prefix.length); } });
-        
-        // Raccourcis clavier
+        // --- Recherche (moteur sélectionnable via clic sur le "G") ---
+        const SEARCH_DEFAULT_ENGINE_KEY = "startpage_search_default_engine_v1";
+
+        const PREFIX_ENGINES = {
+          "w ": { url: "https://fr.wikipedia.org/w/index.php", queryParam: "search", placeholder: "Rechercher sur Wikipédia..." },
+          "a ": { url: "https://www.amazon.fr/s", queryParam: "k", placeholder: "Rechercher sur Amazon..." },
+          "y ": { url: "https://www.youtube.com/results", queryParam: "search_query", placeholder: "Rechercher sur YouTube..." }
+        };
+
+        const ENGINES = {
+          google:     { letter: "G",  name: "Google",     url: "https://www.google.com/search", queryParam: "q", placeholder: "Rechercher sur Google..." },
+          duckduckgo: { letter: "D",  name: "DuckDuckGo", url: "https://duckduckgo.com/",      queryParam: "q", placeholder: "Rechercher sur DuckDuckGo..." },
+          bing:       { letter: "B",  name: "Bing",       url: "https://www.bing.com/search",  queryParam: "q", placeholder: "Rechercher sur Bing..." },
+          brave:      { letter: "Br", name: "Brave",      url: "https://search.brave.com/search", queryParam: "q", placeholder: "Rechercher sur Brave..." }
+        };
+
+        const searchForm   = $("#search-form");
+        const searchInput  = $("#search-input");
+        const engineBtn    = $("#engine-button");
+        const engineLetter = $("#engine-letter");
+        const engineMenu   = $("#engine-menu");
+        const engineOptions = $$(".engine-option", engineMenu);
+
+        function getDefaultEngineId() {
+          const saved = localStorage.getItem(SEARCH_DEFAULT_ENGINE_KEY);
+          return (saved && ENGINES[saved]) ? saved : "google";
+        }
+
+        function setDefaultEngineId(engineId) {
+          if (!ENGINES[engineId]) return;
+          localStorage.setItem(SEARCH_DEFAULT_ENGINE_KEY, engineId);
+          applyDefaultEngine(engineId);
+        }
+
+        function applyDefaultEngine(engineId) {
+          const engine = ENGINES[engineId] || ENGINES.google;
+          searchForm.action = engine.url;
+          searchInput.name  = engine.queryParam;
+          engineLetter.textContent = engine.letter;
+          // On garde ton hint "w / a" dans le placeholder (mais on adapte le début)
+          const suffix = ", ou 'w ' pour Wikipedia, 'a ' pour Amazon...";
+          searchInput.placeholder = (engine.name === "Google") ? ("Google" + suffix) : (engine.name + suffix);
+          engineOptions.forEach((btn) => {
+            const active = btn.dataset.engine === engineId;
+            btn.classList.toggle("is-active", active);
+            btn.setAttribute("aria-selected", active ? "true" : "false");
+          });
+        }
+
+        function openEngineMenu() {
+          engineMenu.hidden = false;
+          engineBtn.setAttribute("aria-expanded", "true");
+          // focus sur l'option active (comportement "menu" propre)
+          const current = getDefaultEngineId();
+          const activeBtn = engineOptions.find(b => b.dataset.engine === current) || engineOptions[0];
+          activeBtn?.focus();
+        }
+
+        function closeEngineMenu({ focusButton = false } = {}) {
+          engineMenu.hidden = true;
+          engineBtn.setAttribute("aria-expanded", "false");
+          if (focusButton) engineBtn.focus();
+        }
+
+        function toggleEngineMenu() {
+          if (engineMenu.hidden) openEngineMenu();
+          else closeEngineMenu({ focusButton: true });
+        }
+
+        // init
+        applyDefaultEngine(getDefaultEngineId());
+
+        engineBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleEngineMenu();
+        });
+
+        engineOptions.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const id = btn.dataset.engine;
+            setDefaultEngineId(id);
+            closeEngineMenu({ focusButton: true });
+            searchInput.focus();
+          });
+        });
+
+        // click dehors / ESC
+        document.addEventListener("click", (e) => {
+          if (engineMenu.hidden) return;
+          const target = e.target;
+          if (engineMenu.contains(target) || engineBtn.contains(target)) return;
+          closeEngineMenu();
+        });
+        window.addEventListener("keydown", (e) => {
+          if (engineMenu.hidden) return;
+          if (e.key === "Escape") {
+            e.preventDefault();
+            closeEngineMenu({ focusButton: true });
+          }
+        });
+
+        // Détection des préfixes (w / a / y) : override ponctuel sans changer ton moteur par défaut
+        function detectPrefixEngine(query) {
+          const keys = Object.keys(PREFIX_ENGINES);
+          return keys.find((p) => query.startsWith(p)) || null;
+        }
+
+        searchInput.addEventListener("input", () => {
+          const q = searchInput.value || "";
+          const prefix = detectPrefixEngine(q);
+          if (prefix) {
+            const engine = PREFIX_ENGINES[prefix];
+            searchForm.action = engine.url;
+            searchInput.name = engine.queryParam;
+            // Placeholder contextuel (sans écraser l'entrée)
+            searchInput.placeholder = engine.placeholder;
+          } else {
+            applyDefaultEngine(getDefaultEngineId());
+          }
+        });
+
+        searchForm.addEventListener("submit", (e) => {
+          const q = (searchInput.value || "").trim();
+          const prefix = detectPrefixEngine(q);
+          if (!prefix) return; // moteur par défaut déjà appliqué
+          // Nettoyage de la requête : on retire le préfixe
+          searchInput.value = q.substring(prefix.length).trim();
+        });
+// Raccourcis clavier
         window.addEventListener("keydown", (e) => { 
             const activeTag = document.activeElement.tagName.toLowerCase(), isInputFocused = activeTag === "input" || activeTag === "textarea"; 
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); } 

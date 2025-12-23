@@ -123,6 +123,7 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
     /* Ombre plus profonde pour détacher du fond */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), var(--glass-shadow);
     transition: box-shadow .3s ease, transform .2s ease, border-color .3s ease;
+    position: relative;
 }
 .spotlight:hover { 
     transform: translateY(-2px); 
@@ -136,6 +137,107 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
 }
 .search-icon { width: 22px; height: 22px; fill: var(--secondaryFg); transition: fill .2s ease; margin-right: 0.6rem; }
 .spotlight:focus-within .search-icon { fill: var(--mac-brand); }
+
+/* Sélecteur de moteur (clic sur le "G") */
+.engine-button{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    height:32px;
+    padding:0 10px;
+    margin-right:0.55rem;
+    border-radius:999px;
+    border:1px solid var(--glass-border);
+    background: rgba(255,255,255,0.35);
+    color: var(--primaryFg);
+    font-weight:600;
+    letter-spacing: .2px;
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-select:none;
+    transition: transform .12s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+}
+body.dark .engine-button{
+    background: rgba(30,30,34,0.38);
+}
+.engine-button:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+.engine-button:active{
+    transform: translateY(0px) scale(0.98);
+}
+.engine-button:focus{
+    outline:none;
+}
+.spotlight:focus-within .engine-button{
+    border-color: color-mix(in srgb, var(--mac-brand) 55%, var(--glass-border));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mac-brand) 18%, transparent);
+}
+#engine-letter{
+    width:auto;
+    min-width: 14px;
+}
+.engine-caret{
+    opacity:.7;
+    font-size: 12px;
+    transform: translateY(-1px);
+}
+
+.engine-menu{
+    position:absolute;
+    left: 14px;
+    top: calc(100% + 10px);
+    width: 220px;
+    padding: 10px;
+    border-radius: 18px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    z-index: 50;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+.engine-option{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 10px 10px;
+    border-radius: 14px;
+    border: 0;
+    background: transparent;
+    color: var(--primaryFg);
+    text-align:left;
+    cursor:pointer;
+    transition: background .15s ease, transform .12s ease;
+}
+.engine-option:hover{
+    background: rgba(0,0,0,0.05);
+}
+body.dark .engine-option:hover{
+    background: rgba(255,255,255,0.06);
+}
+.engine-option:active{
+    transform: scale(0.99);
+}
+.engine-option.is-active{
+    background: color-mix(in srgb, var(--mac-brand) 12%, transparent);
+}
+.engine-dot{
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,0,0,0.06);
+    font-weight:700;
+}
+body.dark .engine-dot{
+    background: rgba(255,255,255,0.08);
+}
+
 .spotlight input { width: 100%; height: 100%; border: none; background: transparent; color: var(--fg); font-size: 1.1rem; outline: none; padding: 0; }
 .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); }
 
