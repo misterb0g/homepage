@@ -53,7 +53,37 @@
   </style>
 </head>
 <body>
-  <div class="liquid-background">
+  
+  <!-- Icons (monochrome, charte "macOS-ish") -->
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="i-google" viewBox="0 0 24 24">
+      <path d="M10 2a8 8 0 1 0 4.9 14.3l4.4 4.4 1.4-1.4-4.4-4.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/>
+    </symbol>
+    <symbol id="i-duckduckgo" viewBox="0 0 24 24">
+      <path d="M12 4c3 0 5 1.9 5 4.3 0 1.1-.5 2.1-1.3 2.8.9.5 1.8 1.3 2.3 2.4.2.4 0 .9-.4 1.1-.4.2-.9 0-1.1-.4-.5-1-1.6-1.8-2.6-2.1-.4-.1-.6-.5-.6-.9.1-.4.4-.7.8-.7h.1c.8-.1 1.4-.8 1.4-1.8C15.6 7.6 14.2 6 12 6S8.4 7.6 8.4 10c0 1 .6 1.7 1.4 1.8h.1c.4 0 .7.3.8.7.1.4-.2.8-.6.9-1 .3-2.1 1.1-2.6 2.1-.2.4-.7.6-1.1.4-.4-.2-.6-.7-.4-1.1.5-1.1 1.4-1.9 2.3-2.4C7.5 12.1 7 11.1 7 10.3 7 5.9 9.5 4 12 4z"/>
+      <path d="M13.2 10.2h2.6c.4 0 .7.3.7.7s-.3.7-.7.7h-1.2l.3.3c.3.3.3.7 0 1s-.7.3-1 0l-1-1c-.2-.2-.3-.4-.2-.7 0-.4.3-.7.7-.7z"/>
+    </symbol>
+    <symbol id="i-bing" viewBox="0 0 24 24">
+      <path d="M6 3v10.8l6.7 3.4 5.3-3.1V7.6l-6-2.4v2.3l3.6 1.5v3.7l-2.9 1.6-3.4-1.8V3H6z"/>
+    </symbol>
+    <symbol id="i-brave" viewBox="0 0 24 24">
+      <path d="M7.4 4.2 12 2l4.6 2.2 2 3.6-.8 9.2L12 22l-5.8-5.1-.8-9.2 2-3.6zm1.2 2.1-1.4 2.6.7 7.4L12 20l4.1-3.7.7-7.4-1.4-2.6L12 4.8 8.6 6.3z"/>
+    </symbol>
+    <symbol id="i-wikipedia" viewBox="0 0 24 24">
+      <path d="M6 4h9a3 3 0 0 1 3 3v13H8a2 2 0 0 0-2 2V6a2 2 0 0 1 2-2zm0 2v14c.6-.6 1.4-1 2.3-1H16V7a1 1 0 0 0-1-1H6z"/>
+      <path d="M9 8h6v2H9V8zm0 4h6v2H9v-2z"/>
+    </symbol>
+    <symbol id="i-amazon" viewBox="0 0 24 24">
+      <path d="M7 7h2l.6 10.3c0 .4.3.7.7.7h7.4c.4 0 .7-.3.7-.7L19 9H9.3L9.2 7H20.5a1 1 0 0 1 1 1.1l-1.2 10.2a2 2 0 0 1-2 1.7H10a2 2 0 0 1-2-1.9L7 7z"/>
+      <path d="M9 6a3 3 0 0 1 6 0h-2a1 1 0 1 0-2 0H9z"/>
+    </symbol>
+    <symbol id="i-youtube" viewBox="0 0 24 24">
+      <path d="M21 8.2a3 3 0 0 0-2.1-2.1C17.1 5.6 12 5.6 12 5.6s-5.1 0-6.9.5A3 3 0 0 0 3 8.2 31 31 0 0 0 3 12s0 2.4.5 3.8a3 3 0 0 0 2.1 2.1c1.8.5 6.9.5 6.9.5s5.1 0 6.9-.5a3 3 0 0 0 2.1-2.1c.5-1.4.5-3.8.5-3.8s0-2.4-.5-3.8z"/>
+      <path d="M10 15.5v-7l6 3.5-6 3.5z" fill="currentColor"/>
+    </symbol>
+  </svg>
+
+<div class="liquid-background">
     <div class="blob1"></div>
     <div class="blob2"></div>
   </div>
@@ -142,19 +172,51 @@
     <section id="weather-details" class="card glass weather-details" hidden></section>
     
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
-      <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir le moteur de recherche">
-        <span id="engine-letter" aria-hidden="true">G</span>
-        <span class="engine-caret" aria-hidden="true">▾</span>
-      </button>
-      <div id="engine-menu" class="engine-menu" role="listbox" aria-label="Moteurs de recherche" hidden>
-        <button type="button" class="engine-option" role="option" data-engine="google"><span class="engine-dot">G</span>Google</button>
-        <button type="button" class="engine-option" role="option" data-engine="duckduckgo"><span class="engine-dot">D</span>DuckDuckGo</button>
-        <button type="button" class="engine-option" role="option" data-engine="bing"><span class="engine-dot">B</span>Bing</button>
-        <button type="button" class="engine-option" role="option" data-engine="brave"><span class="engine-dot">Br</span>Brave Search</button>
-      </div>
+      <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche">
+  <svg class="engine-icon" viewBox="0 0 24 24" aria-hidden="true"><use id="engine-icon-use" href="#i-google"></use></svg>
+  <span class="engine-caret" aria-hidden="true">▾</span>
+</button>
+      <div id="engine-menu" class="engine-menu" role="listbox" aria-label="Recherche" hidden>
+  <div class="engine-menu-section">Moteurs</div>
+  <button type="button" class="engine-option" role="option" data-engine="google">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-google"></use></svg>
+    <span>Google</span>
+  </button>
+  <button type="button" class="engine-option" role="option" data-engine="duckduckgo">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-duckduckgo"></use></svg>
+    <span>DuckDuckGo</span>
+  </button>
+  <button type="button" class="engine-option" role="option" data-engine="bing">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bing"></use></svg>
+    <span>Bing</span>
+  </button>
+  <button type="button" class="engine-option" role="option" data-engine="brave">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-brave"></use></svg>
+    <span>Brave Search</span>
+  </button>
+
+  <div class="engine-menu-divider" role="separator" aria-hidden="true"></div>
+  <div class="engine-menu-section">Raccourcis</div>
+
+  <button type="button" class="engine-option" role="option" data-engine="wikipedia">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wikipedia"></use></svg>
+    <span>Wikipedia</span>
+    <span class="engine-hint">w</span>
+  </button>
+  <button type="button" class="engine-option" role="option" data-engine="amazon">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-amazon"></use></svg>
+    <span>Amazon</span>
+    <span class="engine-hint">a</span>
+  </button>
+  <button type="button" class="engine-option" role="option" data-engine="youtube">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-youtube"></use></svg>
+    <span>YouTube</span>
+    <span class="engine-hint">y</span>
+  </button>
+</div>
 
       <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l.3.3v.8l5 5 1.4-1.4-5-5h-.8l-.3-.3A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
-      <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' pour Wikipedia, 'a ' pour Amazon..." required>
+      <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' Wikipedia, 'a ' Amazon, 'y ' YouTube…" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
@@ -609,17 +671,22 @@
         };
 
         const ENGINES = {
-          google:     { letter: "G",  name: "Google",     url: "https://www.google.com/search", queryParam: "q", placeholder: "Rechercher sur Google..." },
-          duckduckgo: { letter: "D",  name: "DuckDuckGo", url: "https://duckduckgo.com/",      queryParam: "q", placeholder: "Rechercher sur DuckDuckGo..." },
-          bing:       { letter: "B",  name: "Bing",       url: "https://www.bing.com/search",  queryParam: "q", placeholder: "Rechercher sur Bing..." },
-          brave:      { letter: "Br", name: "Brave",      url: "https://search.brave.com/search", queryParam: "q", placeholder: "Rechercher sur Brave..." }
-        };
+  google:     { iconId: "i-google",     name: "Google",       url: "https://www.google.com/search", queryParam: "q" },
+  duckduckgo: { iconId: "i-duckduckgo", name: "DuckDuckGo",    url: "https://duckduckgo.com/",      queryParam: "q" },
+  bing:       { iconId: "i-bing",       name: "Bing",         url: "https://www.bing.com/search",  queryParam: "q" },
+  brave:      { iconId: "i-brave",      name: "Brave",        url: "https://search.brave.com/search", queryParam: "q" },
+
+  // Raccourcis (aussi accessibles via préfixe dans la barre)
+  wikipedia:  { iconId: "i-wikipedia",  name: "Wikipedia",    url: "https://fr.wikipedia.org/w/index.php", queryParam: "search" },
+  amazon:     { iconId: "i-amazon",     name: "Amazon",       url: "https://www.amazon.fr/s",      queryParam: "k" },
+  youtube:    { iconId: "i-youtube",    name: "YouTube",      url: "https://www.youtube.com/results", queryParam: "search_query" }
+};
 
         const searchForm   = $("#search-form");
         const searchInput  = $("#search-input");
         const engineBtn    = $("#engine-button");
-        const engineLetter = $("#engine-letter");
-        const engineMenu   = $("#engine-menu");
+        const engineIconUse = $("#engine-icon-use");
+                const engineMenu   = $("#engine-menu");
         const engineOptions = $$(".engine-option", engineMenu);
 
         function getDefaultEngineId() {
@@ -633,14 +700,21 @@
           applyDefaultEngine(engineId);
         }
 
-        function applyDefaultEngine(engineId) {
+        function setEngineIcon(iconId) {
+  const href = "#" + (iconId || "i-google");
+  // Safari: on met href ET xlink:href
+  engineIconUse.setAttribute("href", href);
+  engineIconUse.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", href);
+}
+
+function applyDefaultEngine(engineId) {
           const engine = ENGINES[engineId] || ENGINES.google;
           searchForm.action = engine.url;
           searchInput.name  = engine.queryParam;
-          engineLetter.textContent = engine.letter;
+          setEngineIcon(engine.iconId);
           // On garde ton hint "w / a" dans le placeholder (mais on adapte le début)
-          const suffix = ", ou 'w ' pour Wikipedia, 'a ' pour Amazon...";
-          searchInput.placeholder = (engine.name === "Google") ? ("Google" + suffix) : (engine.name + suffix);
+          const suffix = ", ou 'w ' Wikipedia, 'a ' Amazon, 'y ' YouTube…";
+searchInput.placeholder = engine.name + suffix;
           engineOptions.forEach((btn) => {
             const active = btn.dataset.engine === engineId;
             btn.classList.toggle("is-active", active);
@@ -651,6 +725,7 @@
         function openEngineMenu() {
           engineMenu.hidden = false;
           engineBtn.setAttribute("aria-expanded", "true");
+          document.body.classList.add("engine-open");
           // focus sur l'option active (comportement "menu" propre)
           const current = getDefaultEngineId();
           const activeBtn = engineOptions.find(b => b.dataset.engine === current) || engineOptions[0];
@@ -660,6 +735,7 @@
         function closeEngineMenu({ focusButton = false } = {}) {
           engineMenu.hidden = true;
           engineBtn.setAttribute("aria-expanded", "false");
+          document.body.classList.remove("engine-open");
           if (focusButton) engineBtn.focus();
         }
 
