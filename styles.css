@@ -547,3 +547,23 @@ body.engine-open .engine-menu { z-index: 6000; }
 body.engine-open .bookmarks,
 body.engine-open .bookmarks-grid,
 body.engine-open .bookmark-set { z-index: 1; }
+
+/* =========================================================
+   FIX FINAL — MENU MOTEUR (opacité macOS)
+   ========================================================= */
+
+/* Menu de sélection du moteur — dense, lisible, style macOS */
+.engine-menu {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+}
+
+/* Variante sombre — menus Finder / Safari */
+:root[data-theme="dark"] .engine-menu {
+  background: rgba(28, 28, 30, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.12);
+}
