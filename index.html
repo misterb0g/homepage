@@ -142,7 +142,7 @@
               <input type="checkbox" id="edit-mode-toggle">
               <span class="slider"></span>
           </label>
-          <p class="help-text">Quand c’est activé, les poignées apparaissent et tu peux réordonner les tuiles.</p>
+          <p class="help-text">Quand c’est activé, les poignées apparaissent et tu peux réordonner les tuiles (sinon, zéro déplacement accidentel).</p>
       </div>
 
       <div class="panel-section">
@@ -151,7 +151,7 @@
               <input type="checkbox" id="tiles-reset-toggle">
               <span class="slider"></span>
           </label>
-          <p class="help-text">Action ponctuelle : remet l’ordre par défaut.</p>
+          <p class="help-text">Action ponctuelle : remet l’ordre par défaut, puis se coupe tout seul.</p>
       </div>
 
       </div>
@@ -172,7 +172,7 @@
     <section id="weather-details" class="card glass weather-details" hidden></section>
     
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
-      <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche">
+      <button type="button" id="engine-button" class="engine-button" title="Choisir le moteur de recherche" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche">
   <svg class="engine-icon" viewBox="0 0 24 24" aria-hidden="true"><use id="engine-icon-use" href="#i-google"></use></svg>
   <span class="engine-caret" aria-hidden="true">▾</span>
 </button>
@@ -216,7 +216,7 @@
 </div>
 
       <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l.3.3v.8l5 5 1.4-1.4-5-5h-.8l-.3-.3A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
-      <input type="search" id="search-input" name="q" placeholder="Chercher..." required>
+      <input type="search" id="search-input" name="q" placeholder="Rechercher…" required title="Astuce : w␠ Wikipédia · a␠ Amazon · y␠ YouTube">
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
@@ -231,7 +231,7 @@
       <div class="news-grid">
           <div id="macg-column">
               <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
-                  MacG
+                  MacGeneration
               </h3>
               <div id="macg-list" style="display: grid; gap: 0.8rem;"></div>
           </div>
@@ -712,9 +712,11 @@ function applyDefaultEngine(engineId) {
           searchForm.action = engine.url;
           searchInput.name  = engine.queryParam;
           setEngineIcon(engine.iconId);
-          // On garde ton hint "w / a" dans le placeholder (mais on adapte le début)
-          const suffix = ", ou 'w ' Wikipedia, 'a ' Amazon, 'y ' YouTube…";
-searchInput.placeholder = engine.name + suffix;
+          // Placeholder volontairement minimal ; raccourcis rappelés en tooltip
+          const suffix = ""; // laissé pour compat éventuelle
+          searchInput.title = "Astuce : w␠ Wikipédia · a␠ Amazon · y␠ YouTube";
+searchInput.placeholder = "Rechercher…";
+          engineBtn.title = `Moteur : ${engine.name} — cliquer pour changer`;
           engineOptions.forEach((btn) => {
             const active = btn.dataset.engine === engineId;
             btn.classList.toggle("is-active", active);
@@ -791,9 +793,13 @@ searchInput.placeholder = engine.name + suffix;
             const engine = PREFIX_ENGINES[prefix];
             searchForm.action = engine.url;
             searchInput.name = engine.queryParam;
-            // Placeholder contextuel (sans écraser l'entrée)
-            searchInput.placeholder = engine.placeholder;
+            // On garde un placeholder simple, et on met le contexte en tooltip
+            searchInput.placeholder = "Rechercher…";
+            searchInput.title = engine.placeholder;
+            engineBtn.title = `Cible : ${engine.placeholder.replace("Rechercher sur ", "").replace("...", "")} — via préfixe`;
           } else {
+            // Restore default hint
+            searchInput.title = "Astuce : w␠ Wikipédia · a␠ Amazon · y␠ YouTube";
             applyDefaultEngine(getDefaultEngineId());
           }
         });
