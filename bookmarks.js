@@ -50,7 +50,6 @@ const bookmarks = [
       { name: "Prime", url: "https://www.primevideo.com" },
       { name: "Netflix", url: "https://netflix.com" },
       { name: "Disney +", url: "https://www.disneyplus.com/fr-fr/home" },
-      { name: "Canal+", url: "https://pass.canalplus.com/" },
     ],
   },
 
