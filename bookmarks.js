@@ -89,7 +89,13 @@ const bookmarks = [
       { name: "ChatGPT", url: "https://chatgpt.com/" },
       { name: "Gemini", url: "https://gemini.google.com/" },
       { name: "Notebook LM", url: "https://notebooklm.google" },
+    ],
+  
+      {
+    title: "Admin Page",
+    links: [
       { name: "Github", url: "https://github.com/misterb0g/homepage" },
+      { name: "Vercel", url: "https://vercel.com/misterb0gs-projects/homepage" },
     ],
   },
 ];
