@@ -148,7 +148,7 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
     margin-right:0.55rem;
     border-radius:999px;
     border:1px solid var(--glass-border);
-    background: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.85);
     color: var(--primaryFg);
     font-weight:600;
     letter-spacing: .2px;
