@@ -691,3 +691,102 @@ body::before{
 
 /* Mini rebond façon Finder au drop */
 .bookmark-set.tile-bounce{ animation: tileBounce .15s cubic-bezier(.2,.9,.2,1); }
+
+
+
+
+/* =========================
+   SPOTLIGHT (version "assumée" / proposition 2)
+   - au focus : modal centré + halo + fond assombri
+   ========================= */
+.spotlight{
+  border-radius: 20px;
+}
+
+@supports(selector(:has(*))) {
+  body:has(.spotlight:focus-within)::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.28);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 900;
+    animation: spotOverlayIn .18s ease-out forwards;
+  }
+
+  @keyframes spotOverlayIn{
+    from{ opacity: 0; }
+    to{ opacity: 1; }
+  }
+
+  body:has(.spotlight:focus-within) .spotlight{
+    position: fixed;
+    left: 50%;
+    top: 18vh;
+    transform: translateX(-50%);
+    width: min(760px, 92vw);
+    height: 62px;
+    z-index: 901;
+    margin: 0;
+    border-color: color-mix(in srgb, var(--mac-brand) 55%, var(--glass-border));
+    box-shadow: 0 20px 80px rgba(0,0,0,0.28), var(--glass-shadow);
+  }
+
+  body:has(.spotlight:focus-within) #bookmark-container,
+  body:has(.spotlight:focus-within) #news-container,
+  body:has(.spotlight:focus-within) #chat-container,
+  body:has(.spotlight:focus-within) #weather,
+  body:has(.spotlight:focus-within) #weather-details,
+  body:has(.spotlight:focus-within) #greeting-container{
+    filter: blur(1px);
+    opacity: .85;
+    transition: filter .18s ease, opacity .18s ease;
+  }
+}
+
+/* fallback (sans :has) : juste un spotlight plus "premium" */
+@supports not (selector(:has(*))) {
+  .spotlight:focus-within{
+    box-shadow: 0 20px 80px rgba(0,0,0,0.24), var(--glass-shadow);
+  }
+}
+
+
+/* =========================
+   PRIMARY TILES (RH / FINANCE / ADMIN)
+   - ciblage par titre, ordre indépendant
+   ========================= */
+@media (min-width: 980px) {
+  #bookmark-container .bookmark-set[data-tile-title="Ressources Humaines"],
+  #bookmark-container .bookmark-set[data-tile-title="Banques & Finance"],
+  #bookmark-container .bookmark-set[data-tile-title="Administration"]{
+    flex-basis: 360px;
+  }
+
+  #bookmark-container .bookmark-set[data-tile-title="Ressources Humaines"]::after,
+  #bookmark-container .bookmark-set[data-tile-title="Banques & Finance"]::after,
+  #bookmark-container .bookmark-set[data-tile-title="Administration"]::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius: var(--radius);
+    pointer-events:none;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--mac-brand) 22%, transparent),
+      0 10px 30px rgba(0,0,0,0.10);
+    opacity: .9;
+  }
+
+  :root[data-theme="light"]
+  #bookmark-container .bookmark-set[data-tile-title="Ressources Humaines"]::after,
+  :root[data-theme="light"]
+  #bookmark-container .bookmark-set[data-tile-title="Banques & Finance"]::after,
+  :root[data-theme="light"]
+  #bookmark-container .bookmark-set[data-tile-title="Administration"]::after{
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--mac-brand) 18%, transparent),
+      0 12px 26px rgba(0,0,0,0.08);
+  }
+}
+

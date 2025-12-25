@@ -50,6 +50,12 @@
             gap: 1.5rem;
         }
     }
+  
+    /* --- Spotlight modal : garantir que le menu des moteurs passe AU-DESSUS de l’overlay --- */
+    @supports(selector(:has(*))) {
+      body:has(.spotlight:focus-within) .engine-menu { z-index: 906; }
+    }
+
   </style>
 </head>
 <body>
@@ -103,7 +109,7 @@
       <div class="panel-section">
           <label for="weather-location-input">Lieu de la météo</label>
           <div class="input-group">
-              <input type="text" id="weather-location-input" placeholder="Rechercher…">
+              <input type="text" id="weather-location-input" placeholder="Ville (ex. Bruxelles)">
               <button id="weather-location-save">OK</button>
           </div>
       </div>
@@ -214,7 +220,7 @@
 </div>
 
       <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l.3.3v.8l5 5 1.4-1.4-5-5h-.8l-.3-.3A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
-      <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' Wikipedia, 'a ' Amazon, 'y ' YouTube…" required>
+      <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
@@ -265,6 +271,13 @@
   <script>
 
     // --- Utilitaires ---
+
+// --- Chat : valeur par défaut (masqué par défaut) ---
+if (localStorage.getItem('showChat') === null) {
+  localStorage.setItem('showChat', 'false');
+}
+
+
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => root.querySelectorAll(sel);
     function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
@@ -514,6 +527,9 @@ function setTileSortableEnabled(enabled) {
         // --- Recherche (moteur sélectionnable via clic sur le "G") ---
         const SEARCH_DEFAULT_ENGINE_KEY = "startpage_search_default_engine_v1";
 
+        // Placeholder "Spotlight-like" (stable, quel que soit le moteur)
+        const BASE_PLACEHOLDER = "Rechercher, lancer un outil, poser une question…";
+
         const PREFIX_ENGINES = {
           "w ": { url: "https://fr.wikipedia.org/w/index.php", queryParam: "search", placeholder: "Rechercher sur Wikipédia..." },
           "a ": { url: "https://www.amazon.fr/s", queryParam: "k", placeholder: "Rechercher sur Amazon..." },
@@ -537,6 +553,13 @@ function setTileSortableEnabled(enabled) {
         const engineBtn    = $("#engine-button");
         const engineIconUse = $("#engine-icon-use");
                 const engineMenu   = $("#engine-menu");
+
+        /* Engine menu focus keeper */
+        function keepSpotlightFocused(){
+          // Safari: conserve le mode Spotlight (focus-within) quand on ouvre le menu
+          try { searchInput && searchInput.focus({ preventScroll: true }); } catch(e) { try { searchInput && searchInput.focus(); } catch(_){} }
+        }
+
         const engineOptions = $$(".engine-option", engineMenu);
 
         function getDefaultEngineId() {
@@ -565,7 +588,7 @@ function applyDefaultEngine(engineId) {
           engineBtn.title = engine.name;
           // On garde ton hint "w / a" dans le placeholder (mais on adapte le début)
           const suffix = ", ou 'w ' Wikipedia, 'a ' Amazon, 'y ' YouTube…";
-searchInput.placeholder = engine.name + suffix;
+searchInput.placeholder = BASE_PLACEHOLDER;
           engineOptions.forEach((btn) => {
             const active = btn.dataset.engine === engineId;
             btn.classList.toggle("is-active", active);
@@ -643,7 +666,7 @@ searchInput.placeholder = engine.name + suffix;
             searchForm.action = engine.url;
             searchInput.name = engine.queryParam;
             // Placeholder contextuel (sans écraser l'entrée)
-            searchInput.placeholder = engine.placeholder;
+            searchInput.placeholder = BASE_PLACEHOLDER;
           } else {
             applyDefaultEngine(getDefaultEngineId());
           }
