@@ -103,7 +103,7 @@
       <div class="panel-section">
           <label for="weather-location-input">Lieu de la météo</label>
           <div class="input-group">
-              <input type="text" id="weather-location-input" placeholder="Ex: Sterrebeek">
+              <input type="text" id="weather-location-input" placeholder="Rechercher…">
               <button id="weather-location-save">OK</button>
           </div>
       </div>
@@ -172,7 +172,7 @@
     <section id="weather-details" class="card glass weather-details" hidden></section>
     
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
-      <button type="button" id="engine-button" class="engine-button" title="Choisir le moteur de recherche" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche">
+      <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche" title="Google">
   <svg class="engine-icon" viewBox="0 0 24 24" aria-hidden="true"><use id="engine-icon-use" href="#i-google"></use></svg>
   <span class="engine-caret" aria-hidden="true">▾</span>
 </button>
@@ -216,7 +216,7 @@
 </div>
 
       <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l.3.3v.8l5 5 1.4-1.4-5-5h-.8l-.3-.3A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
-      <input type="search" id="search-input" name="q" placeholder="Rechercher…" required title="Astuce : w␠ Wikipédia · a␠ Amazon · y␠ YouTube">
+      <input type="search" id="search-input" name="q" placeholder="Google, ou 'w ' Wikipedia, 'a ' Amazon, 'y ' YouTube…" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     
@@ -262,6 +262,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="bookmarks.js"></script>
   <script>
 
@@ -300,198 +301,49 @@
       try { localStorage.removeItem(TILE_ORDER_KEY); } catch {}
     }
 
-    function initTileDnD() {
-      const container = $("#bookmark-container");
-      if (!container) return;
+    function initTileSortable() {
+  const container = $("#bookmark-container");
+  if (!container) return;
 
-      // Nettoyage (si re-render)
-      $$(".bookmark-set", container).forEach(tile => {
-        tile.classList.remove("tile-dragging", "tile-peek");
-        tile.style.removeProperty("--drag-x");
-        tile.style.removeProperty("--drag-y");
-      });
+  // Déjà initialisé ?
+  if (window.__tileSortable) {
+    window.__tileSortable.destroy();
+    window.__tileSortable = null;
+  }
 
-      let active = null; // {tile, placeholder, startX, startY, offsetX, offsetY, pointerId, lastX, lastY, baseLeft, baseTop}
-      let raf = null;
+  if (typeof Sortable === "undefined") {
+    console.warn("SortableJS non chargé : drag & drop désactivé.");
+    return;
+  }
 
-      const tiles = () => Array.from($$(".bookmark-set", container));
-      const isHandle = (el) => el && (el.classList?.contains("tile-handle") || el.closest?.(".tile-handle"));
-
-      function makePlaceholder(fromTile) {
-        const ph = document.createElement("section");
-        ph.className = "bookmark-set card glass tile-placeholder";
-        const r = fromTile.getBoundingClientRect();
-        ph.style.width = r.width + "px";
-        ph.style.height = r.height + "px";
-        ph.innerHTML = `<div class="tile-placeholder-inner"></div>`;
-        return ph;
-      }
-
-      function setDraggingStyles(tile, x, y) {
-        tile.style.setProperty("--drag-x", `${x}px`);
-        tile.style.setProperty("--drag-y", `${y}px`);
-      }
-
-      function getInsertionIndex(x, y, draggingTile) {
-        const others = tiles().filter(t => t !== draggingTile && !t.classList.contains("tile-placeholder"));
-        if (!others.length) return 0;
-
-        // On cherche l’élément le plus proche (centre)
-        let best = { idx: others.length, dist: Infinity, before: null };
-        others.forEach((t, i) => {
-          const r = t.getBoundingClientRect();
-          const cx = r.left + r.width / 2;
-          const cy = r.top + r.height / 2;
-          const d = (cx - x) ** 2 + (cy - y) ** 2;
-          if (d < best.dist) best = { idx: i, dist: d, before: t };
-        });
-
-        if (!best.before) return others.length;
-
-        // Décide avant/après selon la position relative (plus stable en flex-wrap)
-        const r = best.before.getBoundingClientRect();
-        const before = (y < r.top + r.height / 2) || (x < r.left + r.width / 2);
-        return before ? others.indexOf(best.before) : others.indexOf(best.before) + 1;
-      }
-
-      function placePlaceholderAt(index, draggingTile) {
-        const ph = active?.placeholder;
-        if (!ph) return;
-
-        const current = tiles().filter(t => t !== draggingTile && t !== ph);
-        const clamped = Math.max(0, Math.min(index, current.length));
-
-        // Insère au bon endroit
-        if (clamped >= current.length) {
-          container.appendChild(ph);
-        } else {
-          container.insertBefore(ph, current[clamped]);
-        }
-      }
-
-      function onPointerMove(e) {
-        if (!active) return;
-        active.lastX = e.clientX;
-        active.lastY = e.clientY;
-
-        if (!raf) {
-          raf = requestAnimationFrame(() => {
-            raf = null;
-            const { tile, startX, startY, offsetX, offsetY, lastX, lastY } = active;
-            const dx = lastX - startX - offsetX;
-            const dy = lastY - startY - offsetY;
-            setDraggingStyles(tile, dx, dy);
-
-            const idx = getInsertionIndex(lastX, lastY, tile);
-            placePlaceholderAt(idx, tile);
-
-            // Petit "peek" sur la tuile sous le curseur (effet macOS-ish)
-            tiles().forEach(t => t.classList.toggle("tile-peek", t !== tile && t !== active.placeholder && t.getBoundingClientRect().left < lastX && t.getBoundingClientRect().right > lastX && t.getBoundingClientRect().top < lastY && t.getBoundingClientRect().bottom > lastY));
-          });
-        }
-      }
-
-      function endDrag(commit = true) {
-        if (!active) return;
-
-        const { tile, placeholder, pointerId } = active;
-
-        try { tile.releasePointerCapture(pointerId); } catch {}
-        document.removeEventListener("pointermove", onPointerMove, { passive: true });
-        document.removeEventListener("pointerup", onPointerUp, { passive: true });
-
-        // Replace tile at placeholder position
-        tile.classList.add("tile-dropping");
-        tile.classList.remove("tile-dragging");
-        tile.style.pointerEvents = "";
-
-        const phRect = placeholder.getBoundingClientRect();
-        const tRect = tile.getBoundingClientRect();
-        // Ajuste l’animation de "snap"
-        const snapX = (phRect.left - tRect.left);
-        const snapY = (phRect.top - tRect.top);
-        setDraggingStyles(tile, parseFloat(tile.style.getPropertyValue("--drag-x") || 0) + snapX, parseFloat(tile.style.getPropertyValue("--drag-y") || 0) + snapY);
-
-        // Après un tick, on remet le tile dans le flux
-        requestAnimationFrame(() => {
-          placeholder.replaceWith(tile);
-          tile.classList.add("tile-bounce");
-          setTimeout(() => tile.classList.remove("tile-bounce"), 180);
-          // reset transform vars
-          tile.style.removeProperty("--drag-x");
-          tile.style.removeProperty("--drag-y");
-          // remet l’élément dans le flux normal
-          tile.style.position = "";
-          tile.style.left = "";
-          tile.style.top = "";
-          tile.style.width = "";
-          tile.style.height = "";
-          tile.classList.remove("tile-dropping");
-          tiles().forEach(t => t.classList.remove("tile-peek"));
-          if (commit) saveTileOrderFromDOM();
-        });
-
-        active = null;
-      }
-
-      function onPointerUp() { endDrag(true); }
-
-      container.addEventListener("pointerdown", (e) => {
-        if (!document.body.classList.contains("edit-mode")) return;
-        const target = e.target;
-        if (!isHandle(target)) return;
-
-        const tile = target.closest(".bookmark-set");
-        if (!tile) return;
-
-        // Empêche sélection / click
-        e.preventDefault();
-
-        const r = tile.getBoundingClientRect();
-        const ph = makePlaceholder(tile);
-
-        // Position initiale
-        const startX = e.clientX;
-        const startY = e.clientY;
-        const offsetX = startX - r.left;
-        const offsetY = startY - r.top;
-
-        // Placeholders + style
-        tile.classList.add("tile-dragging");
-        tile.style.pointerEvents = "none"; // évite hover/click pendant le drag
-        setDraggingStyles(tile, 0, 0);
-
-        // Remplace la tuile par un placeholder (évite le « double espace » en flex-wrap)
-        tile.replaceWith(ph);
-
-        // La tuile devient un élément flottant (plus “macOS-like”)
-        tile.style.position = "fixed";
-        tile.style.left = `${r.left}px`;
-        tile.style.top = `${r.top}px`;
-        tile.style.width = `${r.width}px`;
-        tile.style.height = `${r.height}px`;
-        tile.style.margin = "0";
-        tile.style.zIndex = "9999";
-        document.body.appendChild(tile);
-
-        active = {
-          tile,
-          placeholder: ph,
-          startX, startY,
-          offsetX, offsetY,
-          pointerId: e.pointerId,
-          lastX: startX,
-          lastY: startY,
-        };
-
-
-        tile.setPointerCapture(e.pointerId);
-        document.addEventListener("pointermove", onPointerMove, { passive: true });
-        document.addEventListener("pointerup", onPointerUp, { passive: true });
-      });
-
-      // Le reset est géré via le panneau de paramètres (toggle)
+  window.__tileSortable = new Sortable(container, {
+    animation: 150,
+    easing: "cubic-bezier(.2,.9,.2,1)",
+    handle: ".tile-handle",
+    draggable: ".bookmark-set",
+    ghostClass: "tile-ghost",
+    chosenClass: "tile-chosen",
+    dragClass: "tile-dragging",
+    forceFallback: false, // fallback seulement si nécessaire
+    swapThreshold: 0.65,
+    onEnd: (evt) => {
+      // Petit rebond façon Finder au drop
+      const item = evt.item;
+      item.classList.add("tile-bounce");
+      setTimeout(() => item.classList.remove("tile-bounce"), 180);
+      saveTileOrderFromDOM();
     }
+  });
+
+  // Respect du Mode édition : par défaut désactivé tant que le toggle n’est pas ON
+  const isEdit = document.body.classList.contains("edit-mode");
+  window.__tileSortable.option("disabled", !isEdit);
+}
+
+function setTileSortableEnabled(enabled) {
+  if (!window.__tileSortable) return;
+  window.__tileSortable.option("disabled", !enabled);
+}
 
 // --- Météo ---
     async function getWeather() {
@@ -589,7 +441,7 @@
           </div>
         </section>`).join("");
 
-      initTileDnD();
+      initTileSortable();
     }
 
     // --- NEWS: Fonction générique pour charger un flux ---
@@ -712,11 +564,10 @@ function applyDefaultEngine(engineId) {
           searchForm.action = engine.url;
           searchInput.name  = engine.queryParam;
           setEngineIcon(engine.iconId);
-          // Placeholder volontairement minimal ; raccourcis rappelés en tooltip
-          const suffix = ""; // laissé pour compat éventuelle
-          searchInput.title = "Astuce : w␠ Wikipédia · a␠ Amazon · y␠ YouTube";
-searchInput.placeholder = "Rechercher…";
-          engineBtn.title = `Moteur : ${engine.name} — cliquer pour changer`;
+          engineBtn.title = engine.name;
+          // On garde ton hint "w / a" dans le placeholder (mais on adapte le début)
+          const suffix = ", ou 'w ' Wikipedia, 'a ' Amazon, 'y ' YouTube…";
+searchInput.placeholder = engine.name + suffix;
           engineOptions.forEach((btn) => {
             const active = btn.dataset.engine === engineId;
             btn.classList.toggle("is-active", active);
@@ -793,13 +644,9 @@ searchInput.placeholder = "Rechercher…";
             const engine = PREFIX_ENGINES[prefix];
             searchForm.action = engine.url;
             searchInput.name = engine.queryParam;
-            // On garde un placeholder simple, et on met le contexte en tooltip
-            searchInput.placeholder = "Rechercher…";
-            searchInput.title = engine.placeholder;
-            engineBtn.title = `Cible : ${engine.placeholder.replace("Rechercher sur ", "").replace("...", "")} — via préfixe`;
+            // Placeholder contextuel (sans écraser l'entrée)
+            searchInput.placeholder = engine.placeholder;
           } else {
-            // Restore default hint
-            searchInput.title = "Astuce : w␠ Wikipédia · a␠ Amazon · y␠ YouTube";
             applyDefaultEngine(getDefaultEngineId());
           }
         });
@@ -875,6 +722,7 @@ searchInput.placeholder = "Rechercher…";
         const EDIT_MODE_KEY = "startpage_edit_mode_v1";
         function applyEditMode(on) {
           document.body.classList.toggle("edit-mode", !!on);
+          setTileSortableEnabled(!!on);
           try { localStorage.setItem(EDIT_MODE_KEY, on ? "1" : "0"); } catch {}
         }
         const editModeToggle = $('#edit-mode-toggle');

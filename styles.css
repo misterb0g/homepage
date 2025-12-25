@@ -148,7 +148,7 @@ body { margin: 0; background-color: var(--bg); transition: background-color .3s 
     margin-right:0.55rem;
     border-radius:999px;
     border:1px solid var(--glass-border);
-    background: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.55);
     color: var(--primaryFg);
     font-weight:600;
     letter-spacing: .2px;
@@ -549,21 +549,145 @@ body.engine-open .bookmarks-grid,
 body.engine-open .bookmark-set { z-index: 1; }
 
 /* =========================================================
-   FIX FINAL — MENU MOTEUR (opacité macOS)
+   AJUSTEMENTS — MENU MOTEURS & BARRE DE RECHERCHE (SAFE PATCH)
    ========================================================= */
 
-/* Menu de sélection du moteur — dense, lisible, style macOS */
-.engine-menu {
+/* Menu de sélection du moteur — rendu type macOS (quasi opaque) */
+.engine-menu{
   background: rgba(255, 255, 255, 0.88) !important;
   backdrop-filter: blur(22px) saturate(1.25);
   -webkit-backdrop-filter: blur(22px) saturate(1.25);
 
   border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 18px 50px rgba(0,0,0,.18);
 }
 
 /* Variante sombre — menus Finder / Safari */
-:root[data-theme="dark"] .engine-menu {
+:root[data-theme="dark"] .engine-menu{
   background: rgba(28, 28, 30, 0.92) !important;
   border-color: rgba(255, 255, 255, 0.12);
 }
+
+/* Placeholder plus sobre */
+#search-input::placeholder{
+  color: var(--secondaryFg);
+  opacity: 0.8;
+}
+
+/* Rappel discret des raccourcis (visible uniquement au focus) */
+.spotlight-subhint{
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  color: var(--secondaryFg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+/* Apparition seulement quand on écrit */
+.spotlight:focus-within .spotlight-subhint{
+  opacity: 0.8;
+}
+
+/* Style macOS pour les petites touches */
+.spotlight-subhint kbd{
+  font-family: var(--fontFamily);
+  font-size: 0.78rem;
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.65);
+  margin-left: 4px;
+}
+
+:root[data-theme="dark"] .spotlight-subhint kbd{
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+}
+
+
+/* =========================================================
+   FOND — option 1 (macOS sobre)
+   - Dégradés doux + grain léger
+   ========================================================= */
+body{
+  background-image:
+    radial-gradient(1200px 700px at 15% 10%, rgba(90,160,255,.18), transparent 55%),
+    radial-gradient(900px 600px at 85% 25%, rgba(255,140,210,.12), transparent 60%),
+    radial-gradient(900px 700px at 50% 110%, rgba(120,255,200,.10), transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Grain discret (effet “papier” macOS) */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .08;
+  mix-blend-mode: overlay;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+
+/* On garde les blobs mais plus discrets */
+.liquid-background{ opacity: .30; }
+.blob1, .blob2{ opacity: .28; filter: blur(90px); }
+:root[data-theme="dark"] body::before{ opacity: .10; }
+
+
+
+/* =========================================================
+   Drag & Drop (SortableJS) — repères visuels plus lisibles
+   ========================================================= */
+.bookmark-set.tile-chosen{
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 26px 60px rgba(0,0,0,.22);
+  border-color: color-mix(in srgb, var(--mac-brand) 35%, var(--glass-border));
+}
+
+.bookmark-set.tile-dragging{
+  cursor: grabbing;
+  transform: scale(1.02);
+  box-shadow: 0 30px 70px rgba(0,0,0,.26);
+  border-color: color-mix(in srgb, var(--mac-brand) 40%, var(--glass-border));
+}
+
+/* “Ghost” = l’élément qui suit le curseur (très utile pour comprendre) */
+.tile-ghost{
+  opacity: .92;
+  filter: saturate(1.05);
+}
+
+/* Placeholder = emplacement laissé dans la grille (LA pièce qui manquait) */
+.tile-placeholder,
+.sortable-fallback{
+  /* si le navigateur bascule en fallback */
+}
+
+.sortable-ghost{
+  /* Compat Sortable (au cas où) */
+}
+
+#bookmark-container .tile-ghost{
+  border-radius: var(--radius);
+}
+
+/* Sortable ajoute sa propre “ghostClass” au placeholder dans la liste :
+   on la rend très visible façon “cadre d’insertion” */
+#bookmark-container .tile-ghost{
+  outline: 2px solid color-mix(in srgb, var(--mac-brand) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* Indication “slot” : l’item fantôme dans la liste (ghostClass) */
+#bookmark-container .sortable-ghost{
+  opacity: .25;
+}
+
+/* Mini rebond façon Finder au drop */
+.bookmark-set.tile-bounce{ animation: tileBounce .15s cubic-bezier(.2,.9,.2,1); }
