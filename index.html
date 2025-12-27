@@ -116,6 +116,8 @@
       <div class="panel-section">
           <label>Thème</label>
           <div class="segmented-control" id="theme-selector">
+
+              <button data-value="system" title="Suivre macOS">Auto</button>
               <button data-value="light" title="Thème clair">Jour</button>
               <button data-value="dark" title="Thème sombre">Nuit</button>
           </div>
@@ -735,7 +737,25 @@ searchInput.placeholder = BASE_PLACEHOLDER;
             buttons.forEach(b => b.classList.toggle('active', b.dataset.value === savedValue)); 
             selector.addEventListener('click', (e) => { const target = e.target.closest('button'); if (target?.dataset.value) { applySetting(storageKey, target.dataset.value, action); buttons.forEach(b => b.classList.remove('active')); target.classList.add('active'); } }); 
         }
-        setupSelector('#theme-selector', 'theme', (val) => root.setAttribute('data-theme', val), matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        // Thème : 'system' suit macOS (prefers-color-scheme)
+        const colorSchemeMQ = window.matchMedia("(prefers-color-scheme: dark)");
+        function resolveSystemTheme(){ return colorSchemeMQ.matches ? "dark" : "light"; }
+        function applyTheme(pref){
+          const effective = (pref === "system") ? resolveSystemTheme() : pref;
+          root.setAttribute("data-theme", effective);
+          root.setAttribute("data-theme-pref", pref);
+        }
+        try {
+          colorSchemeMQ.addEventListener("change", () => {
+            if ((localStorage.getItem("theme") || "system") === "system") applyTheme("system");
+          });
+        } catch(e) {
+          try { colorSchemeMQ.addListener(() => {
+            if ((localStorage.getItem("theme") || "system") === "system") applyTheme("system");
+          }); } catch(_){}
+        }
+        setupSelector('#theme-selector', 'theme', applyTheme, 'system');
+
         setupSelector('#density-selector', 'density', (val) => root.setAttribute('data-density', val), 'cozy');
 
 
@@ -794,7 +814,44 @@ searchInput.placeholder = BASE_PLACEHOLDER;
       getWeather();
       loadNews();
     });
-  
+
+
+    // --- Spotlight: garder le focus sur l'input quand on clique le sélecteur moteur ---
+    (function focusKeeperEngineMenu(){
+      const searchInput = document.getElementById("search-input");
+      const engineButton = document.getElementById("engine-button");
+      const engineMenu = document.getElementById("engine-menu");
+      if (!searchInput || !engineButton || !engineMenu) return;
+
+      const refocus = () => {
+        try { searchInput.focus({ preventScroll: true }); }
+        catch (e) { try { searchInput.focus(); } catch(_){} }
+      };
+
+      const preventFocus = (el) => {
+        if (!el) return;
+        const handler = (e) => { e.preventDefault(); refocus(); };
+        el.addEventListener("pointerdown", handler, { passive: false, capture: true });
+        el.addEventListener("mousedown", handler, { passive: false, capture: true });
+        el.addEventListener("touchstart", handler, { passive: false, capture: true });
+      };
+
+      preventFocus(engineButton);
+
+      const wireOptions = () => engineMenu.querySelectorAll(".engine-option").forEach(preventFocus);
+      wireOptions();
+
+      // Si le menu est mis à jour dynamiquement, on rebranche
+      const mo = new MutationObserver(wireOptions);
+      mo.observe(engineMenu, { childList: true, subtree: true });
+
+      // Après click (toggle / selection), on refocus aussi (au cas où)
+      engineButton.addEventListener("click", () => setTimeout(refocus, 0), true);
+      engineMenu.addEventListener("click", (e) => {
+        if (e.target && e.target.closest(".engine-option")) setTimeout(refocus, 0);
+      }, true);
+    })();
+
 </script>
 </body>
 </html>

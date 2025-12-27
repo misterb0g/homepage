@@ -790,3 +790,143 @@ body::before{
   }
 }
 
+
+/* =========================================================
+   SELECTEUR MOTEUR – FINITIONS APPLE
+   - icônes lisibles
+   - désaturation maîtrisée
+   - animation micro au changement
+   - contraste renforcé en Auto / Nuit
+   ========================================================= */
+
+/* Icônes par défaut (inactives) */
+.engine-icon,
+.engine-option-icon {
+  color: var(--secondaryFg);
+  opacity: 0.7;
+  filter: grayscale(35%);
+  transition:
+    opacity .15s ease,
+    filter .15s ease,
+    transform .15s ease,
+    color .15s ease;
+}
+
+/* Hover */
+.engine-button:hover .engine-icon,
+.engine-option:hover .engine-option-icon {
+  opacity: 0.9;
+  filter: grayscale(0%);
+  color: var(--fg);
+}
+
+/* Icône moteur actif (clair par défaut) */
+.engine-option.is-active .engine-option-icon,
+.engine-button .engine-icon {
+  opacity: 1;
+  filter: none;
+  color: var(--fg);
+}
+
+/* Mode sombre OU Auto (effectif sombre) → contraste renforcé */
+:root[data-theme="dark"] .engine-option.is-active .engine-option-icon,
+:root[data-theme="dark"] .engine-button .engine-icon,
+:root[data-theme-pref="system"][data-theme="dark"] .engine-option.is-active .engine-option-icon,
+:root[data-theme-pref="system"][data-theme="dark"] .engine-button .engine-icon {
+  color: color-mix(in srgb, var(--fg) 90%, white);
+}
+
+/* Micro animation scale (déclenchée en JS) */
+.engine-icon.animate {
+  animation: enginePop 150ms cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes enginePop {
+  from { transform: scale(0.98); }
+  to   { transform: scale(1); }
+}
+
+
+/* =========================
+   SELECTEUR MOTEUR – TEXTE LISIBLE (couleur "secondary")
+   ========================= */
+.engine-button,
+.engine-option {
+  color: var(--secondaryFg);
+}
+
+.engine-menu-section {
+  color: var(--secondaryFg);
+}
+
+/* Icône active + libellé actif : un cran au-dessus */
+.engine-option.is-active,
+.engine-option.is-active .engine-option-icon {
+  color: var(--fg);
+}
+
+/* Quand le menu est ouvert, on assume un peu plus de contraste */
+.engine-button[aria-expanded="true"] {
+  color: var(--fg);
+}
+
+
+/* Active icon: pas de désaturation, sinon on ne voit plus le pictogramme */
+.engine-option.is-active .engine-option-icon,
+.engine-button .engine-icon {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Inactif: désaturation légère mais pas "fantôme" */
+.engine-icon,
+.engine-option-icon {
+  filter: grayscale(18%);
+  opacity: 0.78;
+}
+
+/* Auto/Nuit: on garde une icône active bien présente */
+:root[data-theme="dark"] .engine-button .engine-icon,
+:root[data-theme="dark"] .engine-option.is-active .engine-option-icon,
+:root[data-theme-pref="system"][data-theme="dark"] .engine-button .engine-icon,
+:root[data-theme-pref="system"][data-theme="dark"] .engine-option.is-active .engine-option-icon {
+  color: var(--fg);
+}
+
+
+/* =========================
+   VARIANTE APPLE MINIMAL
+   - Texte toujours gris (secondaryFg)
+   - Icône active seule en blanc
+   ========================= */
+
+/* Texte du sélecteur : toujours discret */
+.engine-button,
+.engine-option,
+.engine-menu-section {
+  color: var(--secondaryFg);
+}
+
+/* Icônes par défaut : discrètes */
+.engine-icon,
+.engine-option-icon {
+  color: var(--secondaryFg);
+  opacity: 0.75;
+  filter: grayscale(20%);
+}
+
+/* Icône ACTIVE uniquement : pleine lisibilité */
+.engine-option.is-active .engine-option-icon,
+.engine-button .engine-icon {
+  color: var(--fg);
+  opacity: 1;
+  filter: none;
+}
+
+/* Hover : on réveille légèrement sans casser la hiérarchie */
+.engine-option:hover .engine-option-icon,
+.engine-button:hover .engine-icon {
+  opacity: 0.9;
+  filter: grayscale(0%);
+}
+
