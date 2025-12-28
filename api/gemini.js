@@ -1,66 +1,54 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// On peut passer en edge pour plus de rapidité si la lib le supporte bien
-export const config = { runtime: 'nodejs' }; 
+export const config = { runtime: 'nodejs' };
 
-const ALLOWED_ORIGINS = ['https://start.bogarts.be', 'http://localhost:3000'];
+const ALLOWED_ORIGIN = 'https://start.bogarts.be';
 
-function getCorsHeaders(origin) {
-  const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allow,
-    'Vary': 'Origin',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  };
+// Amélioration de la fonction CORS pour inclure localhost en test si besoin
+function setCorsHeaders(res, origin) {
+  const allow = origin === ALLOWED_ORIGIN ? ALLOWED_ORIGIN : ALLOWED_ORIGIN;
+  res.setHeader('Access-Control-Allow-Origin', allow);
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }
 
 export default async function handler(req, res) {
   const origin = req.headers.origin || '';
 
-  // 1. Gestion du Preflight (OPTIONS)
+  // 1. Toujours mettre les headers CORS, même pour OPTIONS
+  setCorsHeaders(res, origin);
+
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, getCorsHeaders(origin));
-    res.end();
-    return;
+    return res.status(204).end();
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Méthode non autorisée' });
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error('Clé API manquante dans les variables d’environnement.');
-    }
+    if (!apiKey) throw new Error('Clé API manquante');
 
-    // Dans Node.js sur Vercel, req.body est déjà un objet si le Content-Type est JSON
-    const { prompt } = req.body;
+    // Sécurité : Vérifier si req.body existe (Vercel le parse par défaut pour le JSON)
+    const prompt = req.body?.prompt;
 
     if (!prompt) {
-      return res.status(400).json({ error: 'Le prompt est vide.' });
+      return res.status(400).json({ error: 'Le champ "prompt" est manquant dans le corps de la requête.' });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Utilisation de 1.5-flash pour la rapidité sur une page de démarrage
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
 
-    // Appliquer les headers CORS à la réponse de succès
-    const headers = getCorsHeaders(origin);
-    Object.keys(headers).forEach(key => res.setHeader(key, headers[key]));
-
     return res.status(200).json({ text });
 
   } catch (error) {
-    console.error("Erreur Gemini:", error);
-    return res.status(500).json({ 
-      error: "Erreur lors de la génération", 
-      details: error.message 
-    });
+    console.error("Erreur Gemini:", error.message);
+    return res.status(500).json({ error: error.message });
   }
 }
