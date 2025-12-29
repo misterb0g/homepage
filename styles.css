@@ -836,3 +836,70 @@ body::before{
 :root[data-theme="dark"] .engine-caret  { color: var(--secondaryFg); }
 :root[data-theme="dark"] .engine-option:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
 :root[data-theme="dark"] .engine-hint { color: var(--secondaryFg); border-color: rgba(255,255,255,0.18); }
+
+
+/* =========================================================
+   PATCH LISIBILITÉ – MODE SOMBRE
+   - Icônes moteurs en gris clair (style macOS)
+   - Dates météo plus lisibles
+   ========================================================= */
+
+/* Icônes moteurs : base (inactif) */
+:root[data-theme="dark"] .engine-icon,
+:root[data-theme="dark"] .engine-option-icon{
+  color: var(--secondaryFg);
+  opacity: 0.92;
+  filter: grayscale(0%); /* on garde la lisibilité */
+}
+
+/* Icône active / moteur sélectionné : un cran au-dessus */
+:root[data-theme="dark"] .engine-button .engine-icon,
+:root[data-theme="dark"] .engine-option.is-active .engine-option-icon{
+  color: var(--fg);
+  opacity: 1;
+  filter: none;
+}
+
+/* Auto mais effectif sombre */
+:root[data-theme="dark"][data-theme-pref="system"] .engine-icon,
+:root[data-theme="dark"][data-theme-pref="system"] .engine-option-icon{
+  color: var(--secondaryFg);
+}
+
+/* Dates météo (prévisions 5 jours) */
+:root[data-theme="dark"] .wd-date{
+  color: var(--fg);
+  opacity: 0.92;
+}
+
+/* Carte météo : garde une couleur de texte lisible */
+:root[data-theme="dark"] #weather,
+:root[data-theme="dark"] #weather-details{
+  color: var(--fg);
+}
+/* =========================================================
+   PATCH "SVG USE" – Icônes moteurs lisibles en DARK (Safari/Firefox)
+   Problème: les symboles <use> peuvent garder un fill noir.
+   Fix: forcer fill/stroke sur <svg>, <use> et descendants.
+   ========================================================= */
+:root[data-theme="dark"] .engine-icon,
+:root[data-theme="dark"] .engine-option-icon{
+  color: var(--secondaryFg) !important;
+}
+
+/* Forcer la couleur réelle du pictogramme */
+:root[data-theme="dark"] .engine-icon,
+:root[data-theme="dark"] .engine-option-icon,
+:root[data-theme="dark"] .engine-icon use,
+:root[data-theme="dark"] .engine-option-icon use,
+:root[data-theme="dark"] .engine-icon *,
+:root[data-theme="dark"] .engine-option-icon *{
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* Active: un cran au-dessus */
+:root[data-theme="dark"] .engine-button .engine-icon,
+:root[data-theme="dark"] .engine-option.is-active .engine-option-icon{
+  color: var(--fg) !important;
+}
