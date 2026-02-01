@@ -41,6 +41,7 @@ const bookmarks = [
       { name: "Drive perso", url: "https://drive.google.com/drive/my-drive" },
       { name: "Mail", url: "https://mail.google.com/mail" },
       { name: "Agenda", url: "https://calendar.google.com" },
+      { name: "Maps", url: "https://maps.google.com" },
     ],
   },
 
