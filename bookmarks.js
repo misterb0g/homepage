@@ -37,8 +37,7 @@ const bookmarks = [
   {
     title: "Google",
     links: [
-      { name: "Drive Partagé", url: "https://drive.google.com/drive/shared-drives" },
-      { name: "Drive perso", url: "https://drive.google.com/drive/my-drive" },
+      { name: "Drive", url: "https://drive.google.com/" },
       { name: "Mail", url: "https://mail.google.com/mail" },
       { name: "Agenda", url: "https://calendar.google.com" },
       { name: "Maps", url: "https://maps.google.com" },
