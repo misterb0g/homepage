@@ -4,7 +4,7 @@ export const config = { runtime: "nodejs" };
 
 const ALLOWED_ORIGIN = "https://start.bogarts.be";
 
-// Ordre de fallback : modèles connus compatibles generateContent sur l'API Gemini (v1beta)
+// Modèles candidats (ordre = préférence). Ajuste si ton ListModels montre d’autres noms.
 const MODEL_CANDIDATES = [
   "gemini-2.0-flash",
   "gemini-2.0-flash-lite",
@@ -12,8 +12,33 @@ const MODEL_CANDIDATES = [
   "gemini-1.5-flash",
 ];
 
+const MAX_RETRIES_429 = 2; // 2 retries = 3 tentatives au total
+const BASE_BACKOFF_MS = 1200;
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function is429(err) {
+  const msg = String(err?.message || err || "");
+  return msg.includes("429") || msg.toLowerCase().includes("resource exhausted") || msg.toLowerCase().includes("too many requests");
+}
+
+function extractRetryAfterSeconds(err) {
+  const msg = String(err?.message || err || "");
+  // patterns fréquents vus dans les messages
+  // 1) "Please retry in 54.52s"
+  const m1 = msg.match(/retry in\s+([0-9.]+)s/i);
+  if (m1) return Math.max(1, Math.ceil(parseFloat(m1[1])));
+
+  // 2) JSON retryDelay:"54s"
+  const m2 = msg.match(/"retryDelay"\s*:\s*"([0-9]+)s"/i);
+  if (m2) return Math.max(1, parseInt(m2[1], 10));
+
+  return null;
+}
+
 async function listModels(apiKey) {
-  // Endpoint officiel list models (utile pour diagnostiquer les noms réellement disponibles pour ta clé)
   const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
   const r = await fetch(url);
   if (!r.ok) {
@@ -24,36 +49,59 @@ async function listModels(apiKey) {
   return j.models || [];
 }
 
-async function tryGenerate(genAI, prompt) {
+async function generateWithModel(genAI, modelName, prompt) {
+  const model = genAI.getGenerativeModel({ model: modelName });
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  return { model: modelName, text: response.text() };
+}
+
+async function tryGenerateWithFallback(genAI, prompt) {
   let lastErr = null;
 
   for (const modelName of MODEL_CANDIDATES) {
     try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return { model: modelName, text: response.text() };
+      return await generateWithModel(genAI, modelName, prompt);
     } catch (e) {
-      // On garde l'erreur et on tente le prochain modèle
       lastErr = e;
-      // Si ce n'est pas un 404/NotFound, on remonte tout de suite (quota, auth, etc.)
       const msg = String(e?.message || e);
+
+      // Si ce n'est pas un 404/NotFound, on arrête le fallback modèle.
+      // (quota 429, auth 401/403, etc.)
       if (!msg.includes("404") && !msg.toLowerCase().includes("not found")) {
         throw e;
       }
+      // sinon on essaie le modèle suivant
     }
   }
 
-  // Tous les modèles ont échoué (probablement changement de nomenclature / accès clé)
   const msg = String(lastErr?.message || lastErr || "Erreur inconnue");
   throw new Error(
     `Aucun modèle Gemini de la liste n'est disponible pour generateContent. Dernière erreur: ${msg}. ` +
-    `Astuce: appelle /api/gemini?listModels=1 pour obtenir la liste des modèles accessibles.`
+      `Astuce: appelle /api/gemini?listModels=1 pour obtenir la liste des modèles accessibles.`
   );
 }
 
+async function generateWithRetry(genAI, prompt) {
+  let attempt = 0;
+
+  while (true) {
+    try {
+      return await tryGenerateWithFallback(genAI, prompt);
+    } catch (e) {
+      if (!is429(e) || attempt >= MAX_RETRIES_429) throw e;
+
+      const retryAfter = extractRetryAfterSeconds(e);
+      const backoff = retryAfter ? retryAfter * 1000 : BASE_BACKOFF_MS * Math.pow(2, attempt);
+
+      attempt += 1;
+      await sleep(backoff);
+    }
+  }
+}
+
 export default async function handler(req, res) {
-  // CORS (simple et explicite)
+  // CORS
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -64,14 +112,13 @@ export default async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return res.status(500).json({ error: "GEMINI_API_KEY manquante côté serveur." });
 
-    // Endpoint de diagnostic (non destiné au grand public)
+    // Diagnostic : /api/gemini?listModels=1
     if (req.method === "GET") {
-      const wantList = (req.query?.listModels === "1") || (req.query?.listModels === "true");
+      const wantList = req.query?.listModels === "1" || req.query?.listModels === "true";
       if (!wantList) return res.status(404).json({ error: "Not found" });
 
       const models = await listModels(apiKey);
-      // On renvoie un sous-ensemble utile : name + supportedGenerationMethods (si présent)
-      const simplified = models.map(m => ({
+      const simplified = models.map((m) => ({
         name: m.name,
         displayName: m.displayName,
         supportedGenerationMethods: m.supportedGenerationMethods,
@@ -82,16 +129,32 @@ export default async function handler(req, res) {
     // POST : génération
     let body = req.body;
     if (typeof body === "string") {
-      try { body = JSON.parse(body); } catch {}
+      try {
+        body = JSON.parse(body);
+      } catch {}
     }
 
     const prompt = body?.prompt;
     if (!prompt) return res.status(400).json({ error: 'Champ "prompt" manquant.' });
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const out = await tryGenerate(genAI, prompt);
 
-    return res.status(200).json({ text: out.text, model: out.model });
+    try {
+      const out = await generateWithRetry(genAI, prompt);
+      return res.status(200).json({ text: out.text, model: out.model });
+    } catch (e) {
+      // Gestion UX des 429 : message clair + Retry-After si on le détecte
+      if (is429(e)) {
+        const retryAfterSec = extractRetryAfterSeconds(e) ?? 60;
+        res.setHeader("Retry-After", String(retryAfterSec));
+        return res.status(503).json({
+          error:
+            `Gemini est temporairement indisponible (quota/rate limit). ` +
+            `Réessaie dans ~${retryAfterSec}s, ou bascule sur ChatGPT.`,
+        });
+      }
+      throw e;
+    }
   } catch (error) {
     return res.status(500).json({ error: error.message || String(error) });
   }
