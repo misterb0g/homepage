@@ -26,6 +26,32 @@ body { -webkit-font-smoothing: antialiased; }
 :root[data-density="compact"] { --card-gap: 0.5rem; --bookmark-margin: 0.2rem 0; --bookmark-padding: 0.1rem 0.3rem; }
 :root[data-density="cozy"] { --card-gap: 0.7rem; --bookmark-margin: .45rem 0; --bookmark-padding: .25rem .3rem; }
 
+
+/* === LiquidGlass Material System (consolidation) === */
+:root{
+  /* Compat: certaines règles utilisaient --primaryFg */
+  --primaryFg: var(--fg);
+
+  /* Matériaux */
+  --glass-blur: 18px;
+  --glass-sat: 1.25;
+  --glass-alpha: 0.55;            /* base */
+  --glass-alpha-strong: 0.78;     /* menus / sidebars */
+  --glass-outline: 1px;
+
+  /* Ombres douces */
+  --shadow-soft: 0 8px 32px rgba(0,0,0,.25);
+  --shadow-hover: 0 16px 44px rgba(0,0,0,.18);
+
+  /* Scrim (stabilité de lisibilité quand overlay) */
+  --scrim: rgba(0,0,0,0.22);
+}
+
+:root[data-theme="light"]{
+  --scrim: rgba(0,0,0,0.10);
+}
+
+
 /* =========================
    FOND LIQUIDE ANIMÉ
    ========================= */
@@ -902,4 +928,90 @@ body::before{
 :root[data-theme="dark"] .engine-button .engine-icon,
 :root[data-theme="dark"] .engine-option.is-active .engine-option-icon{
   color: var(--fg) !important;
+}
+
+/* =========================================================
+   LiquidGlass overrides (stabilisation + déduplication)
+   ========================================================= */
+
+/* Matériau principal */
+.glass{
+  background: color-mix(in srgb, var(--containerBg) 30%, transparent);
+  border: var(--glass-outline) solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+
+/* Menu moteurs de recherche — version unique, stable */
+.engine-menu{
+  background: color-mix(in srgb, var(--containerBg) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  box-shadow: 0 18px 50px rgba(0,0,0,.18);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  backdrop-filter: blur(22px) saturate(1.2);
+}
+
+.engine-option{ color: var(--fg); }
+.engine-option:hover{ background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.engine-option.is-active{ background: color-mix(in srgb, var(--mac-brand) 14%, transparent); }
+
+/* SVG <use> cross-browser : forcer currentColor */
+.engine-icon,
+.engine-option-icon,
+.engine-icon use,
+.engine-option-icon use,
+.engine-icon *,
+.engine-option-icon *{
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.engine-icon,
+.engine-option-icon{
+  color: var(--secondaryFg);
+  opacity: .92;
+}
+.engine-button .engine-icon,
+.engine-option.is-active .engine-option-icon{
+  color: var(--fg);
+  opacity: 1;
+}
+
+/* Spotlight overlay : séparer le scrim (after) du grain (before) */
+@supports(selector(:has(*))) {
+  /* Neutraliser tout éventuel détournement de body::before pendant le focus */
+  body:has(.spotlight:focus-within)::before{
+    background: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  body:has(.spotlight:focus-within)::after{
+    content:"";
+    position: fixed;
+    inset: 0;
+    background: var(--scrim);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    z-index: 900;
+    animation: spotOverlayIn .18s ease-out forwards;
+  }
+}
+
+@keyframes spotOverlayIn{
+  from{ opacity: 0; }
+  to{ opacity: 1; }
+}
+
+/* Réduction du mouvement */
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+}
+
+/* Fallback si backdrop-filter non supporté */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+  .glass{
+    background: color-mix(in srgb, var(--containerBg) 92%, transparent);
+  }
 }
