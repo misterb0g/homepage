@@ -33,7 +33,7 @@ const bookmarks = [
       { name: "Incidence asbl", url: "https://www.incidence-asbl.be/" },
       { name: "Culture.be", url: "https://www.culture.be/" }
       { name: "CESSoC.be", url: "https://www.cessoc.be/" }
-    ]
+    ],
   },
   {
     title: "Google",
