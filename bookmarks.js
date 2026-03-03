@@ -32,7 +32,6 @@ const bookmarks = [
       { name: "FESEFA", url: "https://www.fesefa.be/" },
       { name: "Incidence asbl", url: "https://www.incidence-asbl.be/" },
       { name: "Culture.be", url: "https://www.culture.be/" }
-      { name: "CESSoC", url: "https://www.cessoc.be/" }
     ]
   },
   {
