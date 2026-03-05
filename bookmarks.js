@@ -23,6 +23,7 @@ const bookmarks = [
     links: [
       { name: "ING", url: "https://ebanking.ing.be/login" },
       { name: "Winbooks", url: "https://app.winbooksconnect.be/" },
+      { name: "Winbooks View", url: "https://app.winbooksview.be/" },
       { name: "Fortis", url: "https://www.bnpparibasfortis.be/fr/generic/logon" },
     ],
   },
