@@ -231,7 +231,18 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
     </div>
 
-    <section id="news-container" class="card glass" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.5rem; display: none;">
+    <section id="news-container" class="card glass widget-shell widget-news" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.1rem 1.5rem 1.5rem; display: none;" data-widget-id="news">
+      <div class="widget-toolbar" data-drag-handle>
+        <div class="widget-title">Actualités</div>
+        <button class="widget-window-btn" type="button" data-widget-toggle="news" aria-expanded="true" aria-label="Réduire ou déployer le module Actualités" title="Réduire / déployer">
+          <span class="widget-lights" aria-hidden="true">
+            <span class="light-dot"></span>
+            <span class="light-dot"></span>
+            <span class="light-dot"></span>
+          </span>
+        </button>
+      </div>
+      <div class="widget-body">
       <div class="news-grid">
           <div id="macg-column">
               <h3 style="margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--fg); border-bottom: 2px solid var(--border); padding-bottom: 0.5rem;">
@@ -247,9 +258,21 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
               <div id="lesoir-list" style="display: grid; gap: 0.8rem;"></div>
           </div>
       </div>
+      </div>
     </section>
     
-    <div id="chat-container" class="card glass">
+    <div id="chat-container" class="card glass widget-shell widget-chat" data-widget-id="chat">
+      <div class="widget-toolbar" data-drag-handle>
+        <div class="widget-title">Chat</div>
+        <button class="widget-window-btn" type="button" data-widget-toggle="chat" aria-expanded="true" aria-label="Réduire ou déployer le module Chat" title="Réduire / déployer">
+          <span class="widget-lights" aria-hidden="true">
+            <span class="light-dot"></span>
+            <span class="light-dot"></span>
+            <span class="light-dot"></span>
+          </span>
+        </button>
+      </div>
+      <div class="widget-body">
       <div class="chat-tabs">
           <button class="chat-tab active" data-target="gpt">ChatGPT</button>
           <button class="chat-tab" data-target="gemini">Gemini</button>
@@ -263,6 +286,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
           <form class="chat-form" id="gemini-form"><input type="text" name="prompt" placeholder="Discuter avec Gemini…"/><button type="submit">Envoyer</button></form>
       </section>
       <p class="hint">Astuce : `/` ou `⌘K` → Recherche • `Alt+C` → Chat</p>
+      </div>
     </div>
   </div>
 
@@ -831,6 +855,43 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         // Toggle Chat
         const chatToggle = $('#chat-toggle'); const showChat = localStorage.getItem('showChat') !== 'false'; chatToggle.checked = showChat; document.body.classList.toggle('chat-hidden', !showChat);
         chatToggle.addEventListener('change', () => { applySetting('showChat', chatToggle.checked, (val) => document.body.classList.toggle('chat-hidden', !val)); });
+    })();
+
+
+    // --- Widgets macOS : repli + mémorisation ---
+    (function() {
+      const COLLAPSE_KEY = 'startpage_widget_collapsed_v2';
+
+      function readCollapsed() {
+        try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '{}'); }
+        catch { return {}; }
+      }
+
+      function writeCollapsed(state) {
+        try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state)); } catch {}
+      }
+
+      const collapsedState = readCollapsed();
+
+      document.querySelectorAll('[data-widget-toggle]').forEach((button) => {
+        const widgetId = button.getAttribute('data-widget-toggle');
+        const shell = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (!shell) return;
+
+        if (collapsedState[widgetId]) {
+          shell.classList.add('is-collapsed');
+          button.setAttribute('aria-expanded', 'false');
+        }
+
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const collapsed = shell.classList.toggle('is-collapsed');
+          button.setAttribute('aria-expanded', String(!collapsed));
+          collapsedState[widgetId] = collapsed;
+          writeCollapsed(collapsedState);
+        });
+      });
     })();
 
     // --- Init ---
