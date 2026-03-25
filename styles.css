@@ -1144,3 +1144,74 @@ body::before{
 .widget-chat .widget-toolbar {
   margin-bottom: .85rem;
 }
+
+
+/* =========================
+   Widgets macOS v2.1
+   - clic sur toute la barre
+   - pastille droite = masquer
+   ========================= */
+.widget-toolbar{
+  cursor: pointer;
+}
+
+.widget-window-controls{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 2px;
+}
+
+.widget-window-controls .light-dot,
+.widget-close-dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: linear-gradient(180deg, rgba(178,178,182,.95), rgba(132,132,138,.92));
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.35),
+    0 0 0 1px rgba(0,0,0,.08);
+  opacity: .95;
+}
+
+:root[data-theme="dark"] .widget-window-controls .light-dot,
+:root[data-theme="dark"] .widget-close-dot{
+  background: linear-gradient(180deg, rgba(160,160,166,.95), rgba(104,104,110,.92));
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.18),
+    0 0 0 1px rgba(255,255,255,.08);
+}
+
+.widget-close-dot{
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease;
+}
+
+.widget-close-dot:hover{
+  transform: scale(1.12);
+  opacity: 1;
+}
+
+.widget-close-dot:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--mac-brand) 18%, transparent),
+    inset 0 1px 1px rgba(255,255,255,.35),
+    0 0 0 1px rgba(0,0,0,.08);
+}
+
+.widget-shell.is-collapsed .widget-toolbar{
+  margin-bottom: 0;
+}
+
+.widget-shell.is-collapsed{
+  padding-bottom: 1rem !important;
+}
+
+.widget-title{
+  pointer-events: none;
+}

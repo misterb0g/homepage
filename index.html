@@ -234,13 +234,11 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     <section id="news-container" class="card glass widget-shell widget-news" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.1rem 1.5rem 1.5rem; display: none;" data-widget-id="news">
       <div class="widget-toolbar" data-drag-handle>
         <div class="widget-title">Actualités</div>
-        <button class="widget-window-btn" type="button" data-widget-toggle="news" aria-expanded="true" aria-label="Réduire ou déployer le module Actualités" title="Réduire / déployer">
-          <span class="widget-lights" aria-hidden="true">
-            <span class="light-dot"></span>
-            <span class="light-dot"></span>
-            <span class="light-dot"></span>
-          </span>
-        </button>
+        <div class="widget-window-controls" aria-hidden="true">
+          <span class="light-dot"></span>
+          <span class="light-dot"></span>
+          <button class="widget-close-dot" type="button" data-widget-close="news" aria-label="Masquer le module Actualités" title="Masquer le module"></button>
+        </div>
       </div>
       <div class="widget-body">
       <div class="news-grid">
@@ -264,13 +262,11 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     <div id="chat-container" class="card glass widget-shell widget-chat" data-widget-id="chat">
       <div class="widget-toolbar" data-drag-handle>
         <div class="widget-title">Chat</div>
-        <button class="widget-window-btn" type="button" data-widget-toggle="chat" aria-expanded="true" aria-label="Réduire ou déployer le module Chat" title="Réduire / déployer">
-          <span class="widget-lights" aria-hidden="true">
-            <span class="light-dot"></span>
-            <span class="light-dot"></span>
-            <span class="light-dot"></span>
-          </span>
-        </button>
+        <div class="widget-window-controls" aria-hidden="true">
+          <span class="light-dot"></span>
+          <span class="light-dot"></span>
+          <button class="widget-close-dot" type="button" data-widget-close="chat" aria-label="Masquer le module Chat" title="Masquer le module"></button>
+        </div>
       </div>
       <div class="widget-body">
       <div class="chat-tabs">
@@ -858,40 +854,89 @@ searchInput.placeholder = BASE_PLACEHOLDER;
     })();
 
 
-    // --- Widgets macOS : repli + mémorisation ---
+    // --- Widgets macOS : repli + fermeture + mémorisation ---
     (function() {
-      const COLLAPSE_KEY = 'startpage_widget_collapsed_v2';
+      const COLLAPSE_KEY = 'startpage_widget_collapsed_v3';
+      const HIDDEN_KEY = 'startpage_widget_hidden_v3';
 
-      function readCollapsed() {
-        try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '{}'); }
+      function readState(key) {
+        try { return JSON.parse(localStorage.getItem(key) || '{}'); }
         catch { return {}; }
       }
 
-      function writeCollapsed(state) {
-        try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state)); } catch {}
+      function writeState(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
       }
 
-      const collapsedState = readCollapsed();
+      const collapsedState = readState(COLLAPSE_KEY);
+      const hiddenState = readState(HIDDEN_KEY);
 
-      document.querySelectorAll('[data-widget-toggle]').forEach((button) => {
-        const widgetId = button.getAttribute('data-widget-toggle');
+      function syncPanelToggle(widgetId, hidden) {
+        const map = {
+          news: document.getElementById('news-toggle'),
+          chat: document.getElementById('chat-toggle')
+        };
+        const toggle = map[widgetId];
+        if (toggle) toggle.checked = !hidden;
+      }
+
+      function applyHiddenState(widgetId, hidden) {
         const shell = document.querySelector(`[data-widget-id="${widgetId}"]`);
         if (!shell) return;
+        shell.style.display = hidden ? 'none' : '';
+        syncPanelToggle(widgetId, hidden);
+      }
+
+      Object.entries(hiddenState).forEach(([widgetId, hidden]) => applyHiddenState(widgetId, hidden));
+
+      document.querySelectorAll('.widget-toolbar').forEach((toolbar) => {
+        const button = toolbar.querySelector('[data-widget-close]');
+        const shell = toolbar.closest('[data-widget-id]');
+        if (!shell) return;
+        const widgetId = shell.getAttribute('data-widget-id');
 
         if (collapsedState[widgetId]) {
           shell.classList.add('is-collapsed');
-          button.setAttribute('aria-expanded', 'false');
         }
 
-        button.addEventListener('click', (event) => {
-          event.preventDefault();
-          event.stopPropagation();
+        toolbar.addEventListener('click', (event) => {
+          if (event.target.closest('button')) return;
+          if (hiddenState[widgetId]) return;
           const collapsed = shell.classList.toggle('is-collapsed');
-          button.setAttribute('aria-expanded', String(!collapsed));
           collapsedState[widgetId] = collapsed;
-          writeCollapsed(collapsedState);
+          writeState(COLLAPSE_KEY, collapsedState);
         });
+
+        if (button) {
+          button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            hiddenState[widgetId] = true;
+            writeState(HIDDEN_KEY, hiddenState);
+            applyHiddenState(widgetId, true);
+          });
+        }
       });
+
+      const newsToggle = document.getElementById('news-toggle');
+      const chatToggle = document.getElementById('chat-toggle');
+
+      if (newsToggle) {
+        const originalNewsHandler = newsToggle.onchange;
+        newsToggle.addEventListener('change', () => {
+          hiddenState.news = !newsToggle.checked;
+          writeState(HIDDEN_KEY, hiddenState);
+          applyHiddenState('news', hiddenState.news);
+        });
+      }
+
+      if (chatToggle) {
+        chatToggle.addEventListener('change', () => {
+          hiddenState.chat = !chatToggle.checked;
+          writeState(HIDDEN_KEY, hiddenState);
+          applyHiddenState('chat', hiddenState.chat);
+        });
+      }
     })();
 
     // --- Init ---
