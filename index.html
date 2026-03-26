@@ -179,45 +179,11 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         <div id="clock"></div>
     </div>
 
-    <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
+<section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
         <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
     </section>
     <section id="weather-details" class="card glass weather-details" hidden></section>
-    <section id="calendar-widget" class="card glass widget-shell widget-calendar" data-widget-id="calendar" style="width: min(920px, 94%); margin: .35rem auto 1rem; padding: 1rem 1.1rem 1.05rem;">
-      <div class="widget-toolbar" aria-label="Barre du module Calendrier">
-        <div class="widget-title">Calendrier</div>
-        <div class="widget-window-controls" aria-hidden="true">
-          <span class="light-dot"></span>
-          <span class="light-dot"></span>
-          <button class="widget-close-dot" type="button" data-widget-close="calendar" aria-label="Masquer le module Calendrier" title="Masquer le module"></button>
-        </div>
-      </div>
-      <div class="widget-body">
-        <div class="calendar-header">
-          <button type="button" id="calendar-prev" class="calendar-nav-btn" aria-label="Mois précédent">‹</button>
-          <div id="calendar-month-label" class="calendar-month-label">Calendrier</div>
-          <button type="button" id="calendar-next" class="calendar-nav-btn" aria-label="Mois suivant">›</button>
-        </div>
 
-        <div class="calendar-weekdays" aria-hidden="true">
-          <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
-        </div>
-
-        <div id="calendar-grid" class="calendar-grid" aria-live="polite"></div>
-        <div class="calendar-events-block">
-          <div class="calendar-events-header">
-            <div class="calendar-events-title">Agenda</div>
-            <button type="button" id="calendar-reset-selection" class="calendar-reset-btn" hidden>Aujourd’hui</button>
-          </div>
-          <div id="calendar-selected-label" class="calendar-selected-label" hidden></div>
-          <div id="calendar-events" class="calendar-events-list">
-            <div class="calendar-event-empty">Chargement des événements…</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
       <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche" title="Google">
   <svg class="engine-icon" viewBox="0 0 24 24" aria-hidden="true"><use id="engine-icon-use" href="#i-google"></use></svg>
@@ -266,14 +232,47 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
       <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
-    
+
+    <section id="calendar-widget" class="card glass widget-shell widget-calendar" data-widget-id="calendar" style="width: min(920px, 94%); margin: .35rem auto 1rem; padding: 1rem 1.1rem 1.05rem;">
+      <div class="widget-toolbar" aria-label="Barre du module Calendrier">
+        <div class="widget-title">Calendrier</div>
+        <div class="widget-window-controls" aria-hidden="true">
+          <span class="light-dot"></span>
+          <span class="light-dot"></span>
+          <button class="widget-close-dot" type="button" data-widget-close="calendar" aria-label="Masquer le module Calendrier" title="Masquer le module"></button>
+        </div>
+      </div>
+      <div class="widget-body">
+        <div class="calendar-header">
+          <button type="button" id="calendar-prev" class="calendar-nav-btn" aria-label="Mois précédent">‹</button>
+          <div id="calendar-month-label" class="calendar-month-label">Calendrier</div>
+          <button type="button" id="calendar-next" class="calendar-nav-btn" aria-label="Mois suivant">›</button>
+        </div>
+
+        <div class="calendar-weekdays" aria-hidden="true">
+          <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+        </div>
+
+        <div id="calendar-grid" class="calendar-grid" aria-live="polite"></div>
+        <div class="calendar-events-block">
+          <div class="calendar-events-header">
+            <div class="calendar-events-title">Agenda</div>
+            <button type="button" id="calendar-reset-selection" class="calendar-reset-btn" hidden>Aujourd’hui</button>
+          </div>
+          <div id="calendar-selected-label" class="calendar-selected-label" hidden></div>
+          <div id="calendar-events" class="calendar-events-list">
+            <div class="calendar-event-empty">Chargement des événements…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <div id="bookmark-container">
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
     </div>
-    
 
     <section id="news-container" class="card glass widget-shell widget-news" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.1rem 1.5rem 1.5rem; display: none;" data-widget-id="news">
       <div class="widget-toolbar" aria-label="Barre du module Actualités">
@@ -303,7 +302,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
       <div class="widget-resizer" data-widget-resizer="news" aria-hidden="true"></div>
       </div>
     </section>
-    
+
     <div id="chat-container" class="card glass widget-shell widget-chat" data-widget-id="chat">
       <div class="widget-toolbar" aria-label="Barre du module Chat">
         <div class="widget-title">Chat</div>
@@ -330,6 +329,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
       <div class="widget-resizer" data-widget-resizer="chat" aria-hidden="true"></div>
       </div>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

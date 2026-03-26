@@ -2326,3 +2326,27 @@ body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
 #calendar-widget{
   order: 0;
 }
+
+
+/* =========================
+   Ordre ergonomique corrigé
+   météo → recherche → calendrier → favoris → actualités → chat
+   ========================= */
+.weather-container{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.weather-details{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#calendar-widget{
+  width: min(920px, 94%);
+  margin: .75rem auto 1rem !important;
+}
+
+#bookmark-container{
+  margin-top: 0;
+}
