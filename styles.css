@@ -2193,3 +2193,136 @@ body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
 :root[data-density="compact"] .calendar-day{
   min-height: 34px;
 }
+
+
+/* =========================
+   Calendrier interactif
+   ========================= */
+.calendar-events-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.8rem;
+  margin-bottom:.28rem;
+}
+
+.calendar-reset-btn{
+  appearance:none;
+  border:1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--glass-bg) 82%, transparent);
+  color:var(--fg);
+  font-size:.76rem;
+  font-weight:600;
+  border-radius:999px;
+  padding:.3rem .58rem;
+  cursor:pointer;
+  transition: transform .16s ease, background .16s ease, border-color .16s ease;
+}
+
+.calendar-reset-btn:hover{
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--glass-bg) 94%, transparent);
+  border-color: color-mix(in srgb, var(--fg) 16%, transparent);
+}
+
+.calendar-selected-label{
+  font-size:.82rem;
+  color:var(--secondaryFg);
+  margin-bottom:.45rem;
+  text-transform:capitalize;
+}
+
+.calendar-day{
+  position:relative;
+  overflow:hidden;
+}
+
+.calendar-day.has-events span{
+  transform: translateY(-2px);
+}
+
+.calendar-day-dot{
+  position:absolute;
+  left:50%;
+  bottom:6px;
+  width:5px;
+  height:5px;
+  margin-left:-2.5px;
+  border-radius:50%;
+  background: color-mix(in srgb, var(--mac-brand) 72%, var(--fg));
+  opacity:.95;
+}
+
+.calendar-day.is-selected{
+  background: color-mix(in srgb, var(--mac-brand) 18%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--mac-brand) 30%, transparent),
+    0 6px 14px rgba(0,0,0,.06);
+}
+
+.calendar-day.is-selected.is-today{
+  background: color-mix(in srgb, var(--mac-brand) 28%, transparent);
+}
+
+.calendar-day.is-selected .calendar-day-dot{
+  background: color-mix(in srgb, var(--mac-brand) 88%, white);
+}
+
+:root[data-density="compact"] .calendar-reset-btn{
+  font-size:.72rem;
+  padding:.26rem .52rem;
+}
+
+:root[data-density="compact"] .calendar-selected-label{
+  font-size:.78rem;
+}
+
+:root[data-density="compact"] .calendar-day-dot{
+  bottom:5px;
+  width:4px;
+  height:4px;
+  margin-left:-2px;
+}
+
+:root[data-density="dashboard"] .calendar-events-header{
+  margin-bottom:.2rem;
+}
+
+:root[data-density="dashboard"] .calendar-reset-btn{
+  font-size:.64rem;
+  padding:.2rem .42rem;
+}
+
+:root[data-density="dashboard"] .calendar-selected-label{
+  font-size:.68rem;
+  margin-bottom:.28rem;
+}
+
+:root[data-density="dashboard"] .calendar-day.has-events span{
+  transform: translateY(-1px);
+}
+
+:root[data-density="dashboard"] .calendar-day-dot{
+  bottom:4px;
+  width:3.5px;
+  height:3.5px;
+  margin-left:-1.75px;
+}
+
+
+/* =========================
+   Weather / calendar ordering fix
+   ========================= */
+.weather-container{
+  margin-bottom: 0;
+}
+
+.weather-details{
+  order: 0;
+  margin-top: -.2rem;
+  margin-bottom: .35rem;
+}
+
+#calendar-widget{
+  order: 0;
+}

@@ -182,6 +182,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
         <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
     </section>
+    <section id="weather-details" class="card glass weather-details" hidden></section>
     <section id="calendar-widget" class="card glass widget-shell widget-calendar" data-widget-id="calendar" style="width: min(920px, 94%); margin: .35rem auto 1rem; padding: 1rem 1.1rem 1.05rem;">
       <div class="widget-toolbar" aria-label="Barre du module Calendrier">
         <div class="widget-title">Calendrier</div>
@@ -204,15 +205,17 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 
         <div id="calendar-grid" class="calendar-grid" aria-live="polite"></div>
         <div class="calendar-events-block">
-          <div class="calendar-events-title">Agenda</div>
+          <div class="calendar-events-header">
+            <div class="calendar-events-title">Agenda</div>
+            <button type="button" id="calendar-reset-selection" class="calendar-reset-btn" hidden>Aujourd’hui</button>
+          </div>
+          <div id="calendar-selected-label" class="calendar-selected-label" hidden></div>
           <div id="calendar-events" class="calendar-events-list">
             <div class="calendar-event-empty">Chargement des événements…</div>
           </div>
         </div>
       </div>
     </section>
-
-    <section id="weather-details" class="card glass weather-details" hidden></section>
 
     
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
@@ -1132,20 +1135,26 @@ searchInput.placeholder = BASE_PLACEHOLDER;
 
 
 
-        // --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
+            // --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
     (function () {
       const grid = document.getElementById('calendar-grid');
       const label = document.getElementById('calendar-month-label');
       const prev = document.getElementById('calendar-prev');
       const next = document.getElementById('calendar-next');
       const eventsList = document.getElementById('calendar-events');
-      if (!grid || !label || !prev || !next) return;
+      const selectedLabel = document.getElementById('calendar-selected-label');
+      const resetSelectionBtn = document.getElementById('calendar-reset-selection');
+      if (!grid || !label || !prev || !next || !eventsList) return;
 
       let current = new Date();
       current.setDate(1);
 
-      const fmt = new Intl.DateTimeFormat('fr-BE', { month: 'long', year: 'numeric' });
+      let loadedEvents = [];
+      let selectedDateKey = null;
+
+      const monthFmt = new Intl.DateTimeFormat('fr-BE', { month: 'long', year: 'numeric' });
       const dateFmt = new Intl.DateTimeFormat('fr-BE', { weekday: 'short', day: 'numeric', month: 'short' });
+      const fullDateFmt = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
       const timeFmt = new Intl.DateTimeFormat('fr-BE', { hour: '2-digit', minute: '2-digit' });
 
       function startOfDay(date) {
@@ -1158,6 +1167,39 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         return d;
       }
 
+      function toDateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function getEventDateKey(event) {
+        const start = new Date(event.start);
+        return toDateKey(start);
+      }
+
+      function hasEventsOnDate(dateKey) {
+        return loadedEvents.some(event => getEventDateKey(event) === dateKey);
+      }
+
+      function updateSelectionUi() {
+        grid.querySelectorAll('.calendar-day').forEach((btn) => {
+          btn.classList.toggle('is-selected', btn.dataset.dateKey === selectedDateKey);
+        });
+
+        if (selectedDateKey) {
+          const selectedDate = new Date(selectedDateKey + 'T12:00:00');
+          selectedLabel.hidden = false;
+          selectedLabel.textContent = fullDateFmt.format(selectedDate);
+          resetSelectionBtn.hidden = false;
+        } else {
+          selectedLabel.hidden = true;
+          selectedLabel.textContent = '';
+          resetSelectionBtn.hidden = true;
+        }
+      }
+
       function renderCalendar() {
         const year = current.getFullYear();
         const month = current.getMonth();
@@ -1167,23 +1209,29 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-        label.textContent = fmt.format(firstDay);
-        grid.innerHTML = '';
+        label.textContent = monthFmt.format(firstDay);
 
         const today = new Date();
         const cells = [];
 
         for (let i = 0; i < startOffset; i++) {
+          const day = daysInPrevMonth - startOffset + i + 1;
+          const date = new Date(year, month - 1, day);
           cells.push({
-            day: daysInPrevMonth - startOffset + i + 1,
-            outside: true
+            day,
+            outside: true,
+            dateKey: toDateKey(date),
+            hasEvents: hasEventsOnDate(toDateKey(date))
           });
         }
 
         for (let d = 1; d <= daysInMonth; d++) {
+          const date = new Date(year, month, d);
           cells.push({
             day: d,
             outside: false,
+            dateKey: toDateKey(date),
+            hasEvents: hasEventsOnDate(toDateKey(date)),
             today:
               d === today.getDate() &&
               month === today.getMonth() &&
@@ -1192,17 +1240,39 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         }
 
         while (cells.length % 7 !== 0) {
+          const overflowDay = cells.length - (startOffset + daysInMonth) + 1;
+          const date = new Date(year, month + 1, overflowDay);
           cells.push({
-            day: cells.length - (startOffset + daysInMonth) + 1,
-            outside: true
+            day: overflowDay,
+            outside: true,
+            dateKey: toDateKey(date),
+            hasEvents: hasEventsOnDate(toDateKey(date))
           });
         }
 
         grid.innerHTML = cells.map(cell => `
-          <button type="button" class="calendar-day${cell.outside ? ' is-outside' : ''}${cell.today ? ' is-today' : ''}" ${cell.outside ? 'tabindex="-1"' : ''}>
+          <button
+            type="button"
+            class="calendar-day${cell.outside ? ' is-outside' : ''}${cell.today ? ' is-today' : ''}${cell.hasEvents ? ' has-events' : ''}"
+            data-date-key="${cell.dateKey}"
+            aria-pressed="${selectedDateKey === cell.dateKey ? 'true' : 'false'}"
+          >
             <span>${cell.day}</span>
+            ${cell.hasEvents ? '<i class="calendar-day-dot" aria-hidden="true"></i>' : ''}
           </button>
         `).join('');
+
+        grid.querySelectorAll('.calendar-day').forEach((btn) => {
+          btn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const clickedKey = btn.dataset.dateKey;
+            selectedDateKey = (selectedDateKey === clickedKey) ? null : clickedKey;
+            updateSelectionUi();
+            renderEvents();
+          });
+        });
+
+        updateSelectionUi();
       }
 
       function getEventIcon(event) {
@@ -1239,10 +1309,25 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         `;
       }
 
-      function renderGroupedEvents(events) {
-        if (!eventsList) return;
+      function renderSelectedDateEvents() {
+        const selectedEvents = loadedEvents.filter(event => getEventDateKey(event) === selectedDateKey);
+        if (!selectedEvents.length) {
+          eventsList.innerHTML = '<div class="calendar-event-empty">Aucun événement ce jour-là.</div>';
+          return;
+        }
 
-        if (!Array.isArray(events) || events.length === 0) {
+        eventsList.innerHTML = `
+          <section class="calendar-event-group">
+            <div class="calendar-event-group-title">Événements du jour</div>
+            <div class="calendar-event-group-list">
+              ${selectedEvents.map(formatEvent).join('')}
+            </div>
+          </section>
+        `;
+      }
+
+      function renderGroupedEvents() {
+        if (!Array.isArray(loadedEvents) || loadedEvents.length === 0) {
           eventsList.innerHTML = '<div class="calendar-event-empty">Aucun événement à venir.</div>';
           return;
         }
@@ -1256,7 +1341,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           later: []
         };
 
-        events.forEach((event) => {
+        loadedEvents.forEach((event) => {
           const start = new Date(event.start);
           const eventDay = startOfDay(start);
           if (eventDay.getTime() === today.getTime()) buckets.today.push(event);
@@ -1302,8 +1387,15 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         eventsList.innerHTML = sections.join('') || '<div class="calendar-event-empty">Aucun événement à venir.</div>';
       }
 
+      function renderEvents() {
+        if (selectedDateKey) {
+          renderSelectedDateEvents();
+        } else {
+          renderGroupedEvents();
+        }
+      }
+
       async function loadEvents() {
-        if (!eventsList) return;
         eventsList.innerHTML = '<div class="calendar-event-empty">Chargement des événements…</div>';
 
         try {
@@ -1311,12 +1403,9 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
 
-          if (!Array.isArray(data.events) || data.events.length === 0) {
-            eventsList.innerHTML = '<div class="calendar-event-empty">Aucun événement à venir.</div>';
-            return;
-          }
-
-          renderGroupedEvents(data.events.slice(0, 8));
+          loadedEvents = Array.isArray(data.events) ? data.events.slice(0, 20) : [];
+          renderCalendar();
+          renderEvents();
         } catch (error) {
           console.error('Calendar API:', error);
           eventsList.innerHTML = '<div class="calendar-event-empty">Calendrier indisponible.</div>';
@@ -1333,6 +1422,13 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         event.stopPropagation();
         current.setMonth(current.getMonth() + 1);
         renderCalendar();
+      });
+
+      resetSelectionBtn?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        selectedDateKey = null;
+        updateSelectionUi();
+        renderEvents();
       });
 
       renderCalendar();
