@@ -40,6 +40,8 @@ function parseICS(text) {
   for (const block of blocks) {
     const body = block.split("END:VEVENT")[0] || "";
     const title = readField(body, "SUMMARY");
+    const description = readField(body, "DESCRIPTION");
+    const url = readField(body, "URL");
     const startRaw = readField(body, "DTSTART");
     const endRaw = readField(body, "DTEND");
 
@@ -53,6 +55,8 @@ function parseICS(text) {
 
     events.push({
       title: title || "Événement",
+      description: description || "",
+      url: url || "",
       start: start.toISOString(),
       end: end ? end.toISOString() : null,
       allDay
