@@ -1414,3 +1414,155 @@ body{
   width: 208px;
   padding: 9px;
 }
+
+
+/* =========================
+   Dashboard mode
+   ========================= */
+:root[data-density="dashboard"]{
+  --spot-h: 44px;
+  --radius: 14px;
+  --card-gap: 0.35rem;
+  --bookmark-margin: 0.12rem 0;
+  --bookmark-padding: 0.06rem 0.24rem;
+}
+
+:root[data-density="dashboard"] .container{
+  gap: .65rem;
+  padding: 2.1rem 0.9rem 1.6rem;
+}
+
+:root[data-density="dashboard"] #greeting{
+  font-size: clamp(1.7rem, 3.2vw, 2.05rem);
+}
+
+:root[data-density="dashboard"] #clock{
+  font-size: clamp(.95rem, 2vw, 1.08rem);
+}
+
+:root[data-density="dashboard"] .weather-container{
+  width: 290px;
+  padding: .42rem .68rem;
+}
+
+:root[data-density="dashboard"] .weather-details{
+  padding: .6rem;
+}
+
+:root[data-density="dashboard"] .spotlight{
+  height: var(--spot-h);
+  margin: .35rem auto 1rem;
+  padding: 0 .9rem;
+}
+
+:root[data-density="dashboard"] .search-icon{
+  width: 19px;
+  height: 19px;
+  margin-right: .45rem;
+}
+
+:root[data-density="dashboard"] .engine-button{
+  height: 28px;
+  padding: 0 8px;
+  margin-right: .42rem;
+}
+
+:root[data-density="dashboard"] .spotlight input{
+  font-size: .98rem;
+}
+
+:root[data-density="dashboard"] #bookmark-container{
+  gap: .35rem;
+  margin-bottom: 1rem;
+}
+
+:root[data-density="dashboard"] .bookmark-set{
+  padding: .42rem;
+  flex: 0 1 230px;
+}
+
+:root[data-density="dashboard"] .bookmark-title{
+  font-size: .88rem;
+}
+
+:root[data-density="dashboard"] .bookmark{
+  font-size: .86rem;
+}
+
+:root[data-density="dashboard"] #news-container{
+  margin: .8rem auto 1rem !important;
+  padding: .82rem 1rem 1rem !important;
+}
+
+:root[data-density="dashboard"] .news-grid{
+  gap: 1rem;
+}
+
+:root[data-density="dashboard"] #chat-container{
+  margin: .55rem auto .35rem !important;
+  padding: .5rem !important;
+}
+
+:root[data-density="dashboard"] .widget-toolbar{
+  margin-bottom: .62rem;
+}
+
+:root[data-density="dashboard"] .widget-title{
+  font-size: .88rem;
+}
+
+:root[data-density="dashboard"] .widget-window-controls{
+  gap: 5px;
+}
+
+:root[data-density="dashboard"] .widget-window-controls .light-dot,
+:root[data-density="dashboard"] .widget-close-dot{
+  width: 6px;
+  height: 6px;
+}
+
+:root[data-density="dashboard"] .chat-tabs{
+  margin-bottom: .5rem;
+  padding: .22rem;
+}
+
+:root[data-density="dashboard"] .chat-tab{
+  padding: .28rem .62rem;
+  font-size: .88rem;
+}
+
+:root[data-density="dashboard"] .chat-messages{
+  max-height: 220px;
+  gap: .45rem;
+  margin-bottom: .55rem;
+}
+
+:root[data-density="dashboard"] .msg{
+  padding: .54rem .8rem;
+  font-size: .92rem;
+  border-radius: 12px;
+}
+
+:root[data-density="dashboard"] .chat-form input,
+:root[data-density="dashboard"] .chat-form button{
+  height: 40px;
+}
+
+:root[data-density="dashboard"] .hint{
+  font-size: .74rem;
+  margin-top: .5rem;
+}
+
+:root[data-density="dashboard"] .panel-section{
+  margin-bottom: 1rem;
+}
+
+:root[data-density="dashboard"] .widget-shell.is-collapsed{
+  height: var(--spot-h);
+  padding: 0 .9rem !important;
+}
+
+:root[data-density="dashboard"] .engine-menu{
+  width: 208px;
+  padding: 9px;
+}

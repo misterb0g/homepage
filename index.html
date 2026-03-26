@@ -125,6 +125,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
           <div class="segmented-control" id="density-selector">
               <button data-value="cozy" title="Normal">Normal</button>
               <button data-value="compact" title="Compact">Compact</button>
+              <button data-value="dashboard" title="Dashboard">Dashboard</button>
           </div>
       </div>
       <div class="panel-section">
@@ -903,18 +904,8 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           toolbar.addEventListener('click', (event) => {
             if (event.target.closest('button')) return;
             if (hiddenState[widgetId]) return;
-            const wasCollapsed = widget.classList.contains('is-collapsed');
-            const collapsed = !wasCollapsed;
+            const collapsed = !widget.classList.contains('is-collapsed');
             widget.classList.toggle('is-collapsed', collapsed);
-
-            if (wasCollapsed && !collapsed) {
-              widget.classList.remove('is-expanding');
-              requestAnimationFrame(() => {
-                widget.classList.add('is-expanding');
-                setTimeout(() => widget.classList.remove('is-expanding'), 420);
-              });
-            }
-
             collapsedState[widgetId] = collapsed;
             writeState(COLLAPSE_KEY, collapsedState);
           });
@@ -951,6 +942,45 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           applyHiddenState('chat', hiddenState.chat);
         });
       }
+    })();
+
+
+
+    // --- Dashboard mode support ---
+    (function () {
+      const densitySelector = document.getElementById('density-selector');
+      if (!densitySelector) return;
+
+      const buttons = densitySelector.querySelectorAll('button[data-value]');
+      const STORAGE_KEY = 'startpage_density_v2';
+
+      function setActiveDensity(value) {
+        document.documentElement.setAttribute('data-density', value);
+        buttons.forEach((btn) => btn.classList.toggle('active', btn.dataset.value === value));
+        try { localStorage.setItem(STORAGE_KEY, value); } catch {}
+      }
+
+      const savedDensity = localStorage.getItem(STORAGE_KEY) || document.documentElement.getAttribute('data-density') || 'cozy';
+      setActiveDensity(savedDensity);
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          setActiveDensity(btn.dataset.value);
+
+          // En dashboard, on replie automatiquement le chat seulement s'il est visible et non replié.
+          if (btn.dataset.value === 'dashboard') {
+            try {
+              const chat = document.querySelector('[data-widget-id="chat"]');
+              const collapsedState = JSON.parse(localStorage.getItem('startpage_widget_collapsed_v4') || '{}');
+              if (chat && !chat.classList.contains('is-collapsed')) {
+                chat.classList.add('is-collapsed');
+                collapsedState.chat = true;
+                localStorage.setItem('startpage_widget_collapsed_v4', JSON.stringify(collapsedState));
+              }
+            } catch {}
+          }
+        });
+      });
     })();
 
 
