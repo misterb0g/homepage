@@ -121,7 +121,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
           </div>
       </div>
       <div class="panel-section">
-          <label>Densité des favoris</label>
+          <label>Densité de l’interface</label>
           <div class="segmented-control" id="density-selector">
               <button data-value="cozy" title="Normal">Normal</button>
               <button data-value="compact" title="Compact">Compact</button>
@@ -232,7 +232,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     </div>
 
     <section id="news-container" class="card glass widget-shell widget-news" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.1rem 1.5rem 1.5rem; display: none;" data-widget-id="news">
-      <div class="widget-toolbar" data-drag-handle>
+      <div class="widget-toolbar" aria-label="Barre du module Actualités">
         <div class="widget-title">Actualités</div>
         <div class="widget-window-controls" aria-hidden="true">
           <span class="light-dot"></span>
@@ -260,7 +260,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     </section>
     
     <div id="chat-container" class="card glass widget-shell widget-chat" data-widget-id="chat">
-      <div class="widget-toolbar" data-drag-handle>
+      <div class="widget-toolbar" aria-label="Barre du module Chat">
         <div class="widget-title">Chat</div>
         <div class="widget-window-controls" aria-hidden="true">
           <span class="light-dot"></span>
@@ -854,10 +854,10 @@ searchInput.placeholder = BASE_PLACEHOLDER;
     })();
 
 
-    // --- Widgets macOS : repli + fermeture + mémorisation ---
-    (function() {
-      const COLLAPSE_KEY = 'startpage_widget_collapsed_v3';
-      const HIDDEN_KEY = 'startpage_widget_hidden_v3';
+    // --- Widgets macOS consolidés : clic barre = replier / déplier ; pastille droite = masquer ---
+    (function () {
+      const COLLAPSE_KEY = 'startpage_widget_collapsed_v4';
+      const HIDDEN_KEY = 'startpage_widget_hidden_v4';
 
       function readState(key) {
         try { return JSON.parse(localStorage.getItem(key) || '{}'); }
@@ -871,44 +871,57 @@ searchInput.placeholder = BASE_PLACEHOLDER;
       const collapsedState = readState(COLLAPSE_KEY);
       const hiddenState = readState(HIDDEN_KEY);
 
-      function syncPanelToggle(widgetId, hidden) {
-        const map = {
-          news: document.getElementById('news-toggle'),
-          chat: document.getElementById('chat-toggle')
-        };
-        const toggle = map[widgetId];
-        if (toggle) toggle.checked = !hidden;
+      function getPanelToggle(widgetId) {
+        if (widgetId === 'news') return document.getElementById('news-toggle');
+        if (widgetId === 'chat') return document.getElementById('chat-toggle');
+        return null;
       }
 
       function applyHiddenState(widgetId, hidden) {
-        const shell = document.querySelector(`[data-widget-id="${widgetId}"]`);
-        if (!shell) return;
-        shell.style.display = hidden ? 'none' : '';
-        syncPanelToggle(widgetId, hidden);
+        const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (!widget) return;
+        widget.style.display = hidden ? 'none' : '';
+        const toggle = getPanelToggle(widgetId);
+        if (toggle) toggle.checked = !hidden;
       }
 
-      Object.entries(hiddenState).forEach(([widgetId, hidden]) => applyHiddenState(widgetId, hidden));
+      function applyCollapsedState(widgetId, collapsed) {
+        const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (!widget) return;
+        widget.classList.toggle('is-collapsed', !!collapsed);
+      }
 
-      document.querySelectorAll('.widget-toolbar').forEach((toolbar) => {
-        const button = toolbar.querySelector('[data-widget-close]');
-        const shell = toolbar.closest('[data-widget-id]');
-        if (!shell) return;
-        const widgetId = shell.getAttribute('data-widget-id');
+      document.querySelectorAll('.widget-shell[data-widget-id]').forEach((widget) => {
+        const widgetId = widget.dataset.widgetId;
+        const toolbar = widget.querySelector('.widget-toolbar');
+        const closeBtn = widget.querySelector('[data-widget-close]');
 
-        if (collapsedState[widgetId]) {
-          shell.classList.add('is-collapsed');
+        applyCollapsedState(widgetId, !!collapsedState[widgetId]);
+        applyHiddenState(widgetId, !!hiddenState[widgetId]);
+
+        if (toolbar) {
+          toolbar.addEventListener('click', (event) => {
+            if (event.target.closest('button')) return;
+            if (hiddenState[widgetId]) return;
+            const wasCollapsed = widget.classList.contains('is-collapsed');
+            const collapsed = !wasCollapsed;
+            widget.classList.toggle('is-collapsed', collapsed);
+
+            if (wasCollapsed && !collapsed) {
+              widget.classList.remove('is-expanding');
+              requestAnimationFrame(() => {
+                widget.classList.add('is-expanding');
+                setTimeout(() => widget.classList.remove('is-expanding'), 420);
+              });
+            }
+
+            collapsedState[widgetId] = collapsed;
+            writeState(COLLAPSE_KEY, collapsedState);
+          });
         }
 
-        toolbar.addEventListener('click', (event) => {
-          if (event.target.closest('button')) return;
-          if (hiddenState[widgetId]) return;
-          const collapsed = shell.classList.toggle('is-collapsed');
-          collapsedState[widgetId] = collapsed;
-          writeState(COLLAPSE_KEY, collapsedState);
-        });
-
-        if (button) {
-          button.addEventListener('click', (event) => {
+        if (closeBtn) {
+          closeBtn.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
             hiddenState[widgetId] = true;
@@ -922,7 +935,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
       const chatToggle = document.getElementById('chat-toggle');
 
       if (newsToggle) {
-        const originalNewsHandler = newsToggle.onchange;
+        newsToggle.checked = !hiddenState.news;
         newsToggle.addEventListener('change', () => {
           hiddenState.news = !newsToggle.checked;
           writeState(HIDDEN_KEY, hiddenState);
@@ -931,6 +944,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
       }
 
       if (chatToggle) {
+        chatToggle.checked = !hiddenState.chat;
         chatToggle.addEventListener('change', () => {
           hiddenState.chat = !chatToggle.checked;
           writeState(HIDDEN_KEY, hiddenState);
@@ -938,6 +952,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         });
       }
     })();
+
 
     // --- Init ---
     window.addEventListener("load", () => {

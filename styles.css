@@ -1223,3 +1223,194 @@ body{
   inset 0 1px rgba(255,255,255,.04);
 }
 
+
+
+/* =========================
+   Finder-like opening animation
+   ========================= */
+
+@keyframes finderReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(.985);
+    filter: blur(8px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0) scale(1.003);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.widget-shell.is-expanding .widget-body{
+  animation: finderReveal .42s cubic-bezier(.22,1,.36,1);
+}
+
+/* petit raffinement sur la barre pendant l’ouverture */
+.widget-shell.is-expanding{
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.10),
+    inset 0 1px rgba(255,255,255,.35);
+}
+
+:root[data-theme="dark"] .widget-shell.is-expanding{
+  box-shadow:
+    0 18px 42px rgba(0,0,0,.36),
+    inset 0 1px rgba(255,255,255,.04);
+}
+
+/* =========================
+   Compact mode — interface entière
+   ========================= */
+
+:root[data-density="compact"]{
+  --spot-h: 46px;
+  --radius: 14px;
+}
+
+:root[data-density="compact"] .container{
+  gap: .9rem;
+  padding-top: 2.7rem;
+}
+
+:root[data-density="compact"] #greeting{
+  font-size: clamp(2rem, 4.2vw, 2.45rem);
+}
+
+:root[data-density="compact"] #clock{
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+}
+
+:root[data-density="compact"] .weather-container{
+  width: 332px;
+  padding: .58rem .8rem;
+}
+
+:root[data-density="compact"] .weather-details{
+  padding: .75rem;
+}
+
+:root[data-density="compact"] .spotlight{
+  height: var(--spot-h);
+  margin: .45rem auto 1.6rem;
+  padding: 0 .95rem;
+}
+
+:root[data-density="compact"] .search-icon{
+  width: 20px;
+  height: 20px;
+  margin-right: .48rem;
+}
+
+:root[data-density="compact"] .engine-button{
+  height: 30px;
+  padding: 0 9px;
+  margin-right: .45rem;
+}
+
+:root[data-density="compact"] .spotlight input{
+  font-size: 1rem;
+}
+
+:root[data-density="compact"] #bookmark-container{
+  gap: .45rem;
+  margin-bottom: 1.6rem;
+}
+
+:root[data-density="compact"] .bookmark-set{
+  padding: .58rem;
+  flex-basis: 260px;
+}
+
+:root[data-density="compact"] .bookmark-header{
+  padding-bottom: .25rem;
+}
+
+:root[data-density="compact"] .bookmark{
+  font-size: .91rem;
+}
+
+:root[data-density="compact"] #news-container{
+  margin: 1.2rem auto 1.6rem !important;
+  padding: .9rem 1.15rem 1.1rem !important;
+}
+
+:root[data-density="compact"] #chat-container{
+  margin: .7rem auto .5rem !important;
+  padding: .55rem !important;
+}
+
+:root[data-density="compact"] .widget-toolbar{
+  margin-bottom: .68rem;
+}
+
+:root[data-density="compact"] .widget-title{
+  font-size: .9rem;
+}
+
+:root[data-density="compact"] .widget-window-controls{
+  gap: 5px;
+}
+
+:root[data-density="compact"] .widget-window-controls .light-dot,
+:root[data-density="compact"] .widget-close-dot{
+  width: 7px;
+  height: 7px;
+}
+
+:root[data-density="compact"] .chat-tabs{
+  margin-bottom: .55rem;
+  padding: .24rem;
+}
+
+:root[data-density="compact"] .chat-tab{
+  padding: .32rem .72rem;
+  font-size: .92rem;
+}
+
+:root[data-density="compact"] .chat-messages{
+  max-height: 250px;
+  gap: .5rem;
+  margin-bottom: .6rem;
+}
+
+:root[data-density="compact"] .msg{
+  padding: .58rem .86rem;
+  border-radius: 12px;
+  font-size: .95rem;
+}
+
+:root[data-density="compact"] .chat-form input,
+:root[data-density="compact"] .chat-form button{
+  height: 42px;
+}
+
+:root[data-density="compact"] .hint{
+  margin-top: .6rem;
+  font-size: .76rem;
+}
+
+:root[data-density="compact"] .panel-section{
+  margin-bottom: 1.15rem;
+}
+
+:root[data-density="compact"] .panel-header h3{
+  font-size: 1.1rem;
+}
+
+/* cohérence des barres repliées en compact */
+:root[data-density="compact"] .widget-shell.is-collapsed{
+  height: var(--spot-h);
+  padding: 0 .95rem !important;
+}
+
+/* réduction douce du menu moteur */
+:root[data-density="compact"] .engine-menu{
+  width: 208px;
+  padding: 9px;
+}
