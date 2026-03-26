@@ -182,6 +182,36 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
         <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
     </section>
+    <section id="calendar-widget" class="card glass widget-shell widget-calendar" data-widget-id="calendar" style="width: min(920px, 94%); margin: .35rem auto 1rem; padding: 1rem 1.1rem 1.05rem;">
+      <div class="widget-toolbar" aria-label="Barre du module Calendrier">
+        <div class="widget-title">Calendrier</div>
+        <div class="widget-window-controls" aria-hidden="true">
+          <span class="light-dot"></span>
+          <span class="light-dot"></span>
+          <button class="widget-close-dot" type="button" data-widget-close="calendar" aria-label="Masquer le module Calendrier" title="Masquer le module"></button>
+        </div>
+      </div>
+      <div class="widget-body">
+        <div class="calendar-header">
+          <button type="button" id="calendar-prev" class="calendar-nav-btn" aria-label="Mois précédent">‹</button>
+          <div id="calendar-month-label" class="calendar-month-label">Calendrier</div>
+          <button type="button" id="calendar-next" class="calendar-nav-btn" aria-label="Mois suivant">›</button>
+        </div>
+
+        <div class="calendar-weekdays" aria-hidden="true">
+          <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+        </div>
+
+        <div id="calendar-grid" class="calendar-grid" aria-live="polite"></div>
+        <div class="calendar-events-block">
+          <div class="calendar-events-title">Agenda</div>
+          <div id="calendar-events" class="calendar-events-list">
+            <div class="calendar-event-empty">Chargement des événements…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="weather-details" class="card glass weather-details" hidden></section>
 
     
@@ -240,35 +270,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
     </div>
-    <section id="calendar-widget" class="card glass widget-shell widget-calendar" data-widget-id="calendar" style="width: min(920px, 94%); margin: .35rem auto 1rem; padding: 1rem 1.1rem 1.05rem;">
-      <div class="widget-toolbar" aria-label="Barre du module Calendrier">
-        <div class="widget-title">Calendrier</div>
-        <div class="widget-window-controls" aria-hidden="true">
-          <span class="light-dot"></span>
-          <span class="light-dot"></span>
-          <button class="widget-close-dot" type="button" data-widget-close="calendar" aria-label="Masquer le module Calendrier" title="Masquer le module"></button>
-        </div>
-      </div>
-      <div class="widget-body">
-        <div class="calendar-header">
-          <button type="button" id="calendar-prev" class="calendar-nav-btn" aria-label="Mois précédent">‹</button>
-          <div id="calendar-month-label" class="calendar-month-label">Calendrier</div>
-          <button type="button" id="calendar-next" class="calendar-nav-btn" aria-label="Mois suivant">›</button>
-        </div>
-
-        <div class="calendar-weekdays" aria-hidden="true">
-          <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
-        </div>
-
-        <div id="calendar-grid" class="calendar-grid" aria-live="polite"></div>
-        <div class="calendar-events-block">
-          <div class="calendar-events-title">À venir</div>
-          <div id="calendar-events" class="calendar-events-list">
-            <div class="calendar-event-empty">Chargement des événements…</div>
-          </div>
-        </div>
-      </div>
-    </section>
+    
 
     <section id="news-container" class="card glass widget-shell widget-news" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.1rem 1.5rem 1.5rem; display: none;" data-widget-id="news">
       <div class="widget-toolbar" aria-label="Barre du module Actualités">
@@ -945,8 +947,18 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           toolbar.addEventListener('click', (event) => {
             if (event.target.closest('button')) return;
             if (hiddenState[widgetId]) return;
-            const collapsed = !widget.classList.contains('is-collapsed');
+            const wasCollapsed = widget.classList.contains('is-collapsed');
+            const collapsed = !wasCollapsed;
             widget.classList.toggle('is-collapsed', collapsed);
+
+            if (wasCollapsed && !collapsed) {
+              widget.classList.remove('is-expanding');
+              requestAnimationFrame(() => {
+                widget.classList.add('is-expanding');
+                setTimeout(() => widget.classList.remove('is-expanding'), 420);
+              });
+            }
+
             collapsedState[widgetId] = collapsed;
             writeState(COLLAPSE_KEY, collapsedState);
           });
@@ -1120,7 +1132,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
 
 
 
-    // --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
+        // --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
     (function () {
       const grid = document.getElementById('calendar-grid');
       const label = document.getElementById('calendar-month-label');
@@ -1135,6 +1147,16 @@ searchInput.placeholder = BASE_PLACEHOLDER;
       const fmt = new Intl.DateTimeFormat('fr-BE', { month: 'long', year: 'numeric' });
       const dateFmt = new Intl.DateTimeFormat('fr-BE', { weekday: 'short', day: 'numeric', month: 'short' });
       const timeFmt = new Intl.DateTimeFormat('fr-BE', { hour: '2-digit', minute: '2-digit' });
+
+      function startOfDay(date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      }
+
+      function addDays(date, days) {
+        const d = new Date(date);
+        d.setDate(d.getDate() + days);
+        return d;
+      }
 
       function renderCalendar() {
         const year = current.getFullYear();
@@ -1183,6 +1205,14 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         `).join('');
       }
 
+      function getEventIcon(event) {
+        const text = `${event.title || ''} ${event.description || ''}`.toLowerCase();
+        if (event.allDay) return '○';
+        if (text.includes('meet') || text.includes('réunion') || text.includes('meeting') || text.includes('teams') || text.includes('zoom')) return '●';
+        if (text.includes('trajet') || text.includes('déplacement') || text.includes('train') || text.includes('vol')) return '◆';
+        return '•';
+      }
+
       function formatEvent(event) {
         const start = new Date(event.start);
         const end = event.end ? new Date(event.end) : null;
@@ -1193,14 +1223,83 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           ? 'Toute la journée'
           : `${timeFmt.format(start)}${end ? ` – ${timeFmt.format(end)}` : ''}`;
 
+        const wrapperTag = event.url ? 'a' : 'article';
+        const wrapperAttrs = event.url
+          ? `href="${event.url}" target="_blank" rel="noopener noreferrer" class="calendar-event-item is-link"`
+          : `class="calendar-event-item"`;
+
         return `
-          <article class="calendar-event-item">
+          <${wrapperTag} ${wrapperAttrs}>
+            <div class="calendar-event-icon" aria-hidden="true">${getEventIcon(event)}</div>
             <div class="calendar-event-main">
               <div class="calendar-event-name">${event.title || 'Événement'}</div>
               <div class="calendar-event-meta">${dateLabel} · ${timeLabel}</div>
             </div>
-          </article>
+          </${wrapperTag}>
         `;
+      }
+
+      function renderGroupedEvents(events) {
+        if (!eventsList) return;
+
+        if (!Array.isArray(events) || events.length === 0) {
+          eventsList.innerHTML = '<div class="calendar-event-empty">Aucun événement à venir.</div>';
+          return;
+        }
+
+        const today = startOfDay(new Date());
+        const tomorrow = addDays(today, 1);
+
+        const buckets = {
+          today: [],
+          tomorrow: [],
+          later: []
+        };
+
+        events.forEach((event) => {
+          const start = new Date(event.start);
+          const eventDay = startOfDay(start);
+          if (eventDay.getTime() === today.getTime()) buckets.today.push(event);
+          else if (eventDay.getTime() === tomorrow.getTime()) buckets.tomorrow.push(event);
+          else buckets.later.push(event);
+        });
+
+        const sections = [];
+
+        if (buckets.today.length) {
+          sections.push(`
+            <section class="calendar-event-group">
+              <div class="calendar-event-group-title">Aujourd’hui</div>
+              <div class="calendar-event-group-list">
+                ${buckets.today.map(formatEvent).join('')}
+              </div>
+            </section>
+          `);
+        }
+
+        if (buckets.tomorrow.length) {
+          sections.push(`
+            <section class="calendar-event-group">
+              <div class="calendar-event-group-title">Demain</div>
+              <div class="calendar-event-group-list">
+                ${buckets.tomorrow.map(formatEvent).join('')}
+              </div>
+            </section>
+          `);
+        }
+
+        if (buckets.later.length) {
+          sections.push(`
+            <section class="calendar-event-group">
+              <div class="calendar-event-group-title">À venir</div>
+              <div class="calendar-event-group-list">
+                ${buckets.later.slice(0, 4).map(formatEvent).join('')}
+              </div>
+            </section>
+          `);
+        }
+
+        eventsList.innerHTML = sections.join('') || '<div class="calendar-event-empty">Aucun événement à venir.</div>';
       }
 
       async function loadEvents() {
@@ -1217,7 +1316,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
             return;
           }
 
-          eventsList.innerHTML = data.events.slice(0, 5).map(formatEvent).join('');
+          renderGroupedEvents(data.events.slice(0, 8));
         } catch (error) {
           console.error('Calendar API:', error);
           eventsList.innerHTML = '<div class="calendar-event-empty">Calendrier indisponible.</div>';
