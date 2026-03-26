@@ -1215,3 +1215,37 @@ body::before{
 .widget-title{
   pointer-events: none;
 }
+
+
+/* =========================
+   Collapsed widgets = taille barre recherche
+   ========================= */
+
+.widget-shell.is-collapsed{
+  width: min(920px, 94%) !important;
+  height: var(--spot-h);
+  padding: 0 1.1rem !important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.widget-shell.is-collapsed .widget-toolbar{
+  width:100%;
+  margin:0;
+}
+
+.widget-shell.is-collapsed .widget-title{
+  font-size:1rem;
+}
+
+.widget-shell.is-collapsed .widget-body{
+  display:none !important;
+}
+
+/* cohérence avec spotlight */
+.widget-shell{
+  width: min(920px, 94%);
+  margin: 0.6rem auto 2.2rem;
+}
+
