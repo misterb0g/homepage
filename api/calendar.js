@@ -1,7 +1,11 @@
 export default async function handler(req, res) {
-  const icsUrl = process.env.GOOGLE_CALENDAR_ICS_URL;
+  const sources = [
+    process.env.GOOGLE_CALENDAR_ICS_URL,
+    process.env.GOOGLE_CALENDAR_ICS_URL_2,
+    process.env.GOOGLE_CALENDAR_ICS_URL_3
+  ].filter(Boolean);
 
-  if (!icsUrl) {
+  if (!sources.length) {
     return res.status(500).json({
       error: "Missing GOOGLE_CALENDAR_ICS_URL environment variable",
       events: []
@@ -9,19 +13,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(icsUrl, {
-      headers: { "user-agent": "homepage-calendar-widget" }
-    });
+    const responses = await Promise.all(
+      sources.map((url) =>
+        fetch(url, { headers: { "user-agent": "homepage-calendar-widget" } })
+      )
+    );
 
-    if (!response.ok) {
-      throw new Error(`ICS fetch failed with status ${response.status}`);
-    }
+    const bad = responses.find((r) => !r.ok);
+    if (bad) throw new Error(`ICS fetch failed with status ${bad.status}`);
 
-    const icsText = await response.text();
-    const events = parseICS(icsText)
-      .filter(event => new Date(event.end || event.start) >= new Date())
+    const texts = await Promise.all(responses.map((r) => r.text()));
+    const now = new Date();
+    const inSevenDays = new Date(now);
+    inSevenDays.setDate(inSevenDays.getDate() + 7);
+
+    const events = texts
+      .flatMap((text, index) => parseICS(text, `Agenda ${index + 1}`))
+      .filter((event) => {
+        const start = new Date(event.start);
+        const end = new Date(event.end || event.start);
+        return end >= now && start <= inSevenDays;
+      })
       .sort((a, b) => new Date(a.start) - new Date(b.start))
-      .slice(0, 8);
+      .slice(0, 24);
 
     return res.status(200).json({ events });
   } catch (error) {
@@ -32,7 +46,7 @@ export default async function handler(req, res) {
   }
 }
 
-function parseICS(text) {
+function parseICS(text, sourceName) {
   const normalized = text.replace(/\r\n[ \t]/g, "");
   const blocks = normalized.split("BEGIN:VEVENT").slice(1);
   const events = [];
@@ -42,6 +56,7 @@ function parseICS(text) {
     const title = readField(body, "SUMMARY");
     const description = readField(body, "DESCRIPTION");
     const url = readField(body, "URL");
+    const location = readField(body, "LOCATION");
     const startRaw = readField(body, "DTSTART");
     const endRaw = readField(body, "DTEND");
 
@@ -57,6 +72,8 @@ function parseICS(text) {
       title: title || "Événement",
       description: description || "",
       url: url || "",
+      location: location || "",
+      source: sourceName,
       start: start.toISOString(),
       end: end ? end.toISOString() : null,
       allDay
