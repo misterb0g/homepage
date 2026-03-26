@@ -181,6 +181,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 
 <section id="weather" class="card glass weather-container" aria-live="polite" tabindex="0" role="button" aria-expanded="false" title="Cliquer pour afficher les prévisions à 5 jours">
         <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
+      <div id="weather-agenda-mini" class="weather-agenda-mini" hidden></div>
     </section>
     <section id="weather-details" class="card glass weather-details" hidden></section>
 
@@ -445,6 +446,63 @@ function setTileSortableEnabled(enabled) {
     }
     function weatherCodeToFr(code) { const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"}; return map[code] ?? "Météo"; }
     
+
+    // --- Mini-agenda du jour dans la carte météo ---
+    async function loadWeatherMiniAgenda() {
+      const slot = document.getElementById('weather-agenda-mini');
+      if (!slot) return;
+
+      try {
+        const res = await fetch('/api/calendar');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const events = Array.isArray(data.events) ? data.events : [];
+
+        const now = new Date();
+        const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+        const todayEvents = events
+          .filter((event) => {
+            const start = new Date(event.start);
+            const key = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+            return key === todayKey;
+          })
+          .slice(0, 2);
+
+        if (!todayEvents.length) {
+          slot.hidden = true;
+          slot.innerHTML = '';
+          return;
+        }
+
+        const timeFmt = new Intl.DateTimeFormat('fr-BE', { hour: '2-digit', minute: '2-digit' });
+
+        slot.innerHTML = todayEvents.map((event) => {
+          const start = new Date(event.start);
+          const end = event.end ? new Date(event.end) : null;
+          const timeLabel = event.allDay
+            ? 'Aujourd’hui · journée'
+            : `Aujourd’hui · ${timeFmt.format(start)}${end ? `–${timeFmt.format(end)}` : ''}`;
+
+          return `
+            <div class="weather-agenda-item">
+              <span class="weather-agenda-dot" aria-hidden="true"></span>
+              <div class="weather-agenda-text">
+                <div class="weather-agenda-title">${event.title || 'Événement'}</div>
+                <div class="weather-agenda-meta">${timeLabel}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        slot.hidden = false;
+      } catch (error) {
+        console.error('Mini agenda météo:', error);
+        slot.hidden = true;
+      }
+    }
+
+
     // --- Météo détaillée (5 jours) ---
     (function () {
       const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
@@ -1436,6 +1494,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
     })();
 
 
+      loadWeatherMiniAgenda();
     // --- Init ---
     window.addEventListener("load", () => {
       updateGreeting(); $("#clock").textContent = getTime();

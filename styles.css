@@ -2350,3 +2350,88 @@ body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
 #bookmark-container{
   margin-top: 0;
 }
+
+
+/* =========================
+   Mini-agenda du jour dans la météo
+   ========================= */
+.weather-container{
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+
+.weather-agenda-mini{
+  margin-top: .1rem;
+  padding-top: .5rem;
+  border-top: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  display: grid;
+  gap: .32rem;
+  text-align: left;
+}
+
+.weather-agenda-item{
+  display: flex;
+  align-items: flex-start;
+  gap: .48rem;
+}
+
+.weather-agenda-dot{
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mac-brand) 70%, var(--fg));
+  margin-top: .38rem;
+}
+
+.weather-agenda-title{
+  font-size: .84rem;
+  line-height: 1.2;
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.weather-agenda-meta{
+  font-size: .74rem;
+  color: var(--secondaryFg);
+  line-height: 1.2;
+  margin-top: .08rem;
+}
+
+:root[data-density="compact"] .weather-agenda-mini{
+  gap: .26rem;
+  padding-top: .42rem;
+}
+
+:root[data-density="compact"] .weather-agenda-title{
+  font-size: .8rem;
+}
+
+:root[data-density="compact"] .weather-agenda-meta{
+  font-size: .7rem;
+}
+
+:root[data-density="dashboard"] .weather-container{
+  gap: .28rem;
+}
+
+:root[data-density="dashboard"] .weather-agenda-mini{
+  gap: .22rem;
+  padding-top: .36rem;
+}
+
+:root[data-density="dashboard"] .weather-agenda-dot{
+  width: 5px;
+  height: 5px;
+  min-width: 5px;
+  margin-top: .34rem;
+}
+
+:root[data-density="dashboard"] .weather-agenda-title{
+  font-size: .72rem;
+}
+
+:root[data-density="dashboard"] .weather-agenda-meta{
+  font-size: .64rem;
+}
