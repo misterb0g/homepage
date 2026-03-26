@@ -1018,161 +1018,60 @@ body::before{
 
 
 /* =========================
-   Widgets macOS — version option-2
+   Widgets macOS consolidés
    ========================= */
-.widget-shell {
+
+.widget-shell{
+  width: min(920px, 94%);
   overflow: hidden;
-}
-
-.widget-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .8rem;
-  margin-bottom: .95rem;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.widget-title {
-  font-size: .95rem;
-  font-weight: 650;
-  color: var(--fg);
-  opacity: .9;
-  letter-spacing: .01em;
-}
-
-.widget-window-btn {
-  appearance: none;
-  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
-  background: color-mix(in srgb, var(--glass-bg) 78%, transparent);
-  width: 54px;
-  height: 24px;
-  border-radius: 999px;
-  padding: 0 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform .16s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
-}
-
-.widget-window-btn:hover {
-  transform: translateY(-1px);
-  background: color-mix(in srgb, var(--glass-bg) 92%, transparent);
-  border-color: color-mix(in srgb, var(--fg) 16%, transparent);
-}
-
-.widget-window-btn:active {
-  transform: scale(.98);
-}
-
-.widget-window-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mac-brand) 18%, transparent);
-}
-
-.widget-lights {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.light-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: linear-gradient(180deg, rgba(178,178,182,.95), rgba(132,132,138,.92));
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.35),
-    0 0 0 1px rgba(0,0,0,.08);
-  opacity: .95;
-}
-
-:root[data-theme="dark"] .light-dot {
-  background: linear-gradient(180deg, rgba(160,160,166,.95), rgba(104,104,110,.92));
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.18),
-    0 0 0 1px rgba(255,255,255,.08);
-}
-
-
-.widget-shell .widget-body{
   transition:
-    max-height .52s cubic-bezier(.22, 1, .36, 1),
-    opacity .28s ease,
-    transform .52s cubic-bezier(.22, 1, .36, 1),
-    margin-top .28s ease;
-}
-.widget-shell.is-collapsed .widget-toolbar{
-  transform: translateY(1px);
+    transform .35s cubic-bezier(.22,1,.36,1),
+    box-shadow .25s ease,
+    border-color .25s ease;
 }
 
-
-.widget-shell .widget-body {
-  overflow: hidden;
-  max-height: 1200px;
-  opacity: 1;
-  transform: translateY(0);
+.widget-shell:hover{
+  border-color: color-mix(in srgb, var(--fg) 14%, transparent);
 }
 
-.widget-shell.is-collapsed .widget-body {
-  max-height: 0;
-  opacity: 0;
-  transform: translateY(-8px);
-  margin-top: 0;
-  pointer-events: none;
-}
-
-.widget-shell.is-collapsed .widget-window-btn {
-  opacity: .92;
-}
-
-.widget-shell.is-collapsed .widget-lights {
-  transform: scale(.96);
-}
-
-.widget-shell.is-collapsed .light-dot {
-  opacity: .7;
-}
-
-.widget-news .widget-toolbar {
-  margin-bottom: 1.15rem;
-}
-
-.widget-chat .widget-toolbar {
-  margin-bottom: .85rem;
-}
-
-
-/* =========================
-   Widgets macOS v2.1
-   - clic sur toute la barre
-   - pastille droite = masquer
-   ========================= */
 .widget-toolbar{
-  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.8rem;
+  margin-bottom:.95rem;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.widget-title{
+  font-size:.95rem;
+  font-weight:650;
+  color:var(--fg);
+  opacity:.9;
+  letter-spacing:.01em;
+  pointer-events:none;
 }
 
 .widget-window-controls{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 2px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0 2px;
 }
 
 .widget-window-controls .light-dot,
 .widget-close-dot{
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex: 0 0 auto;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  flex:0 0 auto;
   background: linear-gradient(180deg, rgba(178,178,182,.95), rgba(132,132,138,.92));
   box-shadow:
     inset 0 1px 1px rgba(255,255,255,.35),
     0 0 0 1px rgba(0,0,0,.08);
-  opacity: .95;
+  opacity:.95;
 }
 
 :root[data-theme="dark"] .widget-window-controls .light-dot,
@@ -1184,42 +1083,37 @@ body::before{
 }
 
 .widget-close-dot{
-  appearance: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
+  appearance:none;
+  border:none;
+  padding:0;
+  cursor:pointer;
   transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease;
 }
 
 .widget-close-dot:hover{
-  transform: scale(1.12);
-  opacity: 1;
+  transform:scale(1.12);
+  opacity:1;
 }
 
 .widget-close-dot:focus-visible{
-  outline: none;
+  outline:none;
   box-shadow:
     0 0 0 3px color-mix(in srgb, var(--mac-brand) 18%, transparent),
     inset 0 1px 1px rgba(255,255,255,.35),
     0 0 0 1px rgba(0,0,0,.08);
 }
 
-.widget-shell.is-collapsed .widget-toolbar{
-  margin-bottom: 0;
+.widget-shell .widget-body{
+  overflow:hidden;
+  max-height:1200px;
+  opacity:1;
+  transform:translateY(0);
+  transition:
+    max-height .45s cubic-bezier(.22,1,.36,1),
+    opacity .25s ease,
+    transform .45s cubic-bezier(.22,1,.36,1),
+    margin-top .25s ease;
 }
-
-.widget-shell.is-collapsed{
-  padding-bottom: 1rem !important;
-}
-
-.widget-title{
-  pointer-events: none;
-}
-
-
-/* =========================
-   Collapsed widgets = taille barre recherche
-   ========================= */
 
 .widget-shell.is-collapsed{
   width: min(920px, 94%) !important;
@@ -1228,6 +1122,12 @@ body::before{
   display:flex;
   align-items:center;
   justify-content:space-between;
+  margin: 0.6rem auto 2.2rem;
+}
+
+.widget-shell.is-collapsed:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0,0,0,.15);
 }
 
 .widget-shell.is-collapsed .widget-toolbar{
@@ -1240,12 +1140,86 @@ body::before{
 }
 
 .widget-shell.is-collapsed .widget-body{
+  max-height:0;
+  opacity:0;
+  transform:translateY(-8px);
+  margin-top:0;
+  pointer-events:none;
   display:none !important;
 }
 
-/* cohérence avec spotlight */
+.widget-news .widget-toolbar{
+  margin-bottom:1.15rem;
+}
+
+.widget-chat .widget-toolbar{
+  margin-bottom:.85rem;
+}
+
+
+/* =========================
+   macOS Background Theme
+   ========================= */
+
+:root{
+  --mac-bg-light: #f5f5f7;
+  --mac-bg-panel: #ffffffcc;
+  --mac-border: rgba(0,0,0,.08);
+  --mac-toolbar: #f1f1f3;
+}
+
+:root[data-theme="dark"]{
+  --mac-bg-light: #1c1c1e;
+  --mac-bg-panel: #2c2c2ecc;
+  --mac-border: rgba(255,255,255,.08);
+  --mac-toolbar: #2c2c2e;
+}
+
+/* page background */
+body{
+  background: var(--mac-bg-light) !important;
+}
+
+/* glass cards become mac-like */
+.card.glass{
+  background: var(--mac-bg-panel);
+  border: 1px solid var(--mac-border);
+  backdrop-filter: blur(20px) saturate(1.1);
+}
+
+/* settings panel finder style */
+.settings-panel,
+.sidebar,
+.control-panel{
+  background: var(--mac-toolbar);
+  border-right: 1px solid var(--mac-border);
+}
+
+/* top search bar match macOS */
+.search-container,
+.spotlight,
+.search-bar{
+  background: var(--mac-bg-panel);
+  border: 1px solid var(--mac-border);
+}
+
+/* widget toolbar macOS feel */
+.widget-toolbar{
+  background: transparent;
+}
+
+/* subtle mac shadow */
+.card.glass,
 .widget-shell{
-  width: min(920px, 94%);
-  margin: 0.6rem auto 2.2rem;
+  box-shadow:
+  0 8px 24px rgba(0,0,0,.08),
+  inset 0 1px rgba(255,255,255,.35);
+}
+
+:root[data-theme="dark"] .card.glass,
+:root[data-theme="dark"] .widget-shell{
+  box-shadow:
+  0 8px 24px rgba(0,0,0,.35),
+  inset 0 1px rgba(255,255,255,.04);
 }
 
