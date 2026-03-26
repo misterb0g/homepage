@@ -144,6 +144,14 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
       </div>
 
       <div class="panel-section">
+          <label for="calendar-toggle">Afficher le calendrier</label>
+          <label class="toggle-switch">
+              <input type="checkbox" id="calendar-toggle">
+              <span class="slider"></span>
+          </label>
+      </div>
+
+      <div class="panel-section">
           <label for="edit-mode-toggle">Mode édition</label>
           <label class="toggle-switch">
               <input type="checkbox" id="edit-mode-toggle">
@@ -175,6 +183,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         <div class="skeleton skeleton-text" style="width: 60%; height: 24px;"></div>
     </section>
     <section id="weather-details" class="card glass weather-details" hidden></section>
+
     
     <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
       <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche" title="Google">
@@ -231,6 +240,35 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div></section>
     </div>
+    <section id="calendar-widget" class="card glass widget-shell widget-calendar" data-widget-id="calendar" style="width: min(920px, 94%); margin: .35rem auto 1rem; padding: 1rem 1.1rem 1.05rem;">
+      <div class="widget-toolbar" aria-label="Barre du module Calendrier">
+        <div class="widget-title">Calendrier</div>
+        <div class="widget-window-controls" aria-hidden="true">
+          <span class="light-dot"></span>
+          <span class="light-dot"></span>
+          <button class="widget-close-dot" type="button" data-widget-close="calendar" aria-label="Masquer le module Calendrier" title="Masquer le module"></button>
+        </div>
+      </div>
+      <div class="widget-body">
+        <div class="calendar-header">
+          <button type="button" id="calendar-prev" class="calendar-nav-btn" aria-label="Mois précédent">‹</button>
+          <div id="calendar-month-label" class="calendar-month-label">Calendrier</div>
+          <button type="button" id="calendar-next" class="calendar-nav-btn" aria-label="Mois suivant">›</button>
+        </div>
+
+        <div class="calendar-weekdays" aria-hidden="true">
+          <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+        </div>
+
+        <div id="calendar-grid" class="calendar-grid" aria-live="polite"></div>
+        <div class="calendar-events-block">
+          <div class="calendar-events-title">À venir</div>
+          <div id="calendar-events" class="calendar-events-list">
+            <div class="calendar-event-empty">Chargement des événements…</div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section id="news-container" class="card glass widget-shell widget-news" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.1rem 1.5rem 1.5rem; display: none;" data-widget-id="news">
       <div class="widget-toolbar" aria-label="Barre du module Actualités">
@@ -877,6 +915,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
       function getPanelToggle(widgetId) {
         if (widgetId === 'news') return document.getElementById('news-toggle');
         if (widgetId === 'chat') return document.getElementById('chat-toggle');
+        if (widgetId === 'calendar') return document.getElementById('calendar-toggle');
         return null;
       }
 
@@ -926,6 +965,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
 
       const newsToggle = document.getElementById('news-toggle');
       const chatToggle = document.getElementById('chat-toggle');
+      const calendarToggle = document.getElementById('calendar-toggle');
 
       if (newsToggle) {
         newsToggle.checked = !hiddenState.news;
@@ -942,6 +982,15 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           hiddenState.chat = !chatToggle.checked;
           writeState(HIDDEN_KEY, hiddenState);
           applyHiddenState('chat', hiddenState.chat);
+        });
+      }
+
+      if (calendarToggle) {
+        calendarToggle.checked = !hiddenState.calendar;
+        calendarToggle.addEventListener('change', () => {
+          hiddenState.calendar = !calendarToggle.checked;
+          writeState(HIDDEN_KEY, hiddenState);
+          applyHiddenState('calendar', hiddenState.calendar);
         });
       }
     })();
@@ -1067,6 +1116,128 @@ searchInput.placeholder = BASE_PLACEHOLDER;
 
       initWidgetResize('news', 680, 240);
       initWidgetResize('chat', 680, 220);
+    })();
+
+
+
+    // --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
+    (function () {
+      const grid = document.getElementById('calendar-grid');
+      const label = document.getElementById('calendar-month-label');
+      const prev = document.getElementById('calendar-prev');
+      const next = document.getElementById('calendar-next');
+      const eventsList = document.getElementById('calendar-events');
+      if (!grid || !label || !prev || !next) return;
+
+      let current = new Date();
+      current.setDate(1);
+
+      const fmt = new Intl.DateTimeFormat('fr-BE', { month: 'long', year: 'numeric' });
+      const dateFmt = new Intl.DateTimeFormat('fr-BE', { weekday: 'short', day: 'numeric', month: 'short' });
+      const timeFmt = new Intl.DateTimeFormat('fr-BE', { hour: '2-digit', minute: '2-digit' });
+
+      function renderCalendar() {
+        const year = current.getFullYear();
+        const month = current.getMonth();
+
+        const firstDay = new Date(year, month, 1);
+        const startOffset = (firstDay.getDay() + 6) % 7;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+        label.textContent = fmt.format(firstDay);
+        grid.innerHTML = '';
+
+        const today = new Date();
+        const cells = [];
+
+        for (let i = 0; i < startOffset; i++) {
+          cells.push({
+            day: daysInPrevMonth - startOffset + i + 1,
+            outside: true
+          });
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          cells.push({
+            day: d,
+            outside: false,
+            today:
+              d === today.getDate() &&
+              month === today.getMonth() &&
+              year === today.getFullYear()
+          });
+        }
+
+        while (cells.length % 7 !== 0) {
+          cells.push({
+            day: cells.length - (startOffset + daysInMonth) + 1,
+            outside: true
+          });
+        }
+
+        grid.innerHTML = cells.map(cell => `
+          <button type="button" class="calendar-day${cell.outside ? ' is-outside' : ''}${cell.today ? ' is-today' : ''}" ${cell.outside ? 'tabindex="-1"' : ''}>
+            <span>${cell.day}</span>
+          </button>
+        `).join('');
+      }
+
+      function formatEvent(event) {
+        const start = new Date(event.start);
+        const end = event.end ? new Date(event.end) : null;
+        const allDay = !!event.allDay;
+
+        const dateLabel = dateFmt.format(start);
+        const timeLabel = allDay
+          ? 'Toute la journée'
+          : `${timeFmt.format(start)}${end ? ` – ${timeFmt.format(end)}` : ''}`;
+
+        return `
+          <article class="calendar-event-item">
+            <div class="calendar-event-main">
+              <div class="calendar-event-name">${event.title || 'Événement'}</div>
+              <div class="calendar-event-meta">${dateLabel} · ${timeLabel}</div>
+            </div>
+          </article>
+        `;
+      }
+
+      async function loadEvents() {
+        if (!eventsList) return;
+        eventsList.innerHTML = '<div class="calendar-event-empty">Chargement des événements…</div>';
+
+        try {
+          const res = await fetch('/api/calendar');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          if (!Array.isArray(data.events) || data.events.length === 0) {
+            eventsList.innerHTML = '<div class="calendar-event-empty">Aucun événement à venir.</div>';
+            return;
+          }
+
+          eventsList.innerHTML = data.events.slice(0, 5).map(formatEvent).join('');
+        } catch (error) {
+          console.error('Calendar API:', error);
+          eventsList.innerHTML = '<div class="calendar-event-empty">Calendrier indisponible.</div>';
+        }
+      }
+
+      prev.addEventListener('click', (event) => {
+        event.stopPropagation();
+        current.setMonth(current.getMonth() - 1);
+        renderCalendar();
+      });
+
+      next.addEventListener('click', (event) => {
+        event.stopPropagation();
+        current.setMonth(current.getMonth() + 1);
+        renderCalendar();
+      });
+
+      renderCalendar();
+      loadEvents();
     })();
 
 
