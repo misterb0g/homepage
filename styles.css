@@ -1566,3 +1566,108 @@ body{
   width: 208px;
   padding: 9px;
 }
+
+
+/* =========================
+   Widgets redimensionnables
+   News + Chat uniquement
+   ========================= */
+
+.widget-shell{
+  position: relative;
+}
+
+.widget-shell .widget-body{
+  min-height: auto;
+}
+
+.widget-news:not(.is-collapsed) .widget-body,
+.widget-chat:not(.is-collapsed) .widget-body{
+  min-height: calc(var(--widget-custom-height, 0px) - 64px);
+}
+
+.widget-chat .chat-messages{
+  max-height: min(320px, calc(var(--widget-custom-height, 320px) - 135px));
+}
+
+.widget-resizer{
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+  z-index: 3;
+}
+
+.widget-resizer::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background:
+    linear-gradient(135deg,
+      transparent 0 34%,
+      rgba(128,128,128,.62) 34% 44%,
+      transparent 44% 58%,
+      rgba(128,128,128,.62) 58% 68%,
+      transparent 68% 100%);
+}
+
+:root[data-theme="dark"] .widget-resizer::before{
+  background:
+    linear-gradient(135deg,
+      transparent 0 34%,
+      rgba(182,182,188,.52) 34% 44%,
+      transparent 44% 58%,
+      rgba(182,182,188,.52) 58% 68%,
+      transparent 68% 100%);
+}
+
+body.edit-mode .widget-news:not(.is-collapsed) .widget-resizer,
+body.edit-mode .widget-chat:not(.is-collapsed) .widget-resizer{
+  opacity: .55;
+  pointer-events: auto;
+}
+
+body.edit-mode .widget-news:not(.is-collapsed):hover .widget-resizer,
+body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
+  opacity: .9;
+}
+
+.widget-shell.is-resizing{
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 18px 44px rgba(0,0,0,.14);
+}
+
+.widget-shell.is-resizing .widget-resizer{
+  opacity: 1 !important;
+  transform: scale(1.06);
+}
+
+.widget-news{
+  max-width: min(1400px, 96vw);
+}
+
+.widget-chat{
+  max-width: min(1400px, 96vw);
+}
+
+.widget-shell.is-collapsed .widget-resizer{
+  display: none !important;
+}
+
+@media (max-width: 899px){
+  .widget-resizer{
+    display: none !important;
+  }
+
+  .widget-news:not(.is-collapsed) .widget-body,
+  .widget-chat:not(.is-collapsed) .widget-body{
+    min-height: auto !important;
+  }
+}
