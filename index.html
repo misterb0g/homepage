@@ -12,6 +12,29 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="/favicon.ico" sizes="any">
 
+  <script>
+    (function () {
+      try {
+        var root = document.documentElement;
+        var pref = localStorage.getItem('theme') || 'system';
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var effective;
+
+        if (pref === 'system') {
+          effective = mq.matches ? 'dark' : 'light';
+        } else if (pref === 'mac') {
+          effective = mq.matches ? 'macos-dark' : 'macos-light';
+        } else {
+          effective = pref;
+        }
+
+        root.setAttribute('data-theme', effective);
+        root.setAttribute('data-theme-pref', pref);
+      } catch (e) {}
+    })();
+  </script>
+
+
   <style>
     /* --- Animations globales --- */
 to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }

@@ -3095,3 +3095,34 @@ input:checked + .slider:before{
 :root[data-theme="macos-dark"] .btn-icon{
   color: #c5c5cc;
 }
+
+
+/* =========================
+   First-paint safety for Mac theme
+   évite les titres trop clairs au premier chargement
+   ========================= */
+html[data-theme="macos-light"] .widget-title,
+html[data-theme="macos-light"] .bookmark-title,
+html[data-theme="macos-light"] .calendar-month-label,
+html[data-theme="macos-light"] .calendar-events-title,
+html[data-theme="macos-light"] .calendar-event-group-title,
+html[data-theme="macos-light"] .panel-header h3,
+html[data-theme="macos-light"] .panel-section > label,
+html[data-theme="macos-light"] #greeting,
+html[data-theme="macos-light"] #clock{
+  color: #1f1f22 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="macos-dark"] .widget-title,
+html[data-theme="macos-dark"] .bookmark-title,
+html[data-theme="macos-dark"] .calendar-month-label,
+html[data-theme="macos-dark"] .calendar-events-title,
+html[data-theme="macos-dark"] .calendar-event-group-title,
+html[data-theme="macos-dark"] .panel-header h3,
+html[data-theme="macos-dark"] .panel-section > label,
+html[data-theme="macos-dark"] #greeting,
+html[data-theme="macos-dark"] #clock{
+  color: #f5f5f7 !important;
+  opacity: 1 !important;
+}
