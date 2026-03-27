@@ -2490,3 +2490,318 @@ body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
     height: var(--widget-collapsed-height) !important;
   }
 }
+
+
+/* =========================
+   Nouveau thème macOS Finder
+   ========================= */
+:root[data-theme="macos-light"]{
+  --bg: #f5f5f7;
+  --fg: #1f1f22;
+  --secondaryFg: #6e6e73;
+  --containerBg: #ffffff;
+  --glass-bg: rgba(255,255,255,0.80);
+  --glass-border: rgba(0,0,0,.08);
+  --glass-shadow: 0 10px 34px rgba(0,0,0,.08);
+  --mac-brand: #0a84ff;
+  --blob-color1: #f5f5f7;
+  --blob-color2: #ececef;
+  --scrim: rgba(0,0,0,.08);
+}
+
+:root[data-theme="macos-dark"]{
+  --bg: #1c1c1e;
+  --fg: #f5f5f7;
+  --secondaryFg: #a1a1a6;
+  --containerBg: #2c2c2e;
+  --glass-bg: rgba(44,44,46,.78);
+  --glass-border: rgba(255,255,255,.08);
+  --glass-shadow: 0 12px 34px rgba(0,0,0,.34);
+  --mac-brand: #0a84ff;
+  --blob-color1: #1c1c1e;
+  --blob-color2: #2b2b30;
+  --scrim: rgba(0,0,0,.22);
+}
+
+/* fond Finder-like */
+:root[data-theme="macos-light"] body{
+  background: linear-gradient(180deg, #f5f5f7 0%, #efeff2 100%) !important;
+}
+:root[data-theme="macos-dark"] body{
+  background: linear-gradient(180deg, #1c1c1e 0%, #171719 100%) !important;
+}
+
+/* cartes, barre de recherche et panneau réglages plus natifs */
+:root[data-theme="macos-light"] .card.glass,
+:root[data-theme="macos-light"] .spotlight,
+:root[data-theme="macos-light"] #control-panel,
+:root[data-theme="macos-light"] .engine-menu{
+  background: rgba(255,255,255,.80) !important;
+  border-color: rgba(0,0,0,.08) !important;
+  box-shadow:
+    0 10px 34px rgba(0,0,0,.08),
+    inset 0 1px rgba(255,255,255,.55) !important;
+  backdrop-filter: blur(22px) saturate(1.08);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+}
+
+:root[data-theme="macos-dark"] .card.glass,
+:root[data-theme="macos-dark"] .spotlight,
+:root[data-theme="macos-dark"] #control-panel,
+:root[data-theme="macos-dark"] .engine-menu{
+  background: rgba(44,44,46,.80) !important;
+  border-color: rgba(255,255,255,.08) !important;
+  box-shadow:
+    0 12px 34px rgba(0,0,0,.34),
+    inset 0 1px rgba(255,255,255,.05) !important;
+  backdrop-filter: blur(22px) saturate(1.08);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+}
+
+/* panneau réglages plus Finder */
+:root[data-theme="macos-light"] #control-panel{
+  background: rgba(246,246,248,.88) !important;
+}
+:root[data-theme="macos-dark"] #control-panel{
+  background: rgba(37,37,40,.88) !important;
+}
+
+/* segmented controls plus fidèles */
+:root[data-theme="macos-light"] .segmented-control{
+  background: rgba(242,242,247,.94);
+  border-color: rgba(0,0,0,.08);
+}
+:root[data-theme="macos-light"] .segmented-control button.active{
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+:root[data-theme="macos-dark"] .segmented-control{
+  background: rgba(58,58,60,.94);
+  border-color: rgba(255,255,255,.08);
+}
+:root[data-theme="macos-dark"] .segmented-control button.active{
+  background: rgba(72,72,74,.96);
+  box-shadow: 0 1px 3px rgba(0,0,0,.22);
+}
+
+/* toggles plus natifs */
+:root[data-theme="macos-light"] .slider{
+  background-color: rgba(120,120,128,.16);
+  border-color: rgba(0,0,0,.08);
+}
+:root[data-theme="macos-dark"] .slider{
+  background-color: rgba(120,120,128,.26);
+  border-color: rgba(255,255,255,.08);
+}
+:root[data-theme="macos-light"] .slider:before{
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.14);
+}
+:root[data-theme="macos-dark"] .slider:before{
+  background-color: #f5f5f7;
+  box-shadow: 0 1px 3px rgba(0,0,0,.28);
+}
+:root[data-theme="macos-light"] input:checked + .slider,
+:root[data-theme="macos-dark"] input:checked + .slider{
+  background-color: #34c759;
+}
+
+/* pastilles colorées fidèles Finder */
+:root[data-theme="macos-light"] .widget-window-controls .light-dot:nth-child(1),
+:root[data-theme="macos-dark"] .widget-window-controls .light-dot:nth-child(1),
+:root[data-theme="macos-light"] .widget-close-dot,
+:root[data-theme="macos-dark"] .widget-close-dot{
+  background: linear-gradient(180deg, #ff6b66, #ff5f57) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.28), 0 0 0 1px rgba(0,0,0,.10) !important;
+}
+:root[data-theme="macos-light"] .widget-window-controls .light-dot:nth-child(2),
+:root[data-theme="macos-dark"] .widget-window-controls .light-dot:nth-child(2){
+  background: linear-gradient(180deg, #ffcf4d, #ffbd2e) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.28), 0 0 0 1px rgba(0,0,0,.10) !important;
+}
+:root[data-theme="macos-light"] .widget-window-controls .light-dot:nth-child(3),
+:root[data-theme="macos-dark"] .widget-window-controls .light-dot:nth-child(3){
+  background: linear-gradient(180deg, #30d158, #28c840) !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.28), 0 0 0 1px rgba(0,0,0,.10) !important;
+}
+:root[data-theme="macos-light"] .widget-window-controls,
+:root[data-theme="macos-dark"] .widget-window-controls{
+  gap: 7px;
+}
+
+
+/* =========================
+   Correctif lisibilité thème Mac
+   ========================= */
+
+/* rétablit une vraie lisibilité des titres et textes */
+:root[data-theme="macos-light"] .widget-title,
+:root[data-theme="macos-light"] .bookmark-title,
+:root[data-theme="macos-light"] #greeting,
+:root[data-theme="macos-light"] #clock,
+:root[data-theme="macos-light"] .calendar-month-label,
+:root[data-theme="macos-light"] .calendar-events-title,
+:root[data-theme="macos-light"] .calendar-event-group-title,
+:root[data-theme="macos-light"] .weather-agenda-title,
+:root[data-theme="macos-light"] .chat-tab,
+:root[data-theme="macos-light"] .panel-header h3,
+:root[data-theme="macos-light"] .panel-section > label{
+  color: #1f1f22 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="macos-light"] .bookmark,
+:root[data-theme="macos-light"] .calendar-event-name,
+:root[data-theme="macos-light"] .calendar-event-meta,
+:root[data-theme="macos-light"] .weather-agenda-meta,
+:root[data-theme="macos-light"] .msg,
+:root[data-theme="macos-light"] .hint,
+:root[data-theme="macos-light"] .calendar-selected-label,
+:root[data-theme="macos-light"] .calendar-weekdays span{
+  color: #4a4a51 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="macos-light"] .spotlight input,
+:root[data-theme="macos-light"] .chat-form input,
+:root[data-theme="macos-light"] .input-group input{
+  color: #1f1f22 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="macos-light"] .spotlight input::placeholder,
+:root[data-theme="macos-light"] .chat-form input::placeholder,
+:root[data-theme="macos-light"] .input-group input::placeholder{
+  color: #7b7b84 !important;
+  opacity: 1 !important;
+}
+
+/* idem en sombre pour éviter les titres délavés */
+:root[data-theme="macos-dark"] .widget-title,
+:root[data-theme="macos-dark"] .bookmark-title,
+:root[data-theme="macos-dark"] #greeting,
+:root[data-theme="macos-dark"] #clock,
+:root[data-theme="macos-dark"] .calendar-month-label,
+:root[data-theme="macos-dark"] .calendar-events-title,
+:root[data-theme="macos-dark"] .calendar-event-group-title,
+:root[data-theme="macos-dark"] .weather-agenda-title,
+:root[data-theme="macos-dark"] .chat-tab,
+:root[data-theme="macos-dark"] .panel-header h3,
+:root[data-theme="macos-dark"] .panel-section > label{
+  color: #f5f5f7 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="macos-dark"] .bookmark,
+:root[data-theme="macos-dark"] .calendar-event-name,
+:root[data-theme="macos-dark"] .calendar-event-meta,
+:root[data-theme="macos-dark"] .weather-agenda-meta,
+:root[data-theme="macos-dark"] .msg,
+:root[data-theme="macos-dark"] .hint,
+:root[data-theme="macos-dark"] .calendar-selected-label,
+:root[data-theme="macos-dark"] .calendar-weekdays span{
+  color: #c5c5cc !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="macos-dark"] .spotlight input,
+:root[data-theme="macos-dark"] .chat-form input,
+:root[data-theme="macos-dark"] .input-group input{
+  color: #f5f5f7 !important;
+  opacity: 1 !important;
+}
+
+:root[data-theme="macos-dark"] .spotlight input::placeholder,
+:root[data-theme="macos-dark"] .chat-form input::placeholder,
+:root[data-theme="macos-dark"] .input-group input::placeholder{
+  color: #9898a2 !important;
+  opacity: 1 !important;
+}
+
+/* titres de tuiles plus Finder */
+:root[data-theme="macos-light"] .bookmark-title{
+  letter-spacing: .04em;
+}
+:root[data-theme="macos-dark"] .bookmark-title{
+  letter-spacing: .04em;
+}
+
+
+/* =========================
+   Correctif final alignement widget Actualités
+   ========================= */
+
+/* on force exactement la même géométrie repliée que Chat */
+#news-container.is-collapsed,
+#chat-container.is-collapsed{
+  width: var(--widget-collapsed-width) !important;
+  max-width: var(--widget-collapsed-width) !important;
+  min-height: var(--widget-collapsed-height) !important;
+  height: var(--widget-collapsed-height) !important;
+  padding: 0 1.1rem !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+}
+
+#news-container.is-collapsed .widget-toolbar,
+#chat-container.is-collapsed .widget-toolbar{
+  width: 100% !important;
+  min-height: var(--widget-collapsed-height) !important;
+  height: var(--widget-collapsed-height) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-sizing: border-box !important;
+  transform: none !important;
+}
+
+#news-container.is-collapsed .widget-title,
+#chat-container.is-collapsed .widget-title{
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  transform: none !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+#news-container.is-collapsed .widget-window-controls,
+#chat-container.is-collapsed .widget-window-controls{
+  margin: 0 !important;
+  padding: 0 2px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  position: relative !important;
+  top: 0 !important;
+}
+
+/* neutralise les marges spécifiques du widget news à l'état ouvert qui fuient parfois au repli */
+#news-container .widget-toolbar{
+  margin-bottom: .85rem;
+}
+#news-container.is-collapsed .widget-toolbar{
+  margin-bottom: 0 !important;
+}
+
+/* mobile */
+@media (max-width: 768px){
+  #news-container.is-collapsed,
+  #chat-container.is-collapsed{
+    padding: 0 .95rem !important;
+  }
+
+  #news-container.is-collapsed .widget-toolbar,
+  #chat-container.is-collapsed .widget-toolbar{
+    min-height: var(--widget-collapsed-height) !important;
+    height: var(--widget-collapsed-height) !important;
+  }
+}
