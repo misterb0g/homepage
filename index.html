@@ -118,7 +118,7 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
               <button data-value="system" title="Suivre macOS">Auto</button>
               <button data-value="light" title="Thème clair">Jour</button>
               <button data-value="dark" title="Thème sombre">Nuit</button>
-              <button data-value="macos" title="Palette Finder">Mac</button>
+              <button data-value="mac" title="Thème macOS Finder">Mac</button>
           </div>
       </div>
       <div class="panel-section">
@@ -834,7 +834,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
           let effective;
           if (pref === "system") {
             effective = resolveSystemTheme();
-          } else if (pref === "macos") {
+          } else if (pref === "mac") {
             effective = colorSchemeMQ.matches ? "macos-dark" : "macos-light";
           } else {
             effective = pref;
@@ -844,17 +844,13 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         }
         try {
           colorSchemeMQ.addEventListener("change", () => {
-            {
-              const pref = localStorage.getItem("theme") || "system";
-              if (pref === "system" || pref === "macos") applyTheme(pref);
-            }
+            const savedTheme = (localStorage.getItem("theme") || "system");
+            if (savedTheme === "system" || savedTheme === "mac") applyTheme(savedTheme);
           });
         } catch(e) {
           try { colorSchemeMQ.addListener(() => {
-            {
-              const pref = localStorage.getItem("theme") || "system";
-              if (pref === "system" || pref === "macos") applyTheme(pref);
-            }
+            const savedTheme = (localStorage.getItem("theme") || "system");
+            if (savedTheme === "system" || savedTheme === "mac") applyTheme(savedTheme);
           }); } catch(_){}
         }
         setupSelector('#theme-selector', 'theme', applyTheme, 'system');

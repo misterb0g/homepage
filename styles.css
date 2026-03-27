@@ -2890,3 +2890,208 @@ body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
     padding: 0 .95rem !important;
   }
 }
+
+
+/* =========================
+   Sonoma / Finder refinement pass
+   panneau réglages + recherche + toggles
+   ========================= */
+
+/* panneau réglages : plus sidebar Finder */
+:root[data-theme="macos-light"] #control-panel{
+  background: linear-gradient(180deg, rgba(246,246,248,.92), rgba(241,241,244,.88)) !important;
+  border-left: 1px solid rgba(0,0,0,.08) !important;
+  box-shadow:
+    -18px 0 42px rgba(0,0,0,.08),
+    inset 0 1px rgba(255,255,255,.55) !important;
+}
+
+:root[data-theme="macos-dark"] #control-panel{
+  background: linear-gradient(180deg, rgba(39,39,42,.92), rgba(33,33,36,.88)) !important;
+  border-left: 1px solid rgba(255,255,255,.08) !important;
+  box-shadow:
+    -18px 0 42px rgba(0,0,0,.28),
+    inset 0 1px rgba(255,255,255,.05) !important;
+}
+
+:root[data-theme="macos-light"] .panel-header{
+  padding-bottom: .85rem;
+  margin-bottom: 1.15rem;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+:root[data-theme="macos-dark"] .panel-header{
+  padding-bottom: .85rem;
+  margin-bottom: 1.15rem;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+:root[data-theme="macos-light"] .panel-section{
+  padding-bottom: .9rem;
+  margin-bottom: .95rem;
+  border-bottom: 1px solid rgba(0,0,0,.045);
+}
+
+:root[data-theme="macos-dark"] .panel-section{
+  padding-bottom: .9rem;
+  margin-bottom: .95rem;
+  border-bottom: 1px solid rgba(255,255,255,.045);
+}
+
+:root[data-theme="macos-light"] .panel-section:last-child,
+:root[data-theme="macos-dark"] .panel-section:last-child{
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* search bar plus Sonoma */
+:root[data-theme="macos-light"] .spotlight{
+  background: linear-gradient(180deg, rgba(255,255,255,.90), rgba(251,251,253,.82)) !important;
+  border-color: rgba(0,0,0,.08) !important;
+  box-shadow:
+    0 8px 26px rgba(0,0,0,.08),
+    inset 0 1px rgba(255,255,255,.6) !important;
+}
+
+:root[data-theme="macos-dark"] .spotlight{
+  background: linear-gradient(180deg, rgba(53,53,58,.86), rgba(45,45,49,.82)) !important;
+  border-color: rgba(255,255,255,.08) !important;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.30),
+    inset 0 1px rgba(255,255,255,.05) !important;
+}
+
+:root[data-theme="macos-light"] .spotlight:hover{
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.09),
+    0 0 0 4px rgba(10,132,255,.08) !important;
+}
+
+:root[data-theme="macos-dark"] .spotlight:hover{
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.34),
+    0 0 0 4px rgba(10,132,255,.10) !important;
+}
+
+:root[data-theme="macos-light"] .spotlight:focus-within{
+  border-color: rgba(10,132,255,.50) !important;
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.10),
+    0 0 0 3px rgba(10,132,255,.17) !important;
+}
+
+:root[data-theme="macos-dark"] .spotlight:focus-within{
+  border-color: rgba(10,132,255,.55) !important;
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.36),
+    0 0 0 3px rgba(10,132,255,.20) !important;
+}
+
+:root[data-theme="macos-light"] .engine-button{
+  background: rgba(246,246,248,.96);
+  border-color: rgba(0,0,0,.08);
+}
+
+:root[data-theme="macos-dark"] .engine-button{
+  background: rgba(61,61,66,.92);
+  border-color: rgba(255,255,255,.08);
+}
+
+/* toggles plus fidèles Sonoma */
+.toggle-switch{
+  width: 52px;
+  height: 31px;
+}
+
+.slider{
+  border-radius: 999px;
+}
+
+.slider:before{
+  height: 25px;
+  width: 25px;
+  left: 2px;
+  bottom: 2px;
+}
+
+input:checked + .slider:before{
+  transform: translateX(21px);
+}
+
+:root[data-theme="macos-light"] .slider{
+  background: rgba(120,120,128,.16);
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.45);
+}
+
+:root[data-theme="macos-dark"] .slider{
+  background: rgba(120,120,128,.28);
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.05);
+}
+
+:root[data-theme="macos-light"] .slider:before{
+  background: linear-gradient(180deg, #ffffff, #f4f4f6);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.16),
+    inset 0 1px rgba(255,255,255,.75);
+}
+
+:root[data-theme="macos-dark"] .slider:before{
+  background: linear-gradient(180deg, #f5f5f7, #dddddf);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.30),
+    inset 0 1px rgba(255,255,255,.35);
+}
+
+:root[data-theme="macos-light"] input:checked + .slider,
+:root[data-theme="macos-dark"] input:checked + .slider{
+  background: linear-gradient(180deg, #3ad25f, #34c759);
+  border-color: rgba(52,199,89,.52);
+}
+
+/* segmented controls encore plus Finder */
+.segmented-control{
+  padding: .18rem;
+  border-radius: 11px;
+}
+
+.segmented-control button{
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+:root[data-theme="macos-light"] .segmented-control button:not(.active){
+  color: #5f5f67;
+}
+:root[data-theme="macos-dark"] .segmented-control button:not(.active){
+  color: #b0b0b6;
+}
+
+:root[data-theme="macos-light"] .input-group input{
+  background: rgba(255,255,255,.88);
+  border-color: rgba(0,0,0,.08);
+}
+:root[data-theme="macos-dark"] .input-group input{
+  background: rgba(52,52,56,.88);
+  border-color: rgba(255,255,255,.08);
+}
+
+:root[data-theme="macos-light"] .input-group button{
+  background: linear-gradient(180deg, #ffffff, #f4f4f6);
+  color: #1f1f22;
+  border-color: rgba(0,0,0,.08);
+}
+:root[data-theme="macos-dark"] .input-group button{
+  background: linear-gradient(180deg, #5b5b60, #4b4b4f);
+  color: #f5f5f7;
+  border-color: rgba(255,255,255,.08);
+}
+
+:root[data-theme="macos-light"] .btn-icon{
+  color: #4f4f56;
+}
+:root[data-theme="macos-dark"] .btn-icon{
+  color: #c5c5cc;
+}
