@@ -2805,3 +2805,88 @@ body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
     height: var(--widget-collapsed-height) !important;
   }
 }
+
+
+/* =========================
+   Correctif d’équerre ultra-strict
+   barres repliées = alignement parfait
+   ========================= */
+
+/* on passe les widgets repliés en bloc simple pour éviter tout décalage flex parasite */
+#calendar-widget.is-collapsed,
+#news-container.is-collapsed,
+#chat-container.is-collapsed{
+  display: block !important;
+  position: relative !important;
+  width: var(--widget-collapsed-width) !important;
+  max-width: var(--widget-collapsed-width) !important;
+  height: var(--widget-collapsed-height) !important;
+  min-height: var(--widget-collapsed-height) !important;
+  padding: 0 1.1rem !important;
+  box-sizing: border-box !important;
+}
+
+/* toolbar sur toute la hauteur, avec grille 2 colonnes */
+#calendar-widget.is-collapsed .widget-toolbar,
+#news-container.is-collapsed .widget-toolbar,
+#chat-container.is-collapsed .widget-toolbar{
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* titre vraiment centré, sans marge héritée */
+#calendar-widget.is-collapsed .widget-title,
+#news-container.is-collapsed .widget-title,
+#chat-container.is-collapsed .widget-title{
+  display: inline-flex !important;
+  align-items: center !important;
+  align-self: center !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  transform: none !important;
+  position: static !important;
+}
+
+/* pastilles parfaitement centrées */
+#calendar-widget.is-collapsed .widget-window-controls,
+#news-container.is-collapsed .widget-window-controls,
+#chat-container.is-collapsed .widget-window-controls{
+  display: inline-flex !important;
+  align-items: center !important;
+  align-self: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 2px !important;
+  line-height: 1 !important;
+  transform: none !important;
+  position: static !important;
+}
+
+/* neutralise tout espacement spécifique à News en replié */
+#news-container.is-collapsed,
+#news-container.is-collapsed .widget-toolbar,
+#news-container.is-collapsed .widget-title,
+#news-container.is-collapsed .widget-window-controls{
+  top: 0 !important;
+  bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* mobile */
+@media (max-width: 768px){
+  #calendar-widget.is-collapsed,
+  #news-container.is-collapsed,
+  #chat-container.is-collapsed{
+    padding: 0 .95rem !important;
+  }
+}
