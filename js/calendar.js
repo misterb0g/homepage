@@ -1,299 +1,124 @@
-// --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
-    (function () {
-      const grid = document.getElementById('calendar-grid');
-      const label = document.getElementById('calendar-month-label');
-      const prev = document.getElementById('calendar-prev');
-      const next = document.getElementById('calendar-next');
-      const eventsList = document.getElementById('calendar-events');
-      const selectedLabel = document.getElementById('calendar-selected-label');
-      const resetSelectionBtn = document.getElementById('calendar-reset-selection');
-      if (!grid || !label || !prev || !next || !eventsList) return;
+export default async function handler(req, res) {
+  const sources = [
+    process.env.GOOGLE_CALENDAR_ICS_URL,
+    process.env.GOOGLE_CALENDAR_ICS_URL_2,
+    process.env.GOOGLE_CALENDAR_ICS_URL_3
+  ].filter(Boolean);
 
-      let current = new Date();
-      current.setDate(1);
+  if (!sources.length) {
+    return res.status(500).json({
+      error: "Missing GOOGLE_CALENDAR_ICS_URL environment variable",
+      events: []
+    });
+  }
 
-      let loadedEvents = [];
-      let selectedDateKey = null;
+  try {
+    const responses = await Promise.all(
+      sources.map((url) =>
+        fetch(url, { headers: { "user-agent": "homepage-calendar-widget" } })
+      )
+    );
 
-      const monthFmt = new Intl.DateTimeFormat('fr-BE', { month: 'long', year: 'numeric' });
-      const dateFmt = new Intl.DateTimeFormat('fr-BE', { weekday: 'short', day: 'numeric', month: 'short' });
-      const fullDateFmt = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      const timeFmt = new Intl.DateTimeFormat('fr-BE', { hour: '2-digit', minute: '2-digit' });
+    const bad = responses.find((r) => !r.ok);
+    if (bad) throw new Error(`ICS fetch failed with status ${bad.status}`);
 
-      function startOfDay(date) {
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      }
+    const texts = await Promise.all(responses.map((r) => r.text()));
+    const now = new Date();
+    const inThirtyDays = new Date(now);
+    inThirtyDays.setDate(inThirtyDays.getDate() + 30);
 
-      function addDays(date, days) {
-        const d = new Date(date);
-        d.setDate(d.getDate() + days);
-        return d;
-      }
-
-      function toDateKey(date) {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-      }
-
-      function getEventDateKey(event) {
+    const events = texts
+      .flatMap((text, index) => parseICS(text, `Agenda ${index + 1}`))
+      .filter((event) => {
         const start = new Date(event.start);
-        return toDateKey(start);
-      }
+        const end = new Date(event.end || event.start);
+        return end >= now && start <= inThirtyDays;
+      })
+      .sort((a, b) => new Date(a.start) - new Date(b.start))
+      .slice(0, 24);
 
-      function hasEventsOnDate(dateKey) {
-        return loadedEvents.some(event => getEventDateKey(event) === dateKey);
-      }
+    return res.status(200).json({ events });
+  } catch (error) {
+    return res.status(500).json({
+      error: error.message || "Calendar fetch failed",
+      events: []
+    });
+  }
+}
 
-      function updateSelectionUi() {
-        grid.querySelectorAll('.calendar-day').forEach((btn) => {
-          btn.classList.toggle('is-selected', btn.dataset.dateKey === selectedDateKey);
-        });
+function parseICS(text, sourceName) {
+  const normalized = text.replace(/\r\n[ \t]/g, "");
+  const blocks = normalized.split("BEGIN:VEVENT").slice(1);
+  const events = [];
 
-        if (selectedDateKey) {
-          const selectedDate = new Date(selectedDateKey + 'T12:00:00');
-          selectedLabel.hidden = false;
-          selectedLabel.textContent = fullDateFmt.format(selectedDate);
-          resetSelectionBtn.hidden = false;
-        } else {
-          selectedLabel.hidden = true;
-          selectedLabel.textContent = '';
-          resetSelectionBtn.hidden = true;
-        }
-      }
+  for (const block of blocks) {
+    const body = block.split("END:VEVENT")[0] || "";
+    const title = readField(body, "SUMMARY");
+    const description = readField(body, "DESCRIPTION");
+    const url = readField(body, "URL");
+    const location = readField(body, "LOCATION");
+    const startRaw = readField(body, "DTSTART");
+    const endRaw = readField(body, "DTEND");
 
-      function renderCalendar() {
-        const year = current.getFullYear();
-        const month = current.getMonth();
+    if (!startRaw) continue;
 
-        const firstDay = new Date(year, month, 1);
-        const startOffset = (firstDay.getDay() + 6) % 7;
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const daysInPrevMonth = new Date(year, month, 0).getDate();
+    const start = parseICSDate(startRaw);
+    const end = endRaw ? parseICSDate(endRaw) : null;
+    const allDay = !startRaw.includes("T");
 
-        label.textContent = monthFmt.format(firstDay);
+    if (!start) continue;
 
-        const today = new Date();
-        const cells = [];
+    events.push({
+      title: title || "Événement",
+      description: description || "",
+      url: url || "",
+      location: location || "",
+      source: sourceName,
+      start: start.toISOString(),
+      end: end ? end.toISOString() : null,
+      allDay
+    });
+  }
 
-        for (let i = 0; i < startOffset; i++) {
-          const day = daysInPrevMonth - startOffset + i + 1;
-          const date = new Date(year, month - 1, day);
-          cells.push({
-            day,
-            outside: true,
-            dateKey: toDateKey(date),
-            hasEvents: hasEventsOnDate(toDateKey(date))
-          });
-        }
+  return events;
+}
 
-        for (let d = 1; d <= daysInMonth; d++) {
-          const date = new Date(year, month, d);
-          cells.push({
-            day: d,
-            outside: false,
-            dateKey: toDateKey(date),
-            hasEvents: hasEventsOnDate(toDateKey(date)),
-            today:
-              d === today.getDate() &&
-              month === today.getMonth() &&
-              year === today.getFullYear()
-          });
-        }
+function readField(block, name) {
+  const regex = new RegExp(`^${name}(?:;[^:]+)?:([^\\n\\r]+)$`, "m");
+  const match = block.match(regex);
+  return match ? match[1].trim() : null;
+}
 
-        while (cells.length % 7 !== 0) {
-          const overflowDay = cells.length - (startOffset + daysInMonth) + 1;
-          const date = new Date(year, month + 1, overflowDay);
-          cells.push({
-            day: overflowDay,
-            outside: true,
-            dateKey: toDateKey(date),
-            hasEvents: hasEventsOnDate(toDateKey(date))
-          });
-        }
+function parseICSDate(value) {
+  if (!value) return null;
 
-        grid.innerHTML = cells.map(cell => `
-          <button
-            type="button"
-            class="calendar-day${cell.outside ? ' is-outside' : ''}${cell.today ? ' is-today' : ''}${cell.hasEvents ? ' has-events' : ''}"
-            data-date-key="${cell.dateKey}"
-            aria-pressed="${selectedDateKey === cell.dateKey ? 'true' : 'false'}"
-          >
-            <span>${cell.day}</span>
-            ${cell.hasEvents ? '<i class="calendar-day-dot" aria-hidden="true"></i>' : ''}
-          </button>
-        `).join('');
+  if (/^\d{8}$/.test(value)) {
+    const y = Number(value.slice(0, 4));
+    const m = Number(value.slice(4, 6)) - 1;
+    const d = Number(value.slice(6, 8));
+    return new Date(y, m, d, 0, 0, 0);
+  }
 
-        grid.querySelectorAll('.calendar-day').forEach((btn) => {
-          btn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const clickedKey = btn.dataset.dateKey;
-            selectedDateKey = (selectedDateKey === clickedKey) ? null : clickedKey;
-            updateSelectionUi();
-            renderEvents();
-          });
-        });
+  if (/^\d{8}T\d{6}Z$/.test(value)) {
+    const y = Number(value.slice(0, 4));
+    const m = Number(value.slice(4, 6)) - 1;
+    const d = Number(value.slice(6, 8));
+    const hh = Number(value.slice(9, 11));
+    const mm = Number(value.slice(11, 13));
+    const ss = Number(value.slice(13, 15));
+    return new Date(Date.UTC(y, m, d, hh, mm, ss));
+  }
 
-        updateSelectionUi();
-      }
+  if (/^\d{8}T\d{6}$/.test(value)) {
+    const y = Number(value.slice(0, 4));
+    const m = Number(value.slice(4, 6)) - 1;
+    const d = Number(value.slice(6, 8));
+    const hh = Number(value.slice(9, 11));
+    const mm = Number(value.slice(11, 13));
+    const ss = Number(value.slice(13, 15));
+    return new Date(y, m, d, hh, mm, ss);
+  }
 
-      function getEventIcon(event) {
-        const text = `${event.title || ''} ${event.description || ''}`.toLowerCase();
-        if (event.allDay) return '○';
-        if (text.includes('meet') || text.includes('réunion') || text.includes('meeting') || text.includes('teams') || text.includes('zoom')) return '●';
-        if (text.includes('trajet') || text.includes('déplacement') || text.includes('train') || text.includes('vol')) return '◆';
-        return '•';
-      }
-
-      function formatEvent(event) {
-        const start = new Date(event.start);
-        const end = event.end ? new Date(event.end) : null;
-        const allDay = !!event.allDay;
-
-        const dateLabel = dateFmt.format(start);
-        const timeLabel = allDay
-          ? 'Toute la journée'
-          : `${timeFmt.format(start)}${end ? ` – ${timeFmt.format(end)}` : ''}`;
-
-        const wrapperTag = event.url ? 'a' : 'article';
-        const wrapperAttrs = event.url
-          ? `href="${event.url}" target="_blank" rel="noopener noreferrer" class="calendar-event-item is-link"`
-          : `class="calendar-event-item"`;
-
-        return `
-          <${wrapperTag} ${wrapperAttrs}>
-            <div class="calendar-event-icon" aria-hidden="true">${getEventIcon(event)}</div>
-            <div class="calendar-event-main">
-              <div class="calendar-event-name">${event.title || 'Événement'}</div>
-              <div class="calendar-event-meta">${dateLabel} · ${timeLabel}</div>
-            </div>
-          </${wrapperTag}>
-        `;
-      }
-
-      function renderSelectedDateEvents() {
-        const selectedEvents = loadedEvents.filter(event => getEventDateKey(event) === selectedDateKey);
-        if (!selectedEvents.length) {
-          eventsList.innerHTML = '<div class="calendar-event-empty">Aucun événement ce jour-là.</div>';
-          return;
-        }
-
-        eventsList.innerHTML = `
-          <section class="calendar-event-group">
-            <div class="calendar-event-group-title">Événements du jour</div>
-            <div class="calendar-event-group-list">
-              ${selectedEvents.map(formatEvent).join('')}
-            </div>
-          </section>
-        `;
-      }
-
-      function renderGroupedEvents() {
-        if (!Array.isArray(loadedEvents) || loadedEvents.length === 0) {
-          eventsList.innerHTML = '<div class="calendar-event-empty">Aucun événement à venir.</div>';
-          return;
-        }
-
-        const today = startOfDay(new Date());
-        const tomorrow = addDays(today, 1);
-
-        const buckets = {
-          today: [],
-          tomorrow: [],
-          later: []
-        };
-
-        loadedEvents.forEach((event) => {
-          const start = new Date(event.start);
-          const eventDay = startOfDay(start);
-          if (eventDay.getTime() === today.getTime()) buckets.today.push(event);
-          else if (eventDay.getTime() === tomorrow.getTime()) buckets.tomorrow.push(event);
-          else buckets.later.push(event);
-        });
-
-        const sections = [];
-
-        if (buckets.today.length) {
-          sections.push(`
-            <section class="calendar-event-group">
-              <div class="calendar-event-group-title">Aujourd’hui</div>
-              <div class="calendar-event-group-list">
-                ${buckets.today.map(formatEvent).join('')}
-              </div>
-            </section>
-          `);
-        }
-
-        if (buckets.tomorrow.length) {
-          sections.push(`
-            <section class="calendar-event-group">
-              <div class="calendar-event-group-title">Demain</div>
-              <div class="calendar-event-group-list">
-                ${buckets.tomorrow.map(formatEvent).join('')}
-              </div>
-            </section>
-          `);
-        }
-
-        if (buckets.later.length) {
-          sections.push(`
-            <section class="calendar-event-group">
-              <div class="calendar-event-group-title">À venir</div>
-              <div class="calendar-event-group-list">
-                ${buckets.later.slice(0, 4).map(formatEvent).join('')}
-              </div>
-            </section>
-          `);
-        }
-
-        eventsList.innerHTML = sections.join('') || '<div class="calendar-event-empty">Aucun événement à venir.</div>';
-      }
-
-      function renderEvents() {
-        if (selectedDateKey) {
-          renderSelectedDateEvents();
-        } else {
-          renderGroupedEvents();
-        }
-      }
-
-      async function loadEvents() {
-        eventsList.innerHTML = '<div class="calendar-event-empty">Chargement des événements…</div>';
-
-        try {
-          const res = await fetch('/api/calendar');
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
-
-          loadedEvents = Array.isArray(data.events) ? data.events.slice(0, 20) : [];
-          renderCalendar();
-          renderEvents();
-        } catch (error) {
-          console.error('Calendar API:', error);
-          eventsList.innerHTML = '<div class="calendar-event-empty">Calendrier indisponible.</div>';
-        }
-      }
-
-      prev.addEventListener('click', (event) => {
-        event.stopPropagation();
-        current.setMonth(current.getMonth() - 1);
-        renderCalendar();
-      });
-
-      next.addEventListener('click', (event) => {
-        event.stopPropagation();
-        current.setMonth(current.getMonth() + 1);
-        renderCalendar();
-      });
-
-      resetSelectionBtn?.addEventListener('click', (event) => {
-        event.stopPropagation();
-        selectedDateKey = null;
-        updateSelectionUi();
-        renderEvents();
-      });
-
-      renderCalendar();
-      loadEvents();
-    })();
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
