@@ -2429,3 +2429,64 @@ body.edit-mode .widget-chat:not(.is-collapsed):hover .widget-resizer{
     min-height: var(--widget-collapsed-height);
   }
 }
+
+
+/* =========================
+   Correctif alignement widgets repliés
+   Actualités = Chat
+   ========================= */
+
+.widget-news.is-collapsed,
+.widget-chat.is-collapsed,
+.widget-calendar.is-collapsed{
+  align-items: stretch !important;
+}
+
+.widget-news.is-collapsed .widget-toolbar,
+.widget-chat.is-collapsed .widget-toolbar,
+.widget-calendar.is-collapsed .widget-toolbar{
+  min-height: var(--widget-collapsed-height) !important;
+  height: var(--widget-collapsed-height) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.widget-news.is-collapsed .widget-title,
+.widget-chat.is-collapsed .widget-title,
+.widget-calendar.is-collapsed .widget-title{
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.widget-news.is-collapsed .widget-window-controls,
+.widget-chat.is-collapsed .widget-window-controls,
+.widget-calendar.is-collapsed .widget-window-controls{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 2px !important;
+  line-height: 1 !important;
+}
+
+/* neutralise un éventuel décalage spécifique au widget news */
+.widget-news.is-collapsed .widget-toolbar,
+.widget-news.is-collapsed .widget-title,
+.widget-news.is-collapsed .widget-window-controls{
+  transform: none !important;
+}
+
+@media (max-width: 768px){
+  .widget-news.is-collapsed .widget-toolbar,
+  .widget-chat.is-collapsed .widget-toolbar,
+  .widget-calendar.is-collapsed .widget-toolbar{
+    min-height: var(--widget-collapsed-height) !important;
+    height: var(--widget-collapsed-height) !important;
+  }
+}
