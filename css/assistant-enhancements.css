@@ -1,0 +1,80 @@
+/* Assistant enhancements — ajout non destructif */
+:root {
+  --focus-ring: color-mix(in srgb, var(--mac-brand) 42%, transparent);
+  --surface-subtle: color-mix(in srgb, var(--fg) 7%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+  .blob1, .blob2 { animation: none !important; }
+}
+
+:where(a, button, input, [role="button"], [tabindex]):focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+body.focus-mode #news-container,
+body.focus-mode #chat-container,
+body.focus-mode #calendar-widget,
+body.focus-mode #weather-details {
+  display: none !important;
+}
+
+.assistant-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 1600;
+  transform: translateX(-50%) translateY(12px);
+  opacity: 0;
+  min-width: min(420px, calc(100vw - 32px));
+  padding: .75rem .95rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--fg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  font-size: .92rem;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.assistant-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.quick-command-hint {
+  width: min(920px, 94%);
+  margin: -1.65rem auto 1.6rem;
+  color: var(--secondaryFg);
+  font-size: .82rem;
+  text-align: center;
+}
+.quick-command-hint kbd {
+  font: inherit;
+  font-size: .78rem;
+  padding: .12rem .36rem;
+  border-radius: 7px;
+  border: 1px solid var(--glass-border);
+  background: var(--surface-subtle);
+  color: var(--fg);
+}
+
+#bookmark-container .bookmark-set {
+  transform-origin: center;
+}
+
+.bookmark-set[data-tile-title="Ressources Humaines"],
+.bookmark-set[data-tile-title="Administration"],
+.bookmark-set[data-tile-title="Banques & Finance"] {
+  border-color: color-mix(in srgb, var(--mac-brand) 28%, var(--glass-border));
+}
