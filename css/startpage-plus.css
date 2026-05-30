@@ -1,0 +1,133 @@
+/* Startpage Plus — profils, Spotlight enrichi et polish dashboard */
+body[data-startpage-profile="work"] .liquid-background {
+  opacity: .58;
+}
+
+.profile-hidden {
+  display: none !important;
+}
+
+.startpage-quick-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .45rem;
+  width: fit-content;
+  margin: .38rem auto .2rem;
+}
+
+.startpage-profile-pill,
+.startpage-focus-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 0;
+  padding: .34rem .72rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--glass-bg) 78%, transparent);
+  color: var(--secondaryFg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  font: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+
+.startpage-profile-pill:hover,
+.startpage-focus-pill:hover,
+.startpage-focus-pill.active,
+.profile-chip.active {
+  color: var(--fg);
+  border-color: color-mix(in srgb, var(--mac-brand) 45%, var(--glass-border));
+}
+
+.command-palette {
+  position: absolute;
+  z-index: 950;
+  left: 1rem;
+  right: 1rem;
+  top: calc(100% + .45rem);
+  display: grid;
+  gap: .25rem;
+  padding: .45rem;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.command-palette[hidden] {
+  display: none !important;
+}
+
+.command-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem;
+  padding: .62rem .75rem;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.command-item small {
+  color: var(--secondaryFg);
+  font-size: .74rem;
+  white-space: nowrap;
+}
+
+.command-item:hover,
+.command-item.is-active {
+  background: color-mix(in srgb, var(--mac-brand) 16%, transparent);
+}
+
+body[data-startpage-profile="work"] #bookmark-container {
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+}
+
+body[data-startpage-profile="work"] .bookmark-set[data-tile-title="Administration"],
+body[data-startpage-profile="work"] .bookmark-set[data-tile-title="Google"],
+body[data-startpage-profile="work"] .bookmark-set[data-tile-title="IA +"] {
+  border-color: color-mix(in srgb, var(--mac-brand) 38%, var(--glass-border));
+}
+
+body[data-startpage-profile="work"] #news-container,
+body[data-startpage-profile="work"] #chat-container {
+  display: none !important;
+}
+
+:root[data-density="dashboard"] .startpage-quick-controls,
+:root[data-density="compact"] .startpage-quick-controls {
+  margin-top: .32rem;
+}
+
+:root[data-density="dashboard"] .startpage-profile-pill,
+:root[data-density="dashboard"] .startpage-focus-pill,
+:root[data-density="compact"] .startpage-profile-pill,
+:root[data-density="compact"] .startpage-focus-pill {
+  font-size: .76rem;
+  padding: .24rem .58rem;
+}
+
+@media (max-width: 720px) {
+  .startpage-quick-controls {
+    max-width: calc(100% - 1rem);
+    flex-wrap: wrap;
+  }
+
+  .command-palette {
+    left: .5rem;
+    right: .5rem;
+    top: calc(100% + .35rem);
+  }
+  .command-item {
+    padding: .58rem .65rem;
+  }
+}
