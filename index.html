@@ -10,7 +10,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/assistant-enhancements.css" />
+  <link rel="stylesheet" href="css/startpage-plus.css" />
   <link rel="icon" href="/favicon.ico" sizes="any">
+  <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
 
   <script>
     (function () {
@@ -37,7 +41,9 @@
 
   <style>
     /* --- Animations globales --- */
-to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px) scale(.985); filter: blur(4px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
     
     .bookmark-set, #news-container {
@@ -290,6 +296,11 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
       <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
+    <div class="quick-command-hint">Commandes : <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>focus</kbd>, <kbd>dashboard</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…</div>
+    <div class="startpage-quick-controls" aria-label="Commandes rapides de la page de démarrage">
+      <button type="button" class="startpage-profile-pill" title="Basculer entre Complet, Travail et Perso">Profil : Complet</button>
+      <button type="button" class="startpage-focus-pill" title="Afficher uniquement les éléments essentiels" aria-pressed="false">Focus</button>
+    </div>
     
     <div id="bookmark-container">
         <section class="bookmark-set card glass skeleton"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div></section>
@@ -358,6 +369,8 @@ to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
   <script src="bookmarks.js"></script>
+  <script src="js/startpage-config.js" defer></script>
+  <script src="js/startpage-plus.js" defer></script>
   <script>
 
     // --- Utilitaires ---

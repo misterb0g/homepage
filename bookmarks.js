@@ -102,3 +102,7 @@ const bookmarks = [
     ],
   },
 ];
+
+
+// Exposition volontaire pour les modules complémentaires (Spotlight, profils, commandes).
+window.bookmarks = bookmarks;
