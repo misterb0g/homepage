@@ -384,8 +384,19 @@ if (localStorage.getItem('showChat') === null) {
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => root.querySelectorAll(sel);
     function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
-    function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
+function updateGreeting() {
 
+  const h = new Date().getHours();
+
+  $('#greeting').textContent =
+
+    (h >= 5 && h < 12) ? "Bonjour Gilles" :
+
+    (h >= 12 && h < 18) ? "Bon après-midi Gilles" :
+
+    "Bonsoir Gilles";
+
+}
     
 
     // --- Ré-ordonnancement des tuiles (Drag & Drop style macOS) ---
