@@ -384,19 +384,8 @@ if (localStorage.getItem('showChat') === null) {
     const $ = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => root.querySelectorAll(sel);
     function getTime() { const d = new Date(), pad = (n) => (n < 10 ? "0" + n : n); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
-function updateGreeting() {
+    function updateGreeting() { const h = new Date().getHours(); $('#greeting').textContent = (h >= 5 && h < 12) ? "Bonjour" : (h >= 12 && h < 18) ? "Bon après-midi" : "Bonsoir"; }
 
-  const h = new Date().getHours();
-
-  $('#greeting').textContent =
-
-    (h >= 5 && h < 12) ? "Bonjour Gilles" :
-
-    (h >= 12 && h < 18) ? "Bon après-midi Gilles" :
-
-    "Bonsoir Gilles";
-
-}
     
 
     // --- Ré-ordonnancement des tuiles (Drag & Drop style macOS) ---
@@ -856,9 +845,58 @@ searchInput.placeholder = BASE_PLACEHOLDER;
     // --- Panneau de configuration ---
     (function() {
         const panel = $('#control-panel'), overlay = $('#overlay'); const toggleBtn = $('#settings-toggle-btn'), closeBtn = $('#panel-close-btn');
-        function openPanel() { panel.setAttribute('aria-hidden', 'false'); overlay.hidden = false; document.body.classList.add('panel-open'); }
-        function closePanel() { panel.setAttribute('aria-hidden', 'true'); overlay.hidden = true; document.body.classList.remove('panel-open'); }
-        toggleBtn.addEventListener('click', openPanel); closeBtn.addEventListener('click', closePanel); overlay.addEventListener('click', closePanel);
+        const hoverPanelQuery = window.matchMedia('(hover: hover) and (min-width: 768px)');
+        let panelCloseTimer = null;
+        let panelPinnedByClick = false;
+
+        function openPanel(options = {}) {
+          if (!panel || !overlay) return;
+          panel.setAttribute('aria-hidden', 'false');
+          overlay.hidden = false;
+          document.body.classList.add('panel-open');
+          if (options.pinned) panelPinnedByClick = true;
+        }
+
+        function closePanel() {
+          if (!panel || !overlay) return;
+          panel.setAttribute('aria-hidden', 'true');
+          overlay.hidden = true;
+          document.body.classList.remove('panel-open');
+          panelPinnedByClick = false;
+        }
+
+        function scheduleHoverClose() {
+          if (!hoverPanelQuery.matches || panelPinnedByClick) return;
+          clearTimeout(panelCloseTimer);
+          panelCloseTimer = setTimeout(() => {
+            const cursorOnButton = toggleBtn && toggleBtn.matches(':hover');
+            const cursorOnPanel = panel && panel.matches(':hover');
+            if (!cursorOnButton && !cursorOnPanel) closePanel();
+          }, 180);
+        }
+
+        if (toggleBtn && panel && overlay && closeBtn) {
+          toggleBtn.addEventListener('mouseenter', () => {
+            if (hoverPanelQuery.matches) {
+              clearTimeout(panelCloseTimer);
+              openPanel({ pinned: false });
+            }
+          });
+
+          toggleBtn.addEventListener('mouseleave', scheduleHoverClose);
+          panel.addEventListener('mouseenter', () => clearTimeout(panelCloseTimer));
+          panel.addEventListener('mouseleave', scheduleHoverClose);
+
+          toggleBtn.addEventListener('click', () => {
+            if (document.body.classList.contains('panel-open')) closePanel();
+            else openPanel({ pinned: true });
+          });
+
+          closeBtn.addEventListener('click', closePanel);
+          overlay.addEventListener('click', closePanel);
+          hoverPanelQuery.addEventListener?.('change', () => closePanel());
+        }
+
         window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel(); });
         
         // Météo Localisation
