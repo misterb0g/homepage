@@ -217,6 +217,155 @@
       background: rgba(255, 255, 255, 0.14);
     }
 
+
+    /* --- Mode automatique Matin / Journée / Soir --- */
+    .startpage-auto-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .38rem;
+      min-height: 34px;
+      padding: .42rem .78rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.22);
+      color: inherit;
+      font: inherit;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 18px rgba(15, 23, 42, 0.06);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      backdrop-filter: blur(18px) saturate(160%);
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, opacity .18s ease;
+    }
+
+    .startpage-auto-pill:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.34);
+    }
+
+    .startpage-auto-pill.active::before {
+      content: '';
+      width: .48rem;
+      height: .48rem;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: .64;
+    }
+
+    .startpage-auto-pill:not(.active) {
+      opacity: .82;
+      background: rgba(255, 255, 255, 0.14);
+      border-style: dashed;
+    }
+
+    .startpage-auto-pill:not(.active)::before {
+      content: '';
+      width: .48rem;
+      height: .48rem;
+      border-radius: 999px;
+      border: 1.5px solid currentColor;
+      opacity: .45;
+    }
+
+    .startpage-auto-pill.active {
+      background: rgba(255, 255, 255, 0.30);
+      border-style: solid;
+    }
+
+    :root[data-theme="dark"] .startpage-auto-pill,
+    :root[data-theme="macos-dark"] .startpage-auto-pill {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 24px rgba(0, 0, 0, 0.16);
+    }
+
+    :root[data-theme="dark"] .startpage-auto-pill:hover,
+    :root[data-theme="macos-dark"] .startpage-auto-pill:hover {
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    /* --- Micro-polish macOS : contrôles rapides --- */
+    .startpage-quick-controls {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .42rem;
+      margin: .62rem auto 0;
+      padding: .34rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 10px 28px rgba(15, 23, 42, 0.055);
+      -webkit-backdrop-filter: blur(22px) saturate(170%);
+      backdrop-filter: blur(22px) saturate(170%);
+    }
+
+    .startpage-quick-controls > button {
+      min-height: 32px;
+      box-shadow: none;
+      border-color: transparent;
+    }
+
+    .startpage-profile-pill,
+    .startpage-focus-pill,
+    .startpage-auto-pill {
+      position: relative;
+    }
+
+    .startpage-profile-pill:hover,
+    .startpage-focus-pill:hover,
+    .startpage-auto-pill:hover {
+      background: rgba(255, 255, 255, 0.36);
+    }
+
+    .startpage-profile-pill:focus-visible,
+    .startpage-focus-pill:focus-visible,
+    .startpage-auto-pill:focus-visible {
+      outline: 2px solid rgba(0, 122, 255, 0.55);
+      outline-offset: 3px;
+    }
+
+    .startpage-auto-pill:not(.active) {
+      border-style: solid;
+      opacity: .78;
+    }
+
+    .startpage-auto-pill:not(.active)::after {
+      content: 'manuel';
+      margin-left: .12rem;
+      padding: .08rem .34rem;
+      border-radius: 999px;
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .01em;
+      background: rgba(255, 255, 255, 0.34);
+      opacity: .78;
+    }
+
+    :root[data-theme="dark"] .startpage-quick-controls,
+    :root[data-theme="macos-dark"] .startpage-quick-controls {
+      border-color: rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.055);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    :root[data-theme="dark"] .startpage-profile-pill:hover,
+    :root[data-theme="dark"] .startpage-focus-pill:hover,
+    :root[data-theme="dark"] .startpage-auto-pill:hover,
+    :root[data-theme="macos-dark"] .startpage-profile-pill:hover,
+    :root[data-theme="macos-dark"] .startpage-focus-pill:hover,
+    :root[data-theme="macos-dark"] .startpage-auto-pill:hover {
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    :root[data-theme="dark"] .startpage-auto-pill:not(.active)::after,
+    :root[data-theme="macos-dark"] .startpage-auto-pill:not(.active)::after {
+      background: rgba(255, 255, 255, 0.10);
+    }
+
     @media (max-width: 767px) {
       #control-panel.glass {
         top: auto;
@@ -447,10 +596,11 @@
       <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
-    <div class="quick-command-hint">Commandes : <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>focus</kbd>, <kbd>dashboard</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…</div>
+    <div class="quick-command-hint">Commandes : <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>focus</kbd>, <kbd>dashboard</kbd>, <kbd>auto on</kbd>, <kbd>auto off</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…</div>
     <div class="startpage-quick-controls" aria-label="Commandes rapides de la page de démarrage">
       <button type="button" class="startpage-profile-pill" title="Basculer entre Complet, Travail et Perso">Profil : Complet</button>
       <button type="button" class="startpage-focus-pill" title="Afficher uniquement les éléments essentiels" aria-pressed="false">Focus</button>
+      <button type="button" class="startpage-auto-pill" title="Activer ou désactiver l’adaptation automatique selon l’heure" aria-pressed="false">Auto : OFF</button>
     </div>
     
     <div id="bookmark-container">
@@ -1728,6 +1878,231 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         if (e.target && e.target.closest(".engine-option")) setTimeout(refocus, 0);
       }, true);
     })();
+
+
+    // --- Mode automatique Matin / Journée / Soir ---
+    (function startpageContextMode(){
+      const AUTO_KEY = 'startpage_auto_context_v1';
+      const LAST_BUCKET_KEY = 'startpage_auto_context_last_bucket_v1';
+      const $ = (sel, root = document) => root.querySelector(sel);
+      const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+      function toast(message) {
+        let el = $('.assistant-toast');
+        if (!el) {
+          el = document.createElement('div');
+          el.className = 'assistant-toast';
+          el.setAttribute('role', 'status');
+          el.setAttribute('aria-live', 'polite');
+          document.body.appendChild(el);
+        }
+        el.textContent = message;
+        el.classList.add('is-visible');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => el.classList.remove('is-visible'), 1700);
+      }
+
+      function getBucket(date = new Date()) {
+        const hour = date.getHours();
+        if (hour >= 5 && hour < 10) {
+          return {
+            id: 'morning',
+            label: 'Matin',
+            profile: 'work',
+            density: 'dashboard',
+            focus: false,
+            widgets: { calendar: true, news: false, chat: false }
+          };
+        }
+        if (hour >= 10 && hour < 18) {
+          return {
+            id: 'day',
+            label: 'Journée',
+            profile: 'work',
+            density: 'cozy',
+            focus: false,
+            widgets: { calendar: true, news: false, chat: false }
+          };
+        }
+        return {
+          id: 'evening',
+          label: 'Soir',
+          profile: 'personal',
+          density: 'cozy',
+          focus: false,
+          widgets: { calendar: true, news: true, chat: false }
+        };
+      }
+
+      function isAutoEnabled() {
+        return localStorage.getItem(AUTO_KEY) !== '0';
+      }
+
+      function setWidgetVisible(widget, visible) {
+        const toggle = widget === 'calendar' ? $('#calendar-toggle') : $(`#${widget}-toggle`);
+        if (widget === 'calendar') {
+          document.body.classList.toggle('calendar-hidden', !visible);
+          localStorage.setItem('calendarHidden', visible ? '0' : '1');
+        } else {
+          document.body.classList.toggle(`${widget}-hidden`, !visible);
+          localStorage.setItem(`show${widget[0].toUpperCase()}${widget.slice(1)}`, visible ? 'true' : 'false');
+        }
+        if (toggle) toggle.checked = visible;
+      }
+
+      function setDensityNormal() {
+        const plus = window.StartpagePlus;
+        if (plus && typeof plus.setDensity === 'function') plus.setDensity('cozy');
+        document.documentElement.setAttribute('data-density', 'cozy');
+        $$('#density-selector button[data-value]').forEach(btn => btn.classList.toggle('active', btn.dataset.value === 'cozy'));
+        try {
+          localStorage.setItem('density', 'cozy');
+          localStorage.setItem('startpage_density_v2', 'cozy');
+        } catch (_) {}
+      }
+
+      function applyCompleteMode(notify = false) {
+        const plus = window.StartpagePlus;
+        if (plus && typeof plus.applyProfile === 'function') plus.applyProfile('full', false);
+        else document.body.dataset.startpageProfile = 'full';
+
+        if (plus && typeof plus.setFocusMode === 'function') plus.setFocusMode(false, false);
+        else document.body.classList.remove('focus-mode');
+
+        setDensityNormal();
+        ['calendar', 'news', 'chat'].forEach(widget => setWidgetVisible(widget, true));
+        localStorage.setItem(LAST_BUCKET_KEY, 'manual-full');
+        updateAutoUi(getBucket());
+        if (notify) toast('Mode auto coupé · page complète');
+      }
+
+      function disableAuto(resetToComplete = true) {
+        localStorage.setItem(AUTO_KEY, '0');
+        if (resetToComplete) applyCompleteMode(true);
+        else { updateAutoUi(); toast('Mode automatique coupé'); }
+      }
+
+      function applyBucket(bucket, notify = false) {
+        const plus = window.StartpagePlus;
+        if (plus && typeof plus.applyProfile === 'function') plus.applyProfile(bucket.profile, false);
+        if (plus && typeof plus.setDensity === 'function') plus.setDensity(bucket.density);
+        if (plus && typeof plus.setFocusMode === 'function') plus.setFocusMode(bucket.focus, false);
+        Object.entries(bucket.widgets).forEach(([widget, visible]) => setWidgetVisible(widget, visible));
+        localStorage.setItem(LAST_BUCKET_KEY, bucket.id);
+        updateAutoUi(bucket);
+        if (notify) toast(`Mode automatique : ${bucket.label}`);
+      }
+
+      function updateAutoUi(bucket = getBucket()) {
+        const enabled = isAutoEnabled();
+        $$('.startpage-auto-pill').forEach(btn => {
+          btn.classList.toggle('active', enabled);
+          btn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+          btn.textContent = enabled ? `Auto : ON · ${bucket.label}` : 'Auto : OFF';
+          btn.title = enabled
+            ? 'Mode automatique actif — cliquer pour le couper'
+            : 'Mode automatique coupé — cliquer pour le réactiver';
+        });
+        const toggle = $('#auto-context-toggle');
+        if (toggle) toggle.checked = enabled;
+      }
+
+      function installAutoPanelControl() {
+        const panelContent = $('#control-panel .panel-content');
+        if (!panelContent || $('#auto-context-toggle')) return;
+        const section = document.createElement('div');
+        section.className = 'panel-section startpage-auto-section';
+        section.innerHTML = `
+          <div>
+            <label for="auto-context-toggle">Mode automatique</label>
+            <small class="muted" style="display:block;margin-top:.18rem;line-height:1.25;">Quand il est coupé, la page revient en mode Complet.</small>
+          </div>
+          <label class="toggle-switch" title="Activer ou désactiver l’adaptation selon l’heure">
+            <input type="checkbox" id="auto-context-toggle">
+            <span class="slider"></span>
+          </label>
+        `;
+        const profileSection = $('.startpage-profile-section');
+        panelContent.insertBefore(section, profileSection ? profileSection.nextSibling : panelContent.firstChild);
+        $('#auto-context-toggle').addEventListener('change', (event) => {
+          localStorage.setItem(AUTO_KEY, event.target.checked ? '1' : '0');
+          if (event.target.checked) applyBucket(getBucket(), true);
+          else disableAuto(true);
+        });
+      }
+
+      function installAutoPill() {
+        const controls = $('.startpage-quick-controls');
+        if (!controls) return;
+        let pill = $('.startpage-auto-pill');
+        if (!pill) {
+          pill = document.createElement('button');
+          pill.type = 'button';
+          pill.className = 'startpage-auto-pill';
+          pill.title = 'Adapter automatiquement la page selon le moment de la journée';
+          controls.appendChild(pill);
+        }
+        if (!pill.dataset.bound) {
+          pill.addEventListener('click', () => {
+            const next = !isAutoEnabled();
+            localStorage.setItem(AUTO_KEY, next ? '1' : '0');
+            if (next) applyBucket(getBucket(), true);
+            else disableAuto(true);
+          });
+          pill.dataset.bound = '1';
+        }
+      }
+
+      function installSearchCommand() {
+        const form = $('#search-form');
+        const input = $('#search-input');
+        if (!form || !input || form.dataset.autoContextBound) return;
+        form.dataset.autoContextBound = '1';
+        form.addEventListener('submit', (event) => {
+          const query = String(input.value || '').trim().toLowerCase();
+          if (!['auto', 'automatique', 'auto on', 'auto off', 'matin', 'journee', 'journée', 'soir'].includes(query)) return;
+          event.preventDefault();
+          if (query === 'auto' || query === 'automatique') {
+            const next = !isAutoEnabled();
+            localStorage.setItem(AUTO_KEY, next ? '1' : '0');
+            if (next) applyBucket(getBucket(), true);
+            else disableAuto(true);
+            return;
+          }
+          if (query === 'auto on') {
+            localStorage.setItem(AUTO_KEY, '1');
+            applyBucket(getBucket(), true);
+            return;
+          }
+          if (query === 'auto off') {
+            disableAuto(true);
+            return;
+          }
+          localStorage.setItem(AUTO_KEY, '1');
+          const forced = query === 'matin' ? getBucket(new Date(new Date().setHours(7))) :
+            (query === 'soir' ? getBucket(new Date(new Date().setHours(20))) : getBucket(new Date(new Date().setHours(12))));
+          applyBucket(forced, true);
+        }, true);
+      }
+
+      function init() {
+        installAutoPill();
+        installAutoPanelControl();
+        installSearchCommand();
+        const bucket = getBucket();
+        updateAutoUi(bucket);
+        if (isAutoEnabled()) setTimeout(() => applyBucket(bucket, false), 80);
+        setInterval(() => {
+          if (!isAutoEnabled()) { updateAutoUi(getBucket()); return; }
+          const current = getBucket();
+          if (localStorage.getItem(LAST_BUCKET_KEY) !== current.id) applyBucket(current, true);
+          else updateAutoUi(current);
+        }, 5 * 60 * 1000);
+      }
+
+      window.addEventListener('DOMContentLoaded', init);
+    })();
+
 
 </script>
 </body>
