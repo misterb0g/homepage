@@ -83,6 +83,157 @@
       body:has(.spotlight:focus-within) .engine-menu { z-index: 906; }
     }
 
+
+    /* --- Panneau Paramètres : intégration macOS / glassmorphism --- */
+    #control-panel.glass {
+      top: 14px;
+      right: 14px;
+      height: calc(100dvh - 28px);
+      width: min(370px, calc(100vw - 28px));
+      padding: 0;
+      box-sizing: border-box;
+      overflow: hidden;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.50), rgba(255, 255, 255, 0.24)),
+        rgba(245, 247, 250, 0.58);
+      -webkit-backdrop-filter: saturate(180%) blur(30px);
+      backdrop-filter: saturate(180%) blur(30px);
+      box-shadow:
+        0 28px 80px rgba(15, 23, 42, 0.20),
+        0 8px 24px rgba(15, 23, 42, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      opacity: 0;
+      transform: translateX(calc(100% + 28px)) scale(0.985);
+      transition:
+        transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.22s ease;
+    }
+
+    body.panel-open #control-panel.glass {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+
+    #overlay {
+      background: rgba(10, 20, 30, 0.08);
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+    }
+
+    body.panel-open #overlay {
+      opacity: 1;
+    }
+
+    .panel-header {
+      min-height: 60px;
+      padding: 1rem 1rem 0.85rem;
+      margin-bottom: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.10));
+    }
+
+    .panel-header h3 {
+      font-size: 1.05rem;
+      font-weight: 650;
+      letter-spacing: -0.025em;
+    }
+
+    .panel-content {
+      height: calc(100% - 61px);
+      padding: 0.95rem;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .panel-section {
+      margin-bottom: 0.78rem;
+      padding: 0.88rem 0.9rem;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      background: rgba(255, 255, 255, 0.22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .panel-section > label {
+      margin-bottom: 0.62rem;
+      font-size: 0.82rem;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+
+    #control-panel .segmented-control,
+    #control-panel .input-group,
+    #control-panel .toggle-switch {
+      position: relative;
+      z-index: 1;
+    }
+
+    #control-panel .btn-icon {
+      background: rgba(255, 255, 255, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    #control-panel .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.40);
+      transform: translateY(-1px);
+    }
+
+    :root[data-theme="dark"] #control-panel.glass,
+    :root[data-theme="macos-dark"] #control-panel.glass {
+      border-color: rgba(255, 255, 255, 0.16);
+      background:
+        linear-gradient(180deg, rgba(56, 64, 82, 0.56), rgba(23, 27, 36, 0.38)),
+        rgba(18, 22, 30, 0.58);
+      box-shadow:
+        0 32px 90px rgba(0, 0, 0, 0.46),
+        0 10px 28px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    :root[data-theme="dark"] .panel-header,
+    :root[data-theme="macos-dark"] .panel-header {
+      border-bottom-color: rgba(255, 255, 255, 0.10);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+    }
+
+    :root[data-theme="dark"] .panel-section,
+    :root[data-theme="macos-dark"] .panel-section {
+      border-color: rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.075);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    :root[data-theme="dark"] #control-panel .btn-icon,
+    :root[data-theme="macos-dark"] #control-panel .btn-icon {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.10);
+    }
+
+    :root[data-theme="dark"] #control-panel .btn-icon:hover,
+    :root[data-theme="macos-dark"] #control-panel .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    @media (max-width: 767px) {
+      #control-panel.glass {
+        top: auto;
+        right: 10px;
+        left: 10px;
+        bottom: 10px;
+        width: auto;
+        height: min(82dvh, 680px);
+        border-radius: 26px;
+        transform: translateY(calc(100% + 24px)) scale(0.985);
+      }
+
+      body.panel-open #control-panel.glass {
+        transform: translateY(0) scale(1);
+      }
+    }
+
   </style>
 </head>
 <body>
