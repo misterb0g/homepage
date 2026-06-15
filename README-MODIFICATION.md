@@ -1,12 +1,13 @@
-# Modification : panneau de réglages au survol
+# Modification
 
-Fichier modifié : `index.html`
+Version basée sur `startpage-focus-favorites-no-overlap-github-ready`.
 
-Comportement ajouté :
-- sur ordinateur/tablette avec curseur et écran ≥ 768px : le panneau de réglages s'ouvre au survol de la roue dentée ;
-- le panneau reste ouvert tant que le curseur est sur la roue ou sur le panneau ;
-- sur mobile/tactile : le comportement au clic est conservé ;
-- un clic sur la roue fonctionne toujours pour ouvrir/fermer le panneau ;
-- `Échap`, le bouton fermer et l'overlay ferment toujours le panneau.
+## Ajustement
 
-Bloc concerné dans `index.html` : section `// --- Panneau de configuration ---`.
+- Le mode complet reprend maintenant le même look macOS 27 / liquid glass que les favoris en mode Focus.
+- La grille des favoris est responsive et sécurisée contre les superpositions.
+- Aucun changement fonctionnel : Focus reste activé par défaut et les favoris restent visibles en Focus.
+
+## Installation GitHub
+
+Remplacer uniquement `index.html` par celui de ce dossier.

@@ -612,6 +612,88 @@
     }
 
 
+    /* --- Mode complet : Favoris au même look macOS 27 que le mode Focus --- */
+    body:not(.focus-mode) #bookmark-container {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      width: min(1280px, calc(100vw - 56px)) !important;
+      max-width: 1280px !important;
+      margin: clamp(1.4rem, 3.2vh, 2.4rem) auto 0 !important;
+      gap: clamp(.9rem, 1.35vw, 1.15rem) !important;
+      align-items: start !important;
+      justify-items: stretch !important;
+      box-sizing: border-box !important;
+    }
+
+    body:not(.focus-mode) #bookmark-container .bookmark-set {
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+      position: relative !important;
+      border-radius: 24px !important;
+      border-color: var(--liquid-edge) !important;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.075)),
+        var(--liquid-fill) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(170%) !important;
+      backdrop-filter: blur(24px) saturate(170%) !important;
+      box-shadow: 0 12px 44px rgba(15, 23, 42, .08), inset 0 1px 0 rgba(255,255,255,.22) !important;
+    }
+
+    body:not(.focus-mode) #bookmark-container .bookmark-set:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 18px 56px rgba(15, 23, 42, .11), inset 0 1px 0 rgba(255,255,255,.28) !important;
+    }
+
+    body:not(.focus-mode) #bookmark-container .bookmark-inner-container,
+    body:not(.focus-mode) #bookmark-container .bookmark-header,
+    body:not(.focus-mode) #bookmark-container .bookmark {
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    body:not(.focus-mode) #bookmark-container .bookmark-header {
+      opacity: .84;
+      letter-spacing: .08em;
+    }
+
+    body:not(.focus-mode) #bookmark-container .bookmark {
+      min-height: 32px;
+    }
+
+    :root[data-theme="dark"] body:not(.focus-mode) #bookmark-container .bookmark-set,
+    :root[data-theme="macos-dark"] body:not(.focus-mode) #bookmark-container .bookmark-set {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.035)),
+        var(--liquid-fill) !important;
+      box-shadow: 0 16px 52px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255,255,255,.09) !important;
+    }
+
+    @media (max-width: 1180px) {
+      body:not(.focus-mode) #bookmark-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        width: min(960px, calc(100vw - 44px)) !important;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body:not(.focus-mode) #bookmark-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        width: min(660px, calc(100vw - 36px)) !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body:not(.focus-mode) #bookmark-container {
+        grid-template-columns: 1fr !important;
+        width: min(420px, calc(100vw - 28px)) !important;
+      }
+    }
+
+
   </style>
 </head>
 <body class="focus-mode">
