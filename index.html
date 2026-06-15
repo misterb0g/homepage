@@ -38,6 +38,26 @@
     })();
   </script>
 
+  <script>
+    /* Préférences par défaut de la version allégée.
+       Appliquées une seule fois par navigateur pour éviter d'écraser tes choix ensuite. */
+    (function () {
+      try {
+        var migrationKey = 'startpage_light_default_applied_v1';
+        if (localStorage.getItem(migrationKey) !== '1') {
+          localStorage.setItem('startpage_focus_mode_v1', '1');
+          localStorage.setItem('startpage_auto_context_v1', '0');
+          localStorage.setItem('startpage_profile_v2', 'full');
+          localStorage.setItem('density', 'cozy');
+          localStorage.setItem('startpage_density_v2', 'cozy');
+          localStorage.setItem(migrationKey, '1');
+        }
+        document.body && document.body.classList.add('focus-mode');
+      } catch (e) {}
+    })();
+  </script>
+
+
 
   <style>
     /* --- Animations globales --- */
@@ -383,9 +403,218 @@
       }
     }
 
+
+    /* --- Page allégée par défaut + inspiration macOS 27 --- */
+    :root {
+      --liquid-edge: rgba(255, 255, 255, 0.42);
+      --liquid-fill: rgba(255, 255, 255, 0.20);
+      --liquid-fill-strong: rgba(255, 255, 255, 0.32);
+      --liquid-shadow: 0 18px 70px rgba(15, 23, 42, 0.13), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    :root[data-theme="dark"],
+    :root[data-theme="macos-dark"] {
+      --liquid-edge: rgba(255, 255, 255, 0.14);
+      --liquid-fill: rgba(255, 255, 255, 0.075);
+      --liquid-fill-strong: rgba(255, 255, 255, 0.12);
+      --liquid-shadow: 0 22px 80px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    }
+
+    body.focus-mode #greeting-container,
+    body.focus-mode #weather,
+    body.focus-mode #news-container,
+    body.focus-mode #chat-container,
+    body.focus-mode #calendar-widget,
+    body.focus-mode #weather-details {
+      display: none !important;
+    }
+
+
+    /* En mode Focus, on garde uniquement les Favoris comme contenu principal. */
+    body.focus-mode #bookmark-container {
+      display: grid !important;
+      width: min(960px, 92vw);
+      margin: 1.15rem auto 0;
+      gap: .85rem;
+    }
+
+    body.focus-mode #bookmark-container .bookmark-set {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.075)),
+        var(--liquid-fill);
+      border-color: var(--liquid-edge);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+      backdrop-filter: blur(24px) saturate(170%);
+      box-shadow: 0 12px 44px rgba(15, 23, 42, .08), inset 0 1px 0 rgba(255,255,255,.22);
+    }
+
+    body.focus-mode #bookmark-container .bookmark-header {
+      opacity: .82;
+    }
+
+    body.focus-mode #bookmark-container .bookmark {
+      min-height: 32px;
+    }
+
+    body.focus-mode .container {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 8dvh;
+      padding-bottom: 12dvh;
+    }
+
+    body.focus-mode #search-form.spotlight {
+      width: min(760px, 92vw);
+      min-height: 64px;
+      border-radius: 28px;
+      border-color: var(--liquid-edge);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.34), rgba(255,255,255,.12)),
+        var(--liquid-fill);
+      -webkit-backdrop-filter: blur(32px) saturate(185%);
+      backdrop-filter: blur(32px) saturate(185%);
+      box-shadow: var(--liquid-shadow);
+    }
+
+    body.focus-mode #search-input {
+      font-size: 1.04rem;
+      letter-spacing: -0.018em;
+    }
+
+    body.focus-mode .quick-command-hint {
+      margin-top: .8rem;
+      margin-bottom: .6rem;
+      opacity: .72;
+      font-size: .78rem;
+    }
+
+    body.focus-mode .startpage-quick-controls {
+      margin-top: .72rem;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.26), rgba(255,255,255,.08)),
+        var(--liquid-fill);
+      border-color: var(--liquid-edge);
+      box-shadow: var(--liquid-shadow);
+      -webkit-backdrop-filter: blur(28px) saturate(185%);
+      backdrop-filter: blur(28px) saturate(185%);
+    }
+
+    body.focus-mode .startpage-quick-controls > button {
+      min-height: 34px;
+      padding-inline: .86rem;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    body.focus-mode .startpage-quick-controls > button.active,
+    body.focus-mode .startpage-focus-pill.active {
+      background: var(--liquid-fill-strong);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.24), 0 6px 18px rgba(15,23,42,.06);
+    }
+
+    @media (max-width: 720px) {
+  
+    /* En mode Focus, on garde uniquement les Favoris comme contenu principal. */
+    body.focus-mode #bookmark-container {
+      display: grid !important;
+      width: min(960px, 92vw);
+      margin: 1.15rem auto 0;
+      gap: .85rem;
+    }
+
+    body.focus-mode #bookmark-container .bookmark-set {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.075)),
+        var(--liquid-fill);
+      border-color: var(--liquid-edge);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+      backdrop-filter: blur(24px) saturate(170%);
+      box-shadow: 0 12px 44px rgba(15, 23, 42, .08), inset 0 1px 0 rgba(255,255,255,.22);
+    }
+
+    body.focus-mode #bookmark-container .bookmark-header {
+      opacity: .82;
+    }
+
+    body.focus-mode #bookmark-container .bookmark {
+      min-height: 32px;
+    }
+
+    body.focus-mode .container {
+        justify-content: flex-start;
+        padding-top: 22dvh;
+      }
+
+      body.focus-mode .quick-command-hint {
+        display: none;
+      }
+
+      body.focus-mode .startpage-quick-controls {
+        max-width: 92vw;
+        overflow-x: auto;
+        justify-content: flex-start;
+      }
+    }
+
+
+    /* Correctif final : grille Favoris Focus sans superposition.
+       On neutralise les largeurs héritées et on fixe des colonnes régulières. */
+    body.focus-mode #bookmark-container {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      width: min(1280px, calc(100vw - 56px)) !important;
+      max-width: 1280px !important;
+      margin: clamp(1.1rem, 3vh, 2rem) auto 0 !important;
+      gap: clamp(.9rem, 1.35vw, 1.15rem) !important;
+      align-items: start !important;
+      justify-items: stretch !important;
+      box-sizing: border-box !important;
+    }
+
+    body.focus-mode #bookmark-container .bookmark-set {
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      position: relative !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+
+    body.focus-mode #bookmark-container .bookmark-inner-container,
+    body.focus-mode #bookmark-container .bookmark-header,
+    body.focus-mode #bookmark-container .bookmark {
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    @media (max-width: 1180px) {
+      body.focus-mode #bookmark-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        width: min(960px, calc(100vw - 44px)) !important;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body.focus-mode #bookmark-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        width: min(660px, calc(100vw - 36px)) !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      body.focus-mode #bookmark-container {
+        grid-template-columns: 1fr !important;
+        width: min(420px, calc(100vw - 28px)) !important;
+      }
+    }
+
+
   </style>
 </head>
-<body>
+<body class="focus-mode">
   
   <!-- Icons (monochrome, charte "macOS-ish") -->
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -596,7 +825,7 @@
       <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
-    <div class="quick-command-hint">Commandes : <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>focus</kbd>, <kbd>dashboard</kbd>, <kbd>auto on</kbd>, <kbd>auto off</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…</div>
+    <div class="quick-command-hint">Commandes : <kbd>focus</kbd>, <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>complet</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…</div>
     <div class="startpage-quick-controls" aria-label="Commandes rapides de la page de démarrage">
       <button type="button" class="startpage-profile-pill" title="Basculer entre Complet, Travail et Perso">Profil : Complet</button>
       <button type="button" class="startpage-focus-pill" title="Afficher uniquement les éléments essentiels" aria-pressed="false">Focus</button>
@@ -1935,7 +2164,7 @@ searchInput.placeholder = BASE_PLACEHOLDER;
       }
 
       function isAutoEnabled() {
-        return localStorage.getItem(AUTO_KEY) !== '0';
+        return localStorage.getItem(AUTO_KEY) === '1';
       }
 
       function setWidgetVisible(widget, visible) {
