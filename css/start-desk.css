@@ -236,3 +236,101 @@ body:not(.focus-mode) .start-desk-status {
     max-width: 430px !important;
   }
 }
+
+/* Start Desk v2 — raffinement visuel et usage clavier */
+html.start-desk body.focus-mode #bookmark-container {
+  justify-content: center !important;
+  align-content: center !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-set {
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-set:hover {
+  transform: translateY(-3px) scale(1.012);
+  border-color: color-mix(in srgb, var(--start-accent) 48%, var(--start-border)) !important;
+  box-shadow: 0 22px 70px rgba(15, 23, 42, .16), inset 0 1px 0 rgba(255,255,255,.28) !important;
+}
+
+html.start-desk .quick-command-hint {
+  opacity: .72;
+  transition: opacity .18s ease;
+}
+
+html.start-desk .quick-command-hint:hover {
+  opacity: 1;
+}
+
+html.start-desk .command-palette {
+  overflow: hidden;
+}
+
+html.start-desk .command-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.start-desk .command-item small {
+  max-width: 44%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.start-desk-dock button {
+  position: relative;
+}
+
+.start-desk-dock button.is-active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: var(--start-accent);
+  box-shadow: 0 0 16px rgba(55, 200, 189, .72);
+}
+
+.start-desk-status::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--start-accent);
+  box-shadow: 0 0 18px rgba(55, 200, 189, .72);
+}
+
+.start-desk-panel textarea::placeholder {
+  color: color-mix(in srgb, var(--secondaryFg) 70%, transparent);
+}
+
+@media (max-width: 760px) {
+  .start-desk-status {
+    top: 14px;
+    font-size: .76rem;
+    max-width: calc(100vw - 24px);
+  }
+
+  .start-desk-dock {
+    border-radius: 24px;
+    padding: .34rem;
+  }
+
+  .start-desk-dock button {
+    min-height: 34px;
+    padding: .38rem .68rem;
+    font-size: .78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk body.focus-mode #bookmark-container .bookmark-set,
+  .start-desk-panel,
+  .quick-command-hint {
+    transition: none !important;
+  }
+}
