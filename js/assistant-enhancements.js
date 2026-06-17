@@ -73,7 +73,10 @@
       showToast(on ? 'Mode focus activé' : 'Mode focus désactivé');
     };
 
-    try { document.body.classList.toggle('focus-mode', localStorage.getItem(KEY) === '1'); } catch (_) {}
+    try {
+      const savedFocus = localStorage.getItem(KEY);
+      document.body.classList.toggle('focus-mode', savedFocus === null ? true : savedFocus === '1');
+    } catch (_) {}
 
     window.addEventListener('keydown', (event) => {
       const active = document.activeElement;

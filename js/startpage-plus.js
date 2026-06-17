@@ -401,8 +401,11 @@
   window.StartpagePlus = { applyProfile, setDensity, getBookmarkMatches, setFocusMode, toggleFocusMode };
 
   window.addEventListener('DOMContentLoaded', () => {
-    let focusOn = false;
-    try { focusOn = localStorage.getItem(FOCUS_KEY) === '1'; } catch (_) {}
+    let focusOn = true;
+    try {
+      const savedFocus = localStorage.getItem(FOCUS_KEY);
+      focusOn = savedFocus === null ? true : savedFocus === '1';
+    } catch (_) {}
     setFocusMode(focusOn, false);
     installProfileControls();
     installHint();
