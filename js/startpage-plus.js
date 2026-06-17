@@ -91,6 +91,31 @@
       .slice(0, 6);
   }
 
+
+  function getPrefixMatches(query) {
+    const raw = String(query || '').trim();
+    if (!raw) return [];
+    const recipes = [
+      ['g ', 'Recherche Google'],
+      ['ai ', 'Envoyer à ChatGPT'],
+      ['ia ', 'Envoyer à ChatGPT'],
+      ['cal ', 'Chercher dans Google Agenda'],
+      ['drive ', 'Chercher dans Google Drive'],
+      ['gh ', 'Chercher sur GitHub']
+    ];
+    return recipes
+      .filter(([prefix]) => raw.toLowerCase().startsWith(prefix) && raw.length > prefix.length)
+      .map(([prefix, label]) => ({
+        type: 'prefix',
+        key: prefix.trim(),
+        label,
+        meta: raw.slice(prefix.length),
+        raw,
+        score: 95
+      }))
+      .slice(0, 3);
+  }
+
   function setDensity(value) {
     document.documentElement.setAttribute('data-density', value);
     try { localStorage.setItem('density', value); } catch (_) {}
@@ -179,8 +204,16 @@
 
     ['news', 'chat', 'calendar'].forEach(widget => {
       const shouldHide = Array.isArray(profile.hiddenWidgets) && profile.hiddenWidgets.includes(widget);
+      const shouldShow = profileId === 'full' || (Array.isArray(profile.showWidgets) && profile.showWidgets.includes(widget));
       if (shouldHide) setWidgetVisible(widget, false);
+      else if (shouldShow) setWidgetVisible(widget, true);
     });
+
+    if (['silex', 'focus', 'code'].includes(profileId)) {
+      setFocusMode(true, false);
+    } else if (profileId === 'full') {
+      setFocusMode(false, false);
+    }
 
     updateProfileUi(profileId);
     if (notify) toast(`Profil ${profile.label || profileId} activé`);
@@ -282,7 +315,7 @@
 
     function render() {
       const query = input.value.trim();
-      const entries = [...getCommandMatches(query), ...getBookmarkMatches(query)].slice(0, 8);
+      const entries = [...getPrefixMatches(query), ...getCommandMatches(query), ...getBookmarkMatches(query)].slice(0, 8);
       if (!query || !entries.length) {
         palette.hidden = true;
         palette.innerHTML = '';
@@ -290,7 +323,7 @@
       }
       palette.hidden = false;
       palette.innerHTML = entries.map((entry, index) => {
-        const meta = entry.type === 'command' ? 'Commande' : entry.group;
+        const meta = entry.type === 'command' ? 'Commande' : (entry.type === 'prefix' ? entry.meta : entry.group);
         return `<button type="button" class="command-item${index === 0 ? ' is-active' : ''}" data-index="${index}" role="option">
           <span>${escapeHtml(entry.label)}</span>
           <small>${escapeHtml(meta)}</small>
@@ -302,6 +335,11 @@
     function executeEntry(entry) {
       if (!entry) return false;
       if (entry.type === 'command') return executeCommand(entry.command);
+      if (entry.type === 'prefix') {
+        input.value = entry.raw;
+        form.requestSubmit();
+        return true;
+      }
       if (entry.type === 'bookmark') {
         toast(`Ouverture de ${entry.label}`);
         window.location.href = entry.url;
@@ -340,7 +378,7 @@
         const entry = palette._entries?.[idx];
         if (entry) {
           event.preventDefault();
-          input.value = entry.type === 'command' ? entry.key : entry.label;
+          input.value = entry.type === 'command' ? entry.key : (entry.type === 'prefix' ? entry.raw : entry.label);
           render();
         }
       }
@@ -380,7 +418,7 @@
     if (!form || $('.quick-command-hint')) return;
     const hint = document.createElement('div');
     hint.className = 'quick-command-hint';
-    hint.innerHTML = 'Commandes : <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>focus</kbd>, <kbd>dashboard</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…';
+    hint.innerHTML = 'Commandes : <kbd>silex</kbd>, <kbd>focus</kbd>, <kbd>code</kbd>, <kbd>perso</kbd> — recherche : <kbd>g</kbd>, <kbd>ai</kbd>, <kbd>drive</kbd>, <kbd>cal</kbd>, <kbd>gh</kbd>…';
     form.insertAdjacentElement('afterend', hint);
   }
 

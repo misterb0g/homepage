@@ -1,4 +1,4 @@
-// Start Desk v1 — dock, statut discret, notes et raccourcis de recherche.
+// Start Desk v2 — dock, statut discret, notes et raccourcis de recherche.
 (function () {
   'use strict';
 
@@ -55,9 +55,17 @@
 
   function showWidget(widgetId) {
     setFocus(false);
+    if (widgetId === 'calendar') {
+      document.body.classList.remove('calendar-hidden');
+      try { localStorage.setItem('calendarHidden', '0'); } catch (_) {}
+    } else {
+      document.body.classList.remove(`${widgetId}-hidden`);
+      try { localStorage.setItem(`show${widgetId[0].toUpperCase()}${widgetId.slice(1)}`, 'true'); } catch (_) {}
+    }
     const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
     if (widget) {
       widget.style.display = '';
+      widget.hidden = false;
       widget.classList.remove('is-collapsed');
       setTimeout(() => widget.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
     }
@@ -105,10 +113,11 @@
     dock.innerHTML = `
       <button type="button" data-action="focus">Focus</button>
       <button type="button" data-action="silex">Silex</button>
+      <button type="button" data-action="personal">Perso</button>
+      <button type="button" data-action="code">Code</button>
       <button type="button" data-action="apps">Apps</button>
       <button type="button" data-action="agenda">Agenda</button>
       <button type="button" data-action="notes">Notes</button>
-      <button type="button" data-action="settings">Réglages</button>
     `;
     document.body.appendChild(dock);
     dock.addEventListener('click', (event) => {
@@ -118,10 +127,11 @@
       if (action !== 'notes') toggleNotes(false);
       if (action === 'focus') { applyProfile('focus'); setFocus(true); }
       if (action === 'silex') { applyProfile('silex'); setFocus(true); }
+      if (action === 'personal') { applyProfile('personal'); setFocus(true); }
+      if (action === 'code') { applyProfile('code'); setFocus(true); }
       if (action === 'apps') { applyProfile('full'); setFocus(false); }
       if (action === 'agenda') showWidget('calendar');
       if (action === 'notes') toggleNotes();
-      if (action === 'settings') document.getElementById('settings-btn')?.click();
     });
   }
 
@@ -163,12 +173,50 @@
     }, true);
   }
 
+  function installKeyboardShortcuts() {
+    if (document.body.dataset.startDeskShortcuts) return;
+    document.body.dataset.startDeskShortcuts = '1';
+
+    document.addEventListener('keydown', (event) => {
+      const input = $('#search-input');
+      const active = document.activeElement;
+      const isTyping = active && ['INPUT', 'TEXTAREA'].includes(active.tagName);
+
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        input?.focus();
+        input?.select();
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        toggleNotes(false);
+        if (isTyping && active === input) input.blur();
+        return;
+      }
+
+      if (isTyping || event.metaKey || event.ctrlKey || event.altKey) return;
+
+      const key = event.key.toLowerCase();
+      if (key === '/') { event.preventDefault(); input?.focus(); return; }
+      if (key === 'f') { applyProfile('focus'); setFocus(true); return; }
+      if (key === 's') { applyProfile('silex'); setFocus(true); return; }
+      if (key === 'p') { applyProfile('personal'); setFocus(true); return; }
+      if (key === 'c') { applyProfile('code'); setFocus(true); return; }
+      if (key === 'a') { applyProfile('full'); setFocus(false); return; }
+      if (key === 'n') { toggleNotes(); return; }
+    });
+  }
+
   function syncDockState() {
     const dock = $('.start-desk-dock');
     if (!dock) return;
     const profile = document.body.dataset.startpageProfile || '';
     dock.querySelector('[data-action="focus"]')?.classList.toggle('is-active', document.body.classList.contains('focus-mode') && profile === 'focus');
     dock.querySelector('[data-action="silex"]')?.classList.toggle('is-active', document.body.classList.contains('focus-mode') && profile === 'silex');
+    dock.querySelector('[data-action="personal"]')?.classList.toggle('is-active', document.body.classList.contains('focus-mode') && profile === 'personal');
+    dock.querySelector('[data-action="code"]')?.classList.toggle('is-active', document.body.classList.contains('focus-mode') && profile === 'code');
+    dock.querySelector('[data-action="apps"]')?.classList.toggle('is-active', !document.body.classList.contains('focus-mode') && profile === 'full');
   }
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -176,6 +224,7 @@
     createDock();
     createNotesPanel();
     installPrefixCommands();
+    installKeyboardShortcuts();
     setInterval(syncDockState, 700);
     setTimeout(syncDockState, 300);
   });

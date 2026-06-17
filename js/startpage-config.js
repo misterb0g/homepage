@@ -1,7 +1,7 @@
 // Configuration complémentaire de la page de démarrage.
 // Start Desk v1 : profils plus lisibles, commandes rapides et alias personnels.
 window.STARTPAGE_CONFIG = {
-  version: '2026-06-17-start-desk-v1',
+  version: '2026-06-17-start-desk-v2',
 
   profiles: {
     silex: {
@@ -16,7 +16,8 @@ window.STARTPAGE_CONFIG = {
         'IA +',
         'Admin Page'
       ],
-      hiddenWidgets: ['news', 'chat']
+      hiddenWidgets: ['news', 'chat'],
+      showWidgets: ['calendar']
     },
     focus: {
       label: 'Focus',
@@ -34,13 +35,15 @@ window.STARTPAGE_CONFIG = {
       label: 'Perso',
       description: 'Usage personnel : infos, sport, divertissement et IA.',
       visibleCategories: ['Google', 'Divertissement', 'News', 'Sport', 'IA +'],
-      hiddenWidgets: ['chat']
+      hiddenWidgets: ['chat'],
+      showWidgets: ['news', 'calendar']
     },
     full: {
       label: 'Complet',
       description: 'Tous les modules et tous les favoris.',
       visibleCategories: null,
-      hiddenWidgets: []
+      hiddenWidgets: [],
+      showWidgets: ['news', 'chat', 'calendar']
     },
     // Compatibilité avec l’ancienne configuration.
     work: {
@@ -83,6 +86,8 @@ window.STARTPAGE_CONFIG = {
     drive: { type: 'bookmark', query: 'Drive', label: 'Ouvrir Drive' },
     github: { type: 'bookmark', query: 'Github', label: 'Ouvrir GitHub' },
     vercel: { type: 'bookmark', query: 'Vercel', label: 'Ouvrir Vercel' },
+    dinclock: { type: 'bookmark', query: 'DinClock', label: 'Ouvrir DinClock' },
+    partena: { type: 'bookmark', query: 'Partena', label: 'Ouvrir Partena' },
     dolibarr: { type: 'bookmark', query: 'Dolibarr', label: 'Ouvrir Dolibarr' }
   },
 
@@ -93,6 +98,9 @@ window.STARTPAGE_CONFIG = {
     banque: 'ING',
     compta: 'Winbooks',
     dolibarr: 'Dolibarr',
+    odoo: 'Odoo',
+    cle: 'Clé',
+    clé: 'Clé',
     mail: 'Mail',
     gmail: 'Mail',
     drive: 'Drive',
