@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Homepage</title>
+  <title>Start Desk</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="css/assistant-enhancements.css" />
   <link rel="stylesheet" href="css/startpage-plus.css" />
+  <link rel="stylesheet" href="css/start-desk.css" />
   <link rel="icon" href="/favicon.ico" sizes="any">
   <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
@@ -58,6 +59,26 @@
     })();
   </script>
 
+  <script>
+    /* Start Desk v1 : nouveau comportement d’accueil.
+       Appliqué une seule fois pour installer le mode Focus/Silex par défaut. */
+    (function () {
+      try {
+        var key = 'startdesk_v1_defaults_applied';
+        if (localStorage.getItem(key) !== '1') {
+          localStorage.setItem('startpage_focus_mode_v1', '1');
+          localStorage.setItem('startpage_profile_v2', 'silex');
+          localStorage.setItem('showChat', 'false');
+          localStorage.setItem('showNews', 'false');
+          localStorage.setItem('startpage_auto_context_v1', '0');
+          localStorage.setItem('density', 'cozy');
+          localStorage.setItem('startpage_density_v2', 'cozy');
+          localStorage.setItem(key, '1');
+        }
+        document.documentElement.classList.add('start-desk');
+      } catch (e) {}
+    })();
+  </script>
 
 
   <style>
@@ -2417,5 +2438,6 @@ searchInput.placeholder = BASE_PLACEHOLDER;
 
 
 </script>
+  <script src="js/start-desk.js"></script>
 </body>
 </html>
