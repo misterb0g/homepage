@@ -49,7 +49,7 @@
         if (localStorage.getItem(migrationKey) !== '1') {
           localStorage.setItem('startpage_focus_mode_v1', '1');
           localStorage.setItem('startpage_auto_context_v1', '0');
-          localStorage.setItem('startpage_profile_v2', 'full');
+          localStorage.setItem('startpage_profile_v2', 'silex');
           localStorage.setItem('density', 'cozy');
           localStorage.setItem('startpage_density_v2', 'cozy');
           localStorage.setItem(migrationKey, '1');
@@ -76,6 +76,23 @@
           localStorage.setItem(key, '1');
         }
         document.documentElement.classList.add('start-desk');
+      } catch (e) {}
+    })();
+  </script>
+
+  <script>
+    /* Start Desk v3.1b : correctif.
+       Force une seule fois le retour au mode Focus/Silex par défaut,
+       même si une ancienne préférence locale avait remis le mode complet. */
+    (function () {
+      try {
+        var key = 'startdesk_v31b_focus_default_fix';
+        if (localStorage.getItem(key) !== '1') {
+          localStorage.setItem('startpage_focus_mode_v1', '1');
+          localStorage.setItem('startpage_profile_v2', 'silex');
+          localStorage.setItem('startpage_auto_context_v1', '0');
+          localStorage.setItem(key, '1');
+        }
       } catch (e) {}
     })();
   </script>
