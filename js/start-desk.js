@@ -1,24 +1,84 @@
-// Start Desk v3 — contexte du jour, commandes internes, fond temporel et polish mobile.
+// Start Desk v3.1 — contexte du jour, commandes internes, fond temporel, polish mobile et statistiques locales.
 (function () {
   'use strict';
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const NOTES_KEY = 'startdesk_notes_v1';
+  const USAGE_KEY = 'startdesk_usage_stats_v1';
   const PROFILE_LABELS = { silex: 'Silex', focus: 'Focus', personal: 'Perso', code: 'Code', full: 'Complet', work: 'Silex' };
 
   function openUrl(url) {
     window.location.href = url;
   }
 
-  function findBookmark(name) {
+  function bookmarkId(category, name) {
+    return `${String(category || 'Favoris').trim()}::${String(name || 'Sans nom').trim()}`;
+  }
+
+  function getUsageStats() {
+    try { return JSON.parse(localStorage.getItem(USAGE_KEY) || '{}') || {}; } catch (_) { return {}; }
+  }
+
+  function saveUsageStats(stats) {
+    try { localStorage.setItem(USAGE_KEY, JSON.stringify(stats)); } catch (_) {}
+  }
+
+  function currentProfileId() {
+    return document.body.dataset.startpageProfile || 'silex';
+  }
+
+  function findBookmarkLink(name) {
     const q = String(name || '').toLowerCase();
     const groups = Array.isArray(window.bookmarks) ? window.bookmarks : [];
     for (const group of groups) {
       for (const link of (group.links || [])) {
-        if (String(link.name || '').toLowerCase() === q) return link.url;
+        if (String(link.name || '').toLowerCase() === q) {
+          return { ...link, category: group.title || 'Favoris', id: bookmarkId(group.title, link.name) };
+        }
       }
     }
     return null;
+  }
+
+  function findBookmark(name) {
+    return findBookmarkLink(name)?.url || null;
+  }
+
+  function allBookmarkLinks() {
+    const groups = Array.isArray(window.bookmarks) ? window.bookmarks : [];
+    return groups.flatMap(group => (group.links || []).map(link => ({
+      ...link,
+      category: group.title || 'Favoris',
+      id: bookmarkId(group.title, link.name)
+    })));
+  }
+
+  function recordFavoriteUse(meta) {
+    if (!meta || !meta.name) return;
+    const now = new Date().toISOString();
+    const id = meta.id || bookmarkId(meta.category, meta.name);
+    const stats = getUsageStats();
+    const previous = stats[id] || {};
+    const profile = currentProfileId();
+    const byProfile = { ...(previous.byProfile || {}) };
+    byProfile[profile] = (byProfile[profile] || 0) + 1;
+    stats[id] = {
+      id,
+      name: meta.name,
+      category: meta.category || previous.category || 'Favoris',
+      url: meta.url || previous.url || '',
+      count: (previous.count || 0) + 1,
+      firstUsedAt: previous.firstUsedAt || now,
+      lastUsedAt: now,
+      lastProfile: profile,
+      byProfile
+    };
+    saveUsageStats(stats);
+  }
+
+  function resetUsageStats() {
+    try { localStorage.removeItem(USAGE_KEY); } catch (_) {}
+    renderStatsPanel();
   }
 
   function getTimePeriod(date = new Date()) {
@@ -132,7 +192,116 @@
     panel.classList.toggle('is-open', next);
     panel.setAttribute('aria-hidden', next ? 'false' : 'true');
     $('.start-desk-dock [data-action="notes"]')?.classList.toggle('is-active', next);
-    if (next) setTimeout(() => $('textarea', panel)?.focus(), 80);
+    if (next) {
+      toggleStats(false);
+      setTimeout(() => $('textarea', panel)?.focus(), 80);
+    }
+  }
+
+  function formatLastUsed(iso) {
+    if (!iso) return 'jamais';
+    try {
+      return new Intl.DateTimeFormat('fr-BE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+    } catch (_) {
+      return '—';
+    }
+  }
+
+  function renderStatsPanel() {
+    const panel = $('.start-desk-stats-panel');
+    if (!panel) return;
+    const stats = getUsageStats();
+    const all = allBookmarkLinks();
+    const enriched = all.map(link => ({ ...link, ...(stats[link.id] || {}), count: stats[link.id]?.count || 0 }));
+    const used = enriched.filter(item => item.count > 0).sort((a, b) => b.count - a.count || String(a.name).localeCompare(String(b.name)));
+    const top = used.slice(0, 8);
+    const low = used.filter(item => item.count <= 2).slice(0, 8);
+    const never = enriched.filter(item => item.count === 0).slice(0, 12);
+    const totalClicks = used.reduce((sum, item) => sum + item.count, 0);
+
+    const row = (item, showLast = true) => `
+      <li>
+        <span><strong>${escapeHtmlLocal(item.name)}</strong><em>${escapeHtmlLocal(item.category || 'Favoris')}</em></span>
+        <b>${item.count || 0}</b>
+        ${showLast ? `<small>${formatLastUsed(item.lastUsedAt)}</small>` : ''}
+      </li>`;
+
+    panel.querySelector('.stats-body').innerHTML = `
+      <div class="stats-summary">
+        <div><strong>${totalClicks}</strong><span>clics suivis</span></div>
+        <div><strong>${used.length}</strong><span>favoris utilisés</span></div>
+        <div><strong>${never.length}</strong><span>jamais utilisés*</span></div>
+      </div>
+      <p class="stats-note">*Depuis l’activation de cette version sur ce navigateur uniquement.</p>
+      <section>
+        <h4>Très utilisés</h4>
+        <ol class="stats-list">${top.length ? top.map(item => row(item)).join('') : '<li class="empty">Aucune donnée pour l’instant.</li>'}</ol>
+      </section>
+      <section>
+        <h4>Peu utilisés</h4>
+        <ol class="stats-list">${low.length ? low.map(item => row(item)).join('') : '<li class="empty">Aucune donnée pour l’instant.</li>'}</ol>
+      </section>
+      <section>
+        <h4>Jamais utilisés</h4>
+        <ol class="stats-list stats-list-never">${never.length ? never.map(item => row(item, false)).join('') : '<li class="empty">Tous les favoris visibles ont déjà été utilisés.</li>'}</ol>
+      </section>
+    `;
+  }
+
+  function createStatsPanel() {
+    if ($('.start-desk-stats-panel')) return $('.start-desk-stats-panel');
+    const panel = document.createElement('section');
+    panel.className = 'start-desk-panel start-desk-stats-panel';
+    panel.setAttribute('aria-hidden', 'true');
+    panel.innerHTML = `
+      <header>
+        <h3>Stats favoris</h3>
+        <div class="stats-actions">
+          <button class="reset-stats" type="button">Réinitialiser</button>
+          <button class="close-panel" type="button" aria-label="Fermer">×</button>
+        </div>
+      </header>
+      <div class="stats-body"></div>
+    `;
+    document.body.appendChild(panel);
+    $('.close-panel', panel).addEventListener('click', () => toggleStats(false));
+    $('.reset-stats', panel).addEventListener('click', () => {
+      if (window.confirm('Réinitialiser les statistiques locales des favoris ?')) resetUsageStats();
+    });
+    renderStatsPanel();
+    return panel;
+  }
+
+  function toggleStats(force) {
+    const panel = createStatsPanel();
+    renderStatsPanel();
+    const next = typeof force === 'boolean' ? force : !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open', next);
+    panel.setAttribute('aria-hidden', next ? 'false' : 'true');
+    if (next) toggleNotes(false);
+  }
+
+  function escapeHtmlLocal(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+  }
+
+  function installUsageTracking() {
+    const container = $('#bookmark-container');
+    if (!container || container.dataset.startDeskUsageTracking) return;
+    container.dataset.startDeskUsageTracking = '1';
+    container.addEventListener('click', (event) => {
+      const link = event.target.closest('a.bookmark');
+      if (!link) return;
+      const tile = link.closest('.bookmark-set');
+      const category = tile?.dataset.tileTitle || tile?.querySelector('.bookmark-title')?.textContent || 'Favoris';
+      const name = link.textContent.trim();
+      recordFavoriteUse({
+        id: bookmarkId(category, name),
+        name,
+        category,
+        url: link.href
+      });
+    }, true);
   }
 
   function createDock() {
@@ -196,10 +365,11 @@
       const raw = String(input.value || '').trim();
       const lower = raw.toLowerCase();
       const openBookmark = (label) => {
-        const url = findBookmark(label);
-        if (url) {
+        const bookmark = findBookmarkLink(label);
+        if (bookmark?.url) {
           event.preventDefault();
-          openUrl(url);
+          recordFavoriteUse(bookmark);
+          openUrl(bookmark.url);
           return true;
         }
         return false;
@@ -212,6 +382,8 @@
         if (lower === 'code' || lower === 'dev') { applyProfile('code'); setFocus(true); return true; }
         if (lower === 'apps' || lower === 'complet' || lower === 'full') { applyProfile('full'); setFocus(false); return true; }
         if (lower === 'notes') { toggleNotes(true); return true; }
+        if (lower === 'stats' || lower === 'statistiques' || lower === 'usage') { toggleStats(true); return true; }
+        if (lower === 'reset stats' || lower === 'réinitialiser stats' || lower === 'vider stats') { resetUsageStats(); toggleStats(true); return true; }
         if (lower === 'clear notes' || lower === 'vider notes') { clearNotes(); return true; }
         const noteMatch = raw.match(/^(note|notes)\s+(.+)$/i);
         if (noteMatch) return appendNote(noteMatch[2]);
@@ -262,6 +434,7 @@
 
       if (event.key === 'Escape') {
         toggleNotes(false);
+        toggleStats(false);
         if (isTyping && active === input) input.blur();
         return;
       }
@@ -276,6 +449,7 @@
       if (key === 'c') { applyProfile('code'); setFocus(true); return; }
       if (key === 'a') { applyProfile('full'); setFocus(false); return; }
       if (key === 'n') { toggleNotes(); return; }
+      if (key === 'u') { toggleStats(); return; }
     });
   }
 
@@ -295,6 +469,8 @@
     createStatus();
     createDock();
     createNotesPanel();
+    createStatsPanel();
+    installUsageTracking();
     installPrefixCommands();
     installKeyboardShortcuts();
     setInterval(syncDockState, 700);

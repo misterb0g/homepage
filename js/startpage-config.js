@@ -1,7 +1,7 @@
 // Configuration complémentaire de la page de démarrage.
 // Start Desk v1 : profils plus lisibles, commandes rapides et alias personnels.
 window.STARTPAGE_CONFIG = {
-  version: '2026-06-17-start-desk-v3',
+  version: '2026-06-17-start-desk-v3.1',
 
   profiles: {
     silex: {
@@ -81,6 +81,8 @@ window.STARTPAGE_CONFIG = {
     actu: { type: 'toggleWidget', widget: 'news', label: 'Afficher / masquer les actualités' },
     chat: { type: 'toggleWidget', widget: 'chat', label: 'Afficher / masquer le chat' },
     notes: { type: 'internal', value: 'notes', label: 'Ouvrir les notes rapides' },
+    stats: { type: 'internal', value: 'stats', label: 'Afficher les statistiques locales des favoris' },
+    statistiques: { type: 'internal', value: 'stats', label: 'Afficher les statistiques locales des favoris' },
     calendrier: { type: 'toggleWidget', widget: 'calendar', label: 'Afficher / masquer le calendrier' },
     agenda: { type: 'bookmark', query: 'Agenda', label: 'Ouvrir Google Agenda' },
     mail: { type: 'bookmark', query: 'Mail', label: 'Ouvrir Gmail' },
