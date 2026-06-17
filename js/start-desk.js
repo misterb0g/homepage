@@ -1,9 +1,10 @@
-// Start Desk v2 — dock, statut discret, notes et raccourcis de recherche.
+// Start Desk v3 — contexte du jour, commandes internes, fond temporel et polish mobile.
 (function () {
   'use strict';
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const NOTES_KEY = 'startdesk_notes_v1';
+  const PROFILE_LABELS = { silex: 'Silex', focus: 'Focus', personal: 'Perso', code: 'Code', full: 'Complet', work: 'Silex' };
 
   function openUrl(url) {
     window.location.href = url;
@@ -20,6 +21,33 @@
     return null;
   }
 
+  function getTimePeriod(date = new Date()) {
+    const hour = date.getHours();
+    if (hour >= 5 && hour < 11) return 'morning';
+    if (hour >= 11 && hour < 18) return 'day';
+    if (hour >= 18 && hour < 22) return 'evening';
+    return 'night';
+  }
+
+  function getGreeting(date = new Date()) {
+    const hour = date.getHours();
+    if (hour >= 5 && hour < 11) return 'Bonjour Gilles';
+    if (hour >= 11 && hour < 18) return 'Bonne journée Gilles';
+    if (hour >= 18 && hour < 22) return 'Bonsoir Gilles';
+    return 'Mode nuit';
+  }
+
+  function applyTimeBackground() {
+    const period = getTimePeriod();
+    document.documentElement.dataset.startDeskPeriod = period;
+    document.body.dataset.startDeskPeriod = period;
+  }
+
+  function currentProfileLabel() {
+    const profile = document.body.dataset.startpageProfile || 'silex';
+    return PROFILE_LABELS[profile] || profile;
+  }
+
   function createStatus() {
     if ($('.start-desk-status')) return;
     const el = document.createElement('div');
@@ -32,7 +60,9 @@
       const now = new Date();
       const time = now.toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
       const weather = $('#weather')?.innerText?.replace(/\s+/g, ' ').trim();
-      el.innerHTML = `<span>${fmtDate.format(now)}</span><span class="muted">•</span><span>${time}</span>${weather ? `<span class="muted">•</span><span class="muted">${weather}</span>` : ''}`;
+      const profile = currentProfileLabel();
+      el.innerHTML = `<strong>${getGreeting(now)}</strong><span class="muted">•</span><span>${fmtDate.format(now)}</span><span class="muted">•</span><span>${time}</span><span class="muted">•</span><span class="muted">${profile}</span>${weather ? `<span class="muted">•</span><span class="muted">${weather}</span>` : ''}`;
+      applyTimeBackground();
     }
     tick();
     setInterval(tick, 30 * 1000);
@@ -135,6 +165,27 @@
     });
   }
 
+  function appendNote(text) {
+    const clean = String(text || '').trim();
+    if (!clean) return false;
+    const stamp = new Date().toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit' });
+    let current = '';
+    try { current = localStorage.getItem(NOTES_KEY) || ''; } catch (_) {}
+    const next = `${current ? `${current.trim()}\n` : ''}- ${clean} (${stamp})`;
+    try { localStorage.setItem(NOTES_KEY, next); } catch (_) {}
+    const textarea = $('.start-desk-panel textarea');
+    if (textarea) textarea.value = next;
+    toggleNotes(true);
+    return true;
+  }
+
+  function clearNotes() {
+    try { localStorage.removeItem(NOTES_KEY); } catch (_) {}
+    const textarea = $('.start-desk-panel textarea');
+    if (textarea) textarea.value = '';
+    toggleNotes(true);
+  }
+
   function installPrefixCommands() {
     const form = $('#search-form');
     const input = $('#search-input');
@@ -154,13 +205,32 @@
         return false;
       };
 
+      const internal = () => {
+        if (lower === 'focus') { applyProfile('focus'); setFocus(true); return true; }
+        if (lower === 'silex' || lower === 'travail' || lower === 'pro') { applyProfile('silex'); setFocus(true); return true; }
+        if (lower === 'perso' || lower === 'personal') { applyProfile('personal'); setFocus(true); return true; }
+        if (lower === 'code' || lower === 'dev') { applyProfile('code'); setFocus(true); return true; }
+        if (lower === 'apps' || lower === 'complet' || lower === 'full') { applyProfile('full'); setFocus(false); return true; }
+        if (lower === 'notes') { toggleNotes(true); return true; }
+        if (lower === 'clear notes' || lower === 'vider notes') { clearNotes(); return true; }
+        const noteMatch = raw.match(/^(note|notes)\s+(.+)$/i);
+        if (noteMatch) return appendNote(noteMatch[2]);
+        return false;
+      };
+
+      if (internal()) {
+        event.preventDefault();
+        input.value = '';
+        return;
+      }
+
       if (lower === 'cal' || lower === 'agenda') return openBookmark('Agenda');
       if (lower === 'drive') return openBookmark('Drive');
       if (lower === 'gh' || lower === 'git') return openBookmark('Github');
       if (lower === 'mail' || lower === 'gmail') return openBookmark('Mail');
       if (lower === 'ai' || lower === 'ia') return openBookmark('ChatGPT');
 
-      const match = raw.match(/^(g|ai|ia|cal|drive|gh)\s+(.+)$/i);
+      const match = raw.match(/^(g|ai|ia|cal|drive|gh|note)\s+(.+)$/i);
       if (!match) return;
       event.preventDefault();
       const prefix = match[1].toLowerCase();
@@ -170,6 +240,7 @@
       if (prefix === 'cal') return openUrl(`https://calendar.google.com/calendar/u/0/r/search?q=${q}`);
       if (prefix === 'drive') return openUrl(`https://drive.google.com/drive/search?q=${q}`);
       if (prefix === 'gh') return openUrl(`https://github.com/search?q=${q}`);
+      if (prefix === 'note') return appendNote(decodeURIComponent(q));
     }, true);
   }
 
@@ -220,12 +291,14 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
+    applyTimeBackground();
     createStatus();
     createDock();
     createNotesPanel();
     installPrefixCommands();
     installKeyboardShortcuts();
     setInterval(syncDockState, 700);
+    setInterval(applyTimeBackground, 60 * 1000);
     setTimeout(syncDockState, 300);
   });
 })();
