@@ -201,9 +201,11 @@
     section.innerHTML = `
       <label>Profil de page</label>
       <div class="segmented-control profile-selector" id="profile-selector">
-        <button type="button" class="profile-chip" data-profile="full">Complet</button>
-        <button type="button" class="profile-chip" data-profile="work">Travail</button>
+        <button type="button" class="profile-chip" data-profile="silex">Silex</button>
+        <button type="button" class="profile-chip" data-profile="focus">Focus</button>
+        <button type="button" class="profile-chip" data-profile="code">Code</button>
         <button type="button" class="profile-chip" data-profile="personal">Perso</button>
+        <button type="button" class="profile-chip" data-profile="full">Complet</button>
       </div>
     `;
     const density = $('#density-selector')?.closest('.panel-section');
@@ -239,9 +241,9 @@
     }
     if (!pill.dataset.bound) {
       pill.addEventListener('click', () => {
-        const order = ['full', 'work', 'personal'];
+        const order = ['silex', 'focus', 'code', 'personal', 'full'];
         const current = document.body.dataset.startpageProfile || 'full';
-        const next = order[(order.indexOf(current) + 1) % order.length] || 'full';
+        const next = order[(order.indexOf(current) + 1) % order.length] || 'silex';
         applyProfile(next, true);
       });
       pill.dataset.bound = '1';
@@ -394,7 +396,7 @@
   function observeBookmarkRender() {
     const container = $('#bookmark-container');
     if (!container) return;
-    const apply = () => applyProfile(localStorage.getItem(PROFILE_KEY) || 'full', false);
+    const apply = () => applyProfile(localStorage.getItem(PROFILE_KEY) || 'silex', false);
     new MutationObserver(() => setTimeout(apply, 0)).observe(container, { childList: true });
   }
 
@@ -414,6 +416,6 @@
     placeQuickControls();
     installCommandPalette();
     observeBookmarkRender();
-    setTimeout(() => applyProfile(localStorage.getItem(PROFILE_KEY) || 'full', false), 0);
+    setTimeout(() => applyProfile(localStorage.getItem(PROFILE_KEY) || 'silex', false), 0);
   });
 })();
