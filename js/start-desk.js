@@ -278,6 +278,7 @@
     const next = typeof force === 'boolean' ? force : !panel.classList.contains('is-open');
     panel.classList.toggle('is-open', next);
     panel.setAttribute('aria-hidden', next ? 'false' : 'true');
+    $('.start-desk-dock [data-action="stats"]')?.classList.toggle('is-active', next);
     if (next) toggleNotes(false);
   }
 
@@ -317,6 +318,7 @@
       <button type="button" data-action="apps">Apps</button>
       <button type="button" data-action="agenda">Agenda</button>
       <button type="button" data-action="notes">Notes</button>
+      <button type="button" data-action="stats">Stats</button>
     `;
     document.body.appendChild(dock);
     dock.addEventListener('click', (event) => {
@@ -324,6 +326,7 @@
       if (!btn) return;
       const action = btn.dataset.action;
       if (action !== 'notes') toggleNotes(false);
+      if (action !== 'stats') toggleStats(false);
       if (action === 'focus') { applyProfile('focus'); setFocus(true); }
       if (action === 'silex') { applyProfile('silex'); setFocus(true); }
       if (action === 'personal') { applyProfile('personal'); setFocus(true); }
@@ -331,6 +334,7 @@
       if (action === 'apps') { applyProfile('full'); setFocus(false); }
       if (action === 'agenda') showWidget('calendar');
       if (action === 'notes') toggleNotes();
+      if (action === 'stats') toggleStats();
     });
   }
 
