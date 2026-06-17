@@ -1,0 +1,238 @@
+/* Start Desk v1 — couche d’expérience au-dessus de la page existante. */
+:root {
+  --start-accent: #37c8bd;
+  --start-accent-soft: rgba(55, 200, 189, .16);
+  --start-glass: rgba(255, 255, 255, .18);
+  --start-glass-strong: rgba(255, 255, 255, .28);
+  --start-border: rgba(255, 255, 255, .32);
+  --start-shadow: 0 24px 80px rgba(15, 23, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .32);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --start-glass: rgba(255, 255, 255, .075);
+  --start-glass-strong: rgba(255, 255, 255, .12);
+  --start-border: rgba(255, 255, 255, .13);
+  --start-shadow: 0 26px 86px rgba(0, 0, 0, .38), inset 0 1px 0 rgba(255, 255, 255, .09);
+}
+
+body.focus-mode {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(55, 200, 189, .20), transparent 34rem),
+    radial-gradient(circle at 18% 78%, rgba(105, 120, 255, .11), transparent 28rem),
+    var(--bg);
+}
+
+.start-desk-status {
+  position: fixed;
+  z-index: 35;
+  top: clamp(18px, 4vh, 42px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: .52rem;
+  max-width: calc(100vw - 36px);
+  padding: .48rem .78rem;
+  border: 1px solid var(--start-border);
+  border-radius: 999px;
+  background: var(--start-glass);
+  -webkit-backdrop-filter: blur(28px) saturate(175%);
+  backdrop-filter: blur(28px) saturate(175%);
+  box-shadow: var(--start-shadow);
+  color: var(--fg);
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: -.012em;
+  white-space: nowrap;
+}
+
+.start-desk-status .muted {
+  color: var(--secondaryFg);
+  font-weight: 500;
+}
+
+body.focus-mode .start-desk-status {
+  display: inline-flex;
+}
+
+body.focus-mode .container {
+  justify-content: center !important;
+  padding-top: clamp(110px, 18vh, 180px) !important;
+  padding-bottom: clamp(104px, 15vh, 150px) !important;
+}
+
+body.focus-mode #search-form.spotlight {
+  width: min(780px, calc(100vw - 34px)) !important;
+  min-height: 66px !important;
+  border-radius: 30px !important;
+  border-color: var(--start-border) !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .36), rgba(255, 255, 255, .10)),
+    var(--start-glass) !important;
+  box-shadow: var(--start-shadow) !important;
+}
+
+body.focus-mode #search-input {
+  font-size: 1.06rem !important;
+  font-weight: 500;
+}
+
+body.focus-mode #bookmark-container {
+  width: min(1040px, calc(100vw - 36px)) !important;
+  margin-top: 1.25rem !important;
+  gap: .9rem !important;
+}
+
+body.focus-mode #bookmark-container .bookmark-set {
+  flex: 0 1 238px !important;
+  max-width: 258px !important;
+  min-height: unset !important;
+  border-radius: 25px !important;
+  border-color: var(--start-border) !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .28), rgba(255, 255, 255, .07)),
+    var(--start-glass) !important;
+  box-shadow: 0 16px 54px rgba(15, 23, 42, .10), inset 0 1px 0 rgba(255, 255, 255, .22) !important;
+}
+
+body.focus-mode #bookmark-container .bookmark-title {
+  font-size: .88rem !important;
+  letter-spacing: -.012em;
+}
+
+body.focus-mode #bookmark-container .bookmark {
+  border-radius: 14px !important;
+}
+
+.start-desk-dock {
+  position: fixed;
+  z-index: 45;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .34rem;
+  max-width: calc(100vw - 28px);
+  padding: .38rem;
+  border: 1px solid var(--start-border);
+  border-radius: 999px;
+  background: var(--start-glass);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: var(--start-shadow);
+}
+
+.start-desk-dock button {
+  min-height: 36px;
+  padding: .42rem .82rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 650;
+  letter-spacing: -.01em;
+  cursor: pointer;
+}
+
+.start-desk-dock button:hover,
+.start-desk-dock button.is-active {
+  background: var(--start-glass-strong);
+}
+
+.start-desk-panel {
+  position: fixed;
+  z-index: 44;
+  left: 50%;
+  bottom: 76px;
+  width: min(430px, calc(100vw - 28px));
+  max-height: min(520px, calc(100dvh - 130px));
+  transform: translateX(-50%) translateY(10px) scale(.985);
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid var(--start-border);
+  border-radius: 26px;
+  background: var(--start-glass);
+  -webkit-backdrop-filter: blur(34px) saturate(180%);
+  backdrop-filter: blur(34px) saturate(180%);
+  box-shadow: var(--start-shadow);
+  transition: opacity .18s ease, transform .22s cubic-bezier(.22, 1, .36, 1);
+}
+
+.start-desk-panel.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.start-desk-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .95rem 1rem .72rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .16);
+}
+
+.start-desk-panel h3 {
+  margin: 0;
+  font-size: .98rem;
+  letter-spacing: -.02em;
+}
+
+.start-desk-panel .close-panel {
+  border: 0;
+  border-radius: 999px;
+  background: var(--start-glass-strong);
+  color: inherit;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.start-desk-panel textarea {
+  display: block;
+  width: 100%;
+  min-height: 210px;
+  box-sizing: border-box;
+  padding: 1rem;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  line-height: 1.45;
+}
+
+.start-desk-panel .panel-hint {
+  padding: 0 1rem 1rem;
+  color: var(--secondaryFg);
+  font-size: .78rem;
+}
+
+body:not(.focus-mode) .start-desk-status {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .start-desk-dock {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+  .start-desk-dock button {
+    white-space: nowrap;
+  }
+  body.focus-mode .container {
+    padding-top: 108px !important;
+  }
+  body.focus-mode #bookmark-container .bookmark-set {
+    flex-basis: 100% !important;
+    max-width: 430px !important;
+  }
+}
