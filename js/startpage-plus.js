@@ -80,6 +80,10 @@
     if (!q) return [];
     return Object.entries(CONFIG.commandAliases || {})
       .map(([name, command]) => {
+        // Les alias qui ouvrent simplement un favori sont volontairement exclus
+        // de la palette "Commande" : le favori correspondant apparaît déjà
+        // comme résultat unique, avec sa catégorie.
+        if (command?.type === 'bookmark') return null;
         const n = normalize(name);
         let score = 0;
         if (n === q) score = 110;
@@ -161,6 +165,17 @@
       const [match] = getBookmarkMatches(command.query || command.label || '');
       if (match) {
         window.location.href = match.url;
+        return true;
+      }
+    }
+    if (command.type === 'internal') {
+      const action = String(command.value || '').toLowerCase();
+      if (action === 'notes') {
+        document.querySelector('.start-desk-dock [data-action="notes"]')?.click();
+        return true;
+      }
+      if (action === 'stats') {
+        document.querySelector('.start-desk-dock [data-action="stats"]')?.click();
         return true;
       }
     }
