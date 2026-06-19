@@ -2,6 +2,11 @@
 (function () {
   const $ = (sel, root = document) => root.querySelector(sel);
 
+  function openExternal(url) {
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
   function showToast(message) {
     let toast = $('.assistant-toast');
     if (!toast) {
@@ -56,7 +61,7 @@
       if (!best) return;
       event.preventDefault();
       showToast(`Ouverture de ${best.label}`);
-      window.location.href = best.url;
+      openExternal(best.url);
     }, true);
 
     const hint = document.createElement('div');

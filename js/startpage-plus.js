@@ -5,6 +5,11 @@
   const CONFIG = window.STARTPAGE_CONFIG || {};
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function openExternal(url) {
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
   const PROFILE_KEY = 'startpage_profile_v2';
   const FOCUS_KEY = 'startpage_focus_mode_v1';
 
@@ -164,7 +169,7 @@
     if (command.type === 'bookmark') {
       const [match] = getBookmarkMatches(command.query || command.label || '');
       if (match) {
-        window.location.href = match.url;
+        openExternal(match.url);
         return true;
       }
     }
@@ -357,7 +362,7 @@
       }
       if (entry.type === 'bookmark') {
         toast(`Ouverture de ${entry.label}`);
-        window.location.href = entry.url;
+        openExternal(entry.url);
         return true;
       }
       return false;

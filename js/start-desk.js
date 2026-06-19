@@ -8,7 +8,8 @@
   const PROFILE_LABELS = { silex: 'Silex', focus: 'Focus', personal: 'Perso', code: 'Code', full: 'Complet', work: 'Silex' };
 
   function openUrl(url) {
-    window.location.href = url;
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   function bookmarkId(category, name) {
