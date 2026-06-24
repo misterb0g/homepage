@@ -3,12 +3,52 @@
   'use strict';
 
   const CONFIG = window.STARTPAGE_CONFIG || {};
+  const USAGE_KEY = 'startdesk_usage_stats_v1';
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   function openExternal(url) {
     if (!url) return;
     window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  function bookmarkId(category, name) {
+    return `${String(category || 'Favoris').trim()}::${String(name || 'Sans nom').trim()}`;
+  }
+
+  function getUsageStats() {
+    try { return JSON.parse(localStorage.getItem(USAGE_KEY) || '{}') || {}; } catch (_) { return {}; }
+  }
+
+  function saveUsageStats(stats) {
+    try { localStorage.setItem(USAGE_KEY, JSON.stringify(stats)); } catch (_) {}
+  }
+
+  function currentProfileId() {
+    return document.body.dataset.startpageProfile || 'silex';
+  }
+
+  function recordFavoriteUse(meta) {
+    if (!meta || !meta.label) return;
+    const now = new Date().toISOString();
+    const id = meta.id || bookmarkId(meta.group, meta.label);
+    const stats = getUsageStats();
+    const previous = stats[id] || {};
+    const profile = currentProfileId();
+    const byProfile = { ...(previous.byProfile || {}) };
+    byProfile[profile] = (byProfile[profile] || 0) + 1;
+    stats[id] = {
+      id,
+      name: meta.label,
+      category: meta.group || previous.category || 'Favoris',
+      url: meta.url || previous.url || '',
+      count: (previous.count || 0) + 1,
+      firstUsedAt: previous.firstUsedAt || now,
+      lastUsedAt: now,
+      lastProfile: profile,
+      byProfile
+    };
+    saveUsageStats(stats);
   }
   const PROFILE_KEY = 'startpage_profile_v2';
   const FOCUS_KEY = 'startpage_focus_mode_v1';
@@ -52,6 +92,7 @@
       label: link.name,
       group: group.title,
       url: link.url,
+      id: bookmarkId(group.title, link.name),
       haystack: normalize(`${link.name} ${group.title}`)
     })));
   }
@@ -169,6 +210,7 @@
     if (command.type === 'bookmark') {
       const [match] = getBookmarkMatches(command.query || command.label || '');
       if (match) {
+        recordFavoriteUse(match);
         openExternal(match.url);
         return true;
       }
@@ -362,6 +404,7 @@
       }
       if (entry.type === 'bookmark') {
         toast(`Ouverture de ${entry.label}`);
+        recordFavoriteUse(entry);
         openExternal(entry.url);
         return true;
       }
