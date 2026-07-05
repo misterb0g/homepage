@@ -8,23 +8,30 @@ body[data-startpage-profile="work"] .liquid-background {
 }
 
 @keyframes profileTileReveal {
-  from {
-    opacity: .35;
-    transform: translateY(6px) scale(.992);
-    filter: blur(2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* État transitoire posé avant l'injection des tuiles : aucun flash avant
+   l'application du profil et le premier rendu. */
+#bookmark-container.tiles-awaiting-reveal .bookmark-set:not(.profile-hidden) {
+  opacity: 0;
+}
+
+.bookmark-set.initial-revealing {
+  animation: profileTileReveal 140ms ease-out both !important;
 }
 
 .bookmark-set.profile-revealing {
-  animation: profileTileReveal 220ms cubic-bezier(.22, 1, .36, 1) var(--profile-reveal-delay, 0ms) both !important;
+  animation: profileTileReveal 130ms ease-out both !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  #bookmark-container.tiles-awaiting-reveal .bookmark-set:not(.profile-hidden) {
+    opacity: 1;
+    transform: none;
+  }
+  .bookmark-set.initial-revealing,
   .bookmark-set.profile-revealing {
     animation: none !important;
   }
