@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bogarts Desk</title>
+  <title>Start Desk</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -682,9 +682,14 @@
       box-shadow: 0 12px 44px rgba(15, 23, 42, .08), inset 0 1px 0 rgba(255,255,255,.22) !important;
     }
 
+    body:not(.focus-mode) #bookmark-container .bookmark-set {
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
     body:not(.focus-mode) #bookmark-container .bookmark-set:hover {
-      transform: translateY(-2px) !important;
-      box-shadow: 0 18px 56px rgba(15, 23, 42, .11), inset 0 1px 0 rgba(255,255,255,.28) !important;
+      transform: translateY(-3px) scale(1.012) !important;
+      border-color: color-mix(in srgb, var(--start-accent) 48%, var(--start-border)) !important;
+      box-shadow: 0 22px 70px rgba(15, 23, 42, .16), inset 0 1px 0 rgba(255,255,255,.28) !important;
     }
 
     body:not(.focus-mode) #bookmark-container .bookmark-inner-container,
