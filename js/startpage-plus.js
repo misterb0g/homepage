@@ -259,9 +259,24 @@
     try { localStorage.setItem(PROFILE_KEY, profileId); } catch (_) {}
 
     const visible = Array.isArray(profile.visibleCategories) ? new Set(profile.visibleCategories) : null;
+    const newlyVisibleTiles = [];
     $$('#bookmark-container .bookmark-set').forEach(tile => {
       const title = tile.getAttribute('data-tile-title') || '';
-      tile.classList.toggle('profile-hidden', !!visible && !visible.has(title));
+      const wasHidden = tile.classList.contains('profile-hidden');
+      const shouldHide = !!visible && !visible.has(title);
+      tile.classList.toggle('profile-hidden', shouldHide);
+      if (wasHidden && !shouldHide) newlyVisibleTiles.push(tile);
+    });
+
+    // Transition courte et cohérente pour les tuiles qui apparaissent lors d'un changement de profil.
+    requestAnimationFrame(() => {
+      newlyVisibleTiles.forEach((tile, index) => {
+        tile.style.setProperty('--profile-reveal-delay', `${Math.min(index, 8) * 24}ms`);
+        tile.classList.remove('profile-revealing');
+        void tile.offsetWidth;
+        tile.classList.add('profile-revealing');
+        window.setTimeout(() => tile.classList.remove('profile-revealing'), 320 + Math.min(index, 8) * 24);
+      });
     });
 
     ['news', 'chat', 'calendar'].forEach(widget => {
