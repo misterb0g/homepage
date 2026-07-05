@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -105,12 +105,14 @@
       to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
     
-    .bookmark-set, #news-container {
-      opacity: 0; 
+    /* Les tuiles sont révélées par JavaScript après application du profil.
+       Cela évite le double affichage au chargement. */
+    #news-container {
+      opacity: 0;
       animation: fadeInUp 0.46s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       will-change: transform, opacity, filter;
+      animation-delay: 0.1s;
     }
-    #news-container { animation-delay: 0.1s; }
 
     #weather-details:not([hidden]) {
       animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -1196,8 +1198,9 @@ function setTileSortableEnabled(enabled) {
       }
 
       const el = $("#bookmark-container");
-      el.innerHTML = bookmarks.map((b, index) => `
-        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${60 + (index * 35)}ms">
+      el.classList.add('tiles-awaiting-reveal');
+      el.innerHTML = bookmarks.map((b) => `
+        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}">
           <div class="bookmark-header">
             <div class="bookmark-title">${escapeHtml(b.title)}</div>
             <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
@@ -1210,6 +1213,22 @@ function setTileSortableEnabled(enabled) {
             ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.name)}</a>`).join("")}
           </div>
         </section>`).join("");
+
+      // Le profil est appliqué dans le même cycle de rendu, avant le premier affichage.
+      if (window.StartpagePlus?.applyProfile) {
+        let savedProfile = 'silex';
+        try { savedProfile = localStorage.getItem('startpage_profile_v2') || 'silex'; } catch (_) {}
+        window.StartpagePlus.applyProfile(savedProfile, false);
+      }
+
+      requestAnimationFrame(() => {
+        const visibleTiles = Array.from(el.querySelectorAll('.bookmark-set:not(.profile-hidden)'));
+        visibleTiles.forEach(tile => tile.classList.add('initial-revealing'));
+        el.classList.remove('tiles-awaiting-reveal');
+        window.setTimeout(() => {
+          visibleTiles.forEach(tile => tile.classList.remove('initial-revealing'));
+        }, 180);
+      });
 
       initTileSortable();
     }
