@@ -107,7 +107,7 @@
     
     .bookmark-set, #news-container {
       opacity: 0; 
-      animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      animation: fadeInUp 0.46s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       will-change: transform, opacity, filter;
     }
     #news-container { animation-delay: 0.1s; }
@@ -1197,7 +1197,7 @@ function setTileSortableEnabled(enabled) {
 
       const el = $("#bookmark-container");
       el.innerHTML = bookmarks.map((b, index) => `
-        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
+        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${60 + (index * 35)}ms">
           <div class="bookmark-header">
             <div class="bookmark-title">${escapeHtml(b.title)}</div>
             <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
