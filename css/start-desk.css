@@ -587,3 +587,68 @@ body.focus-mode #search-form.spotlight:focus-within::after {
     display: none;
   }
 }
+
+/* =========================================================
+   Start Desk v3.1g — Barre Spotlight harmonisée
+   Même rendu en mode complet et en mode Focus.
+   ========================================================= */
+
+/* La barre complète adopte les dimensions et le rendu du mode Focus. */
+body #search-form.spotlight {
+  position: relative;
+  width: min(780px, calc(100vw - 34px)) !important;
+  min-height: 66px !important;
+  border-radius: 30px !important;
+  border-color: var(--start-border) !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .36), rgba(255, 255, 255, .10)),
+    var(--start-glass) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(185%) !important;
+  backdrop-filter: blur(32px) saturate(185%) !important;
+  box-shadow: var(--start-shadow) !important;
+}
+
+body #search-input {
+  font-size: 1.06rem !important;
+  font-weight: 500;
+  letter-spacing: -.018em;
+  padding-right: 245px !important;
+}
+
+/* L'ancienne aide sous la barre n'est plus nécessaire. */
+html.start-desk .quick-command-hint {
+  display: none !important;
+}
+
+/* Aide compacte intégrée dans la barre, comme en mode Focus. */
+body #search-form.spotlight::after {
+  content: 'focus · silex · perso · code · stats…';
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--secondaryFg);
+  font-size: .72rem;
+  font-weight: 650;
+  opacity: .46;
+  pointer-events: none;
+  transition: opacity .16s ease;
+}
+
+body #search-form.spotlight:focus-within::after {
+  opacity: 0;
+}
+
+@media (max-width: 760px) {
+  body #search-input {
+    padding-right: 24px !important;
+  }
+
+  body #search-form.spotlight::after {
+    display: none;
+  }
+}
