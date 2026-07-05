@@ -670,3 +670,35 @@ body #search-form.spotlight:focus-within::after {
     z-index: 901 !important;
   }
 }
+
+/* =========================================================
+   Start Desk v3.1i — Survol des favoris affiné
+   Halo plus généreux, texte mieux dégagé et alignement régulier.
+   ========================================================= */
+html.start-desk .bookmark-inner-container .bookmark,
+html.start-desk .bookmark-inner-container a {
+  box-sizing: border-box;
+  width: auto;
+  margin-left: -5px !important;
+  margin-right: -5px !important;
+  padding: .56rem .82rem !important;
+  border-radius: 16px !important;
+}
+
+html.start-desk .bookmark-inner-container .bookmark:hover,
+html.start-desk .bookmark-inner-container a:hover,
+html.start-desk .bookmark-inner-container .bookmark:focus-visible,
+html.start-desk .bookmark-inner-container a:focus-visible {
+  transform: none !important;
+  background: color-mix(in srgb, var(--fg) 6%, var(--glass-bg)) !important;
+  border-color: color-mix(in srgb, var(--fg) 11%, transparent) !important;
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, .055),
+    inset 0 1px 0 rgba(255, 255, 255, .30) !important;
+}
+
+/* Garde une respiration identique à gauche et à droite de chaque tuile. */
+html.start-desk .bookmark-inner-container {
+  padding-left: 5px;
+  padding-right: 5px;
+}
