@@ -268,14 +268,14 @@
       if (wasHidden && !shouldHide) newlyVisibleTiles.push(tile);
     });
 
-    // Transition courte et cohérente pour les tuiles qui apparaissent lors d'un changement de profil.
+    // Révélation courte uniquement pour les tuiles réellement ajoutées à l'écran.
+    // Pas de flou : meilleure lisibilité et animation plus stable sur Safari.
     requestAnimationFrame(() => {
-      newlyVisibleTiles.forEach((tile, index) => {
-        tile.style.setProperty('--profile-reveal-delay', `${Math.min(index, 8) * 24}ms`);
+      newlyVisibleTiles.forEach(tile => {
         tile.classList.remove('profile-revealing');
         void tile.offsetWidth;
         tile.classList.add('profile-revealing');
-        window.setTimeout(() => tile.classList.remove('profile-revealing'), 320 + Math.min(index, 8) * 24);
+        window.setTimeout(() => tile.classList.remove('profile-revealing'), 170);
       });
     });
 
@@ -509,13 +509,6 @@
     else form.insertAdjacentElement('afterend', controls);
   }
 
-  function observeBookmarkRender() {
-    const container = $('#bookmark-container');
-    if (!container) return;
-    const apply = () => applyProfile(localStorage.getItem(PROFILE_KEY) || 'silex', false);
-    new MutationObserver(() => setTimeout(apply, 0)).observe(container, { childList: true });
-  }
-
   window.StartpagePlus = { applyProfile, setDensity, getBookmarkMatches, setFocusMode, toggleFocusMode };
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -531,7 +524,8 @@
     installFocusPill();
     placeQuickControls();
     installCommandPalette();
-    observeBookmarkRender();
-    setTimeout(() => applyProfile(localStorage.getItem(PROFILE_KEY) || 'silex', false), 0);
+    // Le profil est appliqué de façon synchrone lors du rendu des favoris.
+    // Ici, on initialise uniquement l'interface avant leur injection.
+    updateProfileUi(localStorage.getItem(PROFILE_KEY) || 'silex');
   });
 })();
