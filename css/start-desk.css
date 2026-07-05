@@ -652,3 +652,21 @@ body #search-form.spotlight:focus-within::after {
     display: none;
   }
 }
+
+/* =========================================================
+   Start Desk v3.1h — Correction centrage Spotlight au focus
+   La règle v3.1g ne doit pas écraser le positionnement modal.
+   ========================================================= */
+@supports(selector(:has(*))) {
+  body:has(#search-form.spotlight:focus-within) #search-form.spotlight {
+    position: fixed !important;
+    left: 50% !important;
+    top: 18vh !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(780px, calc(100vw - 34px)) !important;
+    margin: 0 !important;
+    z-index: 901 !important;
+  }
+}
