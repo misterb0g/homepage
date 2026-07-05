@@ -7,6 +7,29 @@ body[data-startpage-profile="work"] .liquid-background {
   display: none !important;
 }
 
+@keyframes profileTileReveal {
+  from {
+    opacity: .35;
+    transform: translateY(6px) scale(.992);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.bookmark-set.profile-revealing {
+  animation: profileTileReveal 220ms cubic-bezier(.22, 1, .36, 1) var(--profile-reveal-delay, 0ms) both !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookmark-set.profile-revealing {
+    animation: none !important;
+  }
+}
+
 .startpage-quick-controls {
   display: flex;
   justify-content: center;
