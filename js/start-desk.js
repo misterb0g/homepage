@@ -421,6 +421,20 @@
     }, true);
   }
 
+  function installSpotlightFallback() {
+    const form = $('#search-form');
+    if (!form || form.dataset.startDeskFocusFallback) return;
+    form.dataset.startDeskFocusFallback = '1';
+
+    const sync = () => {
+      document.body.classList.toggle('spotlight-active', form.contains(document.activeElement));
+    };
+
+    form.addEventListener('focusin', sync);
+    form.addEventListener('focusout', () => requestAnimationFrame(sync));
+    window.addEventListener('blur', () => document.body.classList.remove('spotlight-active'));
+  }
+
   function installKeyboardShortcuts() {
     if (document.body.dataset.startDeskShortcuts) return;
     document.body.dataset.startDeskShortcuts = '1';
@@ -477,6 +491,7 @@
     createStatsPanel();
     installUsageTracking();
     installPrefixCommands();
+    installSpotlightFallback();
     installKeyboardShortcuts();
     setInterval(syncDockState, 700);
     setInterval(applyTimeBackground, 60 * 1000);
