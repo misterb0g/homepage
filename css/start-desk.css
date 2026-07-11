@@ -702,3 +702,152 @@ html.start-desk .bookmark-inner-container {
   padding-left: 5px;
   padding-right: 5px;
 }
+
+/* =========================================================
+   Start Desk v3.1j — Correctifs responsive et robustesse
+   ========================================================= */
+html.start-desk body {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
+html.start-desk body.focus-mode .container {
+  min-height: 100dvh;
+  justify-content: center !important;
+  padding-top: clamp(104px, 15dvh, 164px) !important;
+  padding-bottom: calc(112px + env(safe-area-inset-bottom)) !important;
+  box-sizing: border-box;
+}
+
+html.start-desk body.focus-mode #bookmark-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  align-content: flex-start !important;
+  width: min(1060px, calc(100vw - 40px)) !important;
+  max-width: 1060px !important;
+  margin: clamp(1rem, 2.4dvh, 1.5rem) auto 0 !important;
+  gap: clamp(.78rem, 1.15vw, 1rem) !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  padding: 4px !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-set {
+  flex: 0 1 248px !important;
+  width: 248px !important;
+  max-width: 258px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  overflow: clip !important;
+}
+
+html.start-desk body:not(.focus-mode) #bookmark-container {
+  overflow: visible !important;
+  padding: 4px !important;
+}
+
+html.start-desk body:not(.focus-mode) #bookmark-container .bookmark-set {
+  overflow: clip !important;
+}
+
+@media (max-width: 920px) {
+  html.start-desk body #search-input {
+    padding-right: 24px !important;
+  }
+
+  html.start-desk body #search-form.spotlight::after {
+    display: none !important;
+  }
+}
+
+html.start-desk body.spotlight-active #search-form.spotlight {
+  position: fixed !important;
+  left: 50% !important;
+  top: clamp(88px, 18dvh, 180px) !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  width: min(780px, calc(100vw - 34px)) !important;
+  margin: 0 !important;
+  z-index: 901 !important;
+}
+
+html.start-desk .start-desk-dock {
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+html.start-desk .start-desk-dock::-webkit-scrollbar {
+  display: none;
+}
+
+html.start-desk .start-desk-status {
+  max-width: calc(100vw - 28px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body.focus-mode .container {
+    justify-content: flex-start !important;
+    padding-top: clamp(102px, 14dvh, 128px) !important;
+  }
+
+  html.start-desk body.focus-mode #bookmark-container {
+    width: min(620px, calc(100vw - 28px)) !important;
+  }
+
+  html.start-desk body.focus-mode #bookmark-container .bookmark-set {
+    flex: 1 1 calc(50% - .5rem) !important;
+    width: auto !important;
+    max-width: 300px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  html.start-desk body {
+    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+  }
+
+  html.start-desk body.focus-mode .container {
+    padding-top: 100px !important;
+    padding-bottom: calc(102px + env(safe-area-inset-bottom)) !important;
+  }
+
+  html.start-desk body.focus-mode #bookmark-container {
+    width: min(430px, calc(100vw - 24px)) !important;
+    gap: .78rem !important;
+  }
+
+  html.start-desk body.focus-mode #bookmark-container .bookmark-set {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 430px !important;
+  }
+
+  html.start-desk .start-desk-status .muted {
+    display: none;
+  }
+
+  html.start-desk .start-desk-dock {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk #news-container {
+    opacity: 1 !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
