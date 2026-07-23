@@ -1,4 +1,4 @@
-// --- NEWS: Fonction générique pour charger un flux ---
+    // --- NEWS: Fonction générique pour charger un flux ---
     async function fetchAndRenderNews(apiUrl, listId) {
         const list = $(listId);
         try {
@@ -48,8 +48,7 @@
         }
     }
 
-
-// --- Chargement global des news ---
+    // --- Chargement global des news ---
     let __newsLoaded = false;
     async function loadNews() {
         const container = $('#news-container');
@@ -66,3 +65,4 @@
         }
         __newsLoaded = true;
     }
+

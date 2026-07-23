@@ -1,8 +1,7 @@
-// --- Barre de recherche intelligente ---
+    // --- Barre de recherche intelligente ---
     (function() {
-
-
-// --- Recherche (moteur sélectionnable via clic sur le "G") ---
+        
+        // --- Recherche (moteur sélectionnable via clic sur le "G") ---
         const SEARCH_DEFAULT_ENGINE_KEY = "startpage_search_default_engine_v1";
 
         // Placeholder "Spotlight-like" (stable, quel que soit le moteur)
@@ -168,39 +167,3 @@ searchInput.placeholder = BASE_PLACEHOLDER;
         });
     })();
 
-
-// --- Spotlight: garder le focus sur l'input quand on clique le sélecteur moteur ---
-    (function focusKeeperEngineMenu(){
-      const searchInput = document.getElementById("search-input");
-      const engineButton = document.getElementById("engine-button");
-      const engineMenu = document.getElementById("engine-menu");
-      if (!searchInput || !engineButton || !engineMenu) return;
-
-      const refocus = () => {
-        try { searchInput.focus({ preventScroll: true }); }
-        catch (e) { try { searchInput.focus(); } catch(_){} }
-      };
-
-      const preventFocus = (el) => {
-        if (!el) return;
-        const handler = (e) => { e.preventDefault(); refocus(); };
-        el.addEventListener("pointerdown", handler, { passive: false, capture: true });
-        el.addEventListener("mousedown", handler, { passive: false, capture: true });
-        el.addEventListener("touchstart", handler, { passive: false, capture: true });
-      };
-
-      preventFocus(engineButton);
-
-      const wireOptions = () => engineMenu.querySelectorAll(".engine-option").forEach(preventFocus);
-      wireOptions();
-
-      // Si le menu est mis à jour dynamiquement, on rebranche
-      const mo = new MutationObserver(wireOptions);
-      mo.observe(engineMenu, { childList: true, subtree: true });
-
-      // Après click (toggle / selection), on refocus aussi (au cas où)
-      engineButton.addEventListener("click", () => setTimeout(refocus, 0), true);
-      engineMenu.addEventListener("click", (e) => {
-        if (e.target && e.target.closest(".engine-option")) setTimeout(refocus, 0);
-      }, true);
-    })();
