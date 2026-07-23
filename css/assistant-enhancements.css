@@ -27,6 +27,10 @@
   --sd-menu-surface: rgba(250,250,252,.78);
   --sd-menu-border: rgba(255,255,255,.48);
   --sd-menu-shadow: 0 20px 55px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.55);
+  --sd-card-surface: rgba(255,255,255,.135);
+  --sd-card-border: rgba(255,255,255,.25);
+  --sd-card-highlight: rgba(255,255,255,.27);
+  --sd-card-shadow: 0 10px 30px rgba(15,23,42,.075), inset 0 1px 0 var(--sd-card-highlight);
 }
 
 :root[data-theme="dark"],
@@ -40,6 +44,10 @@
   --sd-menu-surface: rgba(34,34,38,.82);
   --sd-menu-border: rgba(255,255,255,.13);
   --sd-menu-shadow: 0 24px 65px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.09);
+  --sd-card-surface: rgba(34,34,38,.42);
+  --sd-card-border: rgba(255,255,255,.105);
+  --sd-card-highlight: rgba(255,255,255,.07);
+  --sd-card-shadow: 0 14px 34px rgba(0,0,0,.20), inset 0 1px 0 var(--sd-card-highlight);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -115,6 +123,57 @@ body.focus-mode #weather-details {
 .bookmark-set[data-tile-title="Administration"],
 .bookmark-set[data-tile-title="Banques & Finance"] {
   border-color: color-mix(in srgb, var(--mac-brand) 28%, var(--glass-border));
+}
+
+/* Start Desk 4 — Favoris, phase 1 : fondations des cartes.
+   Proportions plus calmes, rayons cohérents et profondeur contenue. */
+html.start-desk body.focus-mode #bookmark-container .bookmark-set {
+  flex: 0 1 232px !important;
+  width: min(232px, 100%) !important;
+  max-width: 248px !important;
+  min-height: 0 !important;
+  padding: 15px 15px 14px !important;
+  border: 1px solid var(--sd-card-border) !important;
+  border-radius: var(--sd-radius-lg) !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.012)),
+    var(--sd-card-surface) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
+  backdrop-filter: blur(22px) saturate(145%) !important;
+  box-shadow: var(--sd-card-shadow) !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-header {
+  min-height: 30px !important;
+  margin: 0 0 9px !important;
+  padding: 0 2px !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-title {
+  font-size: .86rem !important;
+  font-weight: 650 !important;
+  letter-spacing: -.012em !important;
+  line-height: 1.2 !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-list {
+  gap: 5px !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark {
+  min-height: 34px !important;
+  padding: 6px 8px !important;
+  border-radius: var(--sd-radius-sm) !important;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body.focus-mode #bookmark-container .bookmark-set {
+    flex-basis: min(100%, 430px) !important;
+    width: min(100%, 430px) !important;
+    max-width: 430px !important;
+    padding: 14px !important;
+    border-radius: 20px !important;
+  }
 }
 
 /* Start Desk 4 — composant Recherche
