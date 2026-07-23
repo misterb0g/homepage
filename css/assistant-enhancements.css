@@ -232,16 +232,21 @@ html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button {
   -webkit-appearance: none !important;
   width: 28px !important;
   height: 28px !important;
-  margin-left: 12px !important;
+  margin: 0 0 0 12px !important;
   border-radius: 999px !important;
   cursor: pointer !important;
   opacity: .72 !important;
+  vertical-align: middle !important;
+  transform: translateY(0) !important;
   background:
     linear-gradient(45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
     linear-gradient(-45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
     color-mix(in srgb, var(--fg) 10%, transparent) !important;
+  background-position: center, center, center !important;
+  background-size: 12px 12px, 12px 12px, auto !important;
+  background-repeat: no-repeat !important;
   color: var(--secondaryFg) !important;
-  transition: opacity var(--sd-motion-fast) ease, background var(--sd-motion-fast) ease !important;
+  transition: opacity var(--sd-motion-fast) ease, background-color var(--sd-motion-fast) ease !important;
 }
 
 html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button:hover {
@@ -250,6 +255,9 @@ html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button:hove
     linear-gradient(45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
     linear-gradient(-45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
     color-mix(in srgb, var(--fg) 15%, transparent) !important;
+  background-position: center, center, center !important;
+  background-size: 12px 12px, 12px 12px, auto !important;
+  background-repeat: no-repeat !important;
 }
 
 html.start-desk body.focus-mode #search-form.spotlight :is(input, button):focus,
@@ -343,6 +351,7 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
     width: 26px !important;
     height: 26px !important;
     margin-left: 8px !important;
+    background-size: 11px 11px, 11px 11px, auto !important;
   }
 
   html.start-desk body.focus-mode #search-form.spotlight .engine-menu {
