@@ -1,9 +1,13 @@
-/* Start Desk 5 — Phase 5.1 : panneau Paramètres compact */
+/* Start Desk 5 — Phase 6.1 : panneau Paramètres compact + Motion Foundation */
 :root {
   --sd-settings-surface: rgba(255,255,255,.18);
   --sd-settings-row: rgba(255,255,255,.16);
   --sd-settings-border: rgba(255,255,255,.26);
   --sd-settings-shadow: 0 26px 80px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.38);
+  --sd-motion-fast: 140ms;
+  --sd-motion-medium: 190ms;
+  --sd-motion-slow: 260ms;
+  --sd-motion-curve: cubic-bezier(.22,1,.36,1);
 }
 
 :root[data-theme="dark"],
@@ -21,6 +25,30 @@ html.start-desk #control-panel.glass {
     linear-gradient(180deg, rgba(255,255,255,.18), transparent 34%),
     var(--sd-settings-surface) !important;
   box-shadow: var(--sd-settings-shadow) !important;
+  transform-origin: top right;
+  will-change: transform, opacity;
+  transition:
+    transform var(--sd-motion-medium) var(--sd-motion-curve),
+    opacity var(--sd-motion-fast) ease-out,
+    box-shadow var(--sd-motion-medium) ease-out !important;
+}
+
+html.start-desk body:not(.panel-open) #control-panel.glass {
+  opacity: 0;
+  transform: translate3d(8px,-4px,0) scale(.97);
+  pointer-events: none;
+}
+
+html.start-desk body.panel-open #control-panel.glass {
+  opacity: 1;
+  transform: translate3d(0,0,0) scale(1);
+  pointer-events: auto;
+}
+
+html.start-desk #overlay {
+  transition:
+    opacity var(--sd-motion-medium) ease-out,
+    backdrop-filter var(--sd-motion-medium) ease-out !important;
 }
 
 html.start-desk #control-panel .panel-header {
@@ -64,6 +92,26 @@ html.start-desk #control-panel .panel-section {
   background: var(--sd-settings-row);
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 15%, transparent);
   box-sizing: border-box;
+  transition:
+    transform var(--sd-motion-fast) var(--sd-motion-curve),
+    border-color var(--sd-motion-medium) ease,
+    background-color var(--sd-motion-medium) ease,
+    box-shadow var(--sd-motion-medium) ease;
+}
+
+html.start-desk body.panel-open #control-panel .panel-section {
+  animation: sd-settings-row-in var(--sd-motion-slow) var(--sd-motion-curve) both;
+}
+
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(2) { animation-delay: 18ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(3) { animation-delay: 32ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(4) { animation-delay: 46ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(5) { animation-delay: 60ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(n+6) { animation-delay: 72ms; }
+
+@keyframes sd-settings-row-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 html.start-desk #control-panel .panel-section:last-child {
@@ -121,6 +169,23 @@ html.start-desk #control-panel .segmented-control button {
   cursor: pointer;
 }
 
+html.start-desk #control-panel button,
+html.start-desk #control-panel .btn-icon,
+html.start-desk #control-panel .slider {
+  transition:
+    transform var(--sd-motion-fast) var(--sd-motion-curve),
+    background-color var(--sd-motion-fast) ease,
+    border-color var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease,
+    color var(--sd-motion-fast) ease,
+    filter var(--sd-motion-fast) ease !important;
+}
+
+html.start-desk #control-panel button:active,
+html.start-desk #control-panel .btn-icon:active {
+  transform: scale(.96) !important;
+}
+
 html.start-desk #control-panel .segmented-control button:hover {
   color: var(--fg);
   background: color-mix(in srgb, var(--fg) 6%, transparent);
@@ -157,6 +222,10 @@ html.start-desk #control-panel .input-group input {
   font-size: .8rem;
   outline: none;
   box-sizing: border-box;
+  transition:
+    border-color var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease,
+    background-color var(--sd-motion-fast) ease;
 }
 
 html.start-desk #control-panel .input-group input:focus {
@@ -182,6 +251,10 @@ html.start-desk #control-panel .input-group button {
   box-sizing: border-box;
 }
 
+html.start-desk #control-panel .input-group button:hover {
+  filter: brightness(1.045);
+}
+
 html.start-desk #control-panel .toggle-switch {
   flex: 0 0 auto;
   width: 42px;
@@ -199,6 +272,7 @@ html.start-desk #control-panel .toggle-switch .slider::before {
   height: 20px;
   left: 2px;
   bottom: 2px;
+  transition: transform var(--sd-motion-medium) var(--sd-motion-curve) !important;
 }
 
 html.start-desk #control-panel .toggle-switch input:checked + .slider::before {
@@ -206,8 +280,12 @@ html.start-desk #control-panel .toggle-switch input:checked + .slider::before {
 }
 
 html.start-desk #control-panel .panel-section:hover {
+  transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--fg) 14%, var(--sd-settings-border));
   background: color-mix(in srgb, var(--fg) 7%, var(--sd-settings-row));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 17%, transparent),
+    0 8px 20px rgba(15,23,42,.055);
 }
 
 html.start-desk #control-panel .muted {
@@ -220,6 +298,7 @@ html.start-desk #control-panel .muted {
   html.start-desk #control-panel.glass {
     width: auto !important;
     max-height: calc(100dvh - 20px);
+    transform-origin: top center;
   }
 
   html.start-desk #control-panel .panel-header {
@@ -240,8 +319,15 @@ html.start-desk #control-panel .muted {
 
 @media (prefers-reduced-motion: reduce) {
   html.start-desk #control-panel.glass,
+  html.start-desk #overlay,
   html.start-desk #control-panel .panel-section,
-  html.start-desk #control-panel button {
+  html.start-desk #control-panel button,
+  html.start-desk #control-panel .btn-icon,
+  html.start-desk #control-panel .slider,
+  html.start-desk #control-panel .slider::before,
+  html.start-desk #control-panel input {
+    animation: none !important;
     transition: none !important;
+    scroll-behavior: auto !important;
   }
 }
