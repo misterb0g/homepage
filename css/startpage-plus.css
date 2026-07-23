@@ -406,3 +406,85 @@ html.start-desk body:not(.focus-mode) .hint {
     padding: 12px;
   }
 }
+
+/* Start Desk 5 — Widgets, phase 4 : contenu météo, agenda et actualités. */
+html.start-desk body:not(.focus-mode) .weather-container {
+  overflow: hidden;
+}
+
+html.start-desk body:not(.focus-mode) .weather-container :is(.temperature, .weather-temp, .current-temp) {
+  color: var(--fg);
+  font-weight: 720;
+  letter-spacing: -.035em;
+}
+
+html.start-desk body:not(.focus-mode) #weather-details {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+html.start-desk body:not(.focus-mode) .weather-day {
+  min-width: 0;
+  padding: 10px 8px !important;
+  text-align: center;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+html.start-desk body:not(.focus-mode) .weather-day:hover {
+  border-color: color-mix(in srgb, var(--fg) 14%, var(--sd-widget-border)) !important;
+  background: color-mix(in srgb, var(--fg) 8%, transparent) !important;
+}
+
+html.start-desk body:not(.focus-mode) #calendar-widget {
+  overflow: hidden;
+}
+
+html.start-desk body:not(.focus-mode) #calendar-widget :is(iframe, .calendar-frame) {
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) #calendar-widget :is(.event, .calendar-event, li) {
+  border-radius: 12px;
+}
+
+html.start-desk body:not(.focus-mode) #news-container .news-grid {
+  gap: 14px !important;
+}
+
+html.start-desk body:not(.focus-mode) #news-container .news-grid > * {
+  min-width: 0;
+}
+
+html.start-desk body:not(.focus-mode) #news-container :is(a, .news-item) {
+  border-radius: 12px;
+  transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+html.start-desk body:not(.focus-mode) #news-container a:hover {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) #news-container :is(ul, ol) {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+html.start-desk body:not(.focus-mode) #news-container li + li {
+  margin-top: .45rem;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body:not(.focus-mode) #weather-details {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  html.start-desk body:not(.focus-mode) #news-container .news-grid {
+    gap: 12px !important;
+  }
+}
