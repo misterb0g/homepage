@@ -58,3 +58,11 @@
       weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
     })();
 
+// --- StartDesk module bridge ---
+if (window.StartDesk && typeof window.StartDesk.register === 'function') {
+  window.StartDesk.register('weather', {
+    init: getWeather,
+    refresh: getWeather,
+    describeCode: weatherCodeToFr
+  });
+}
