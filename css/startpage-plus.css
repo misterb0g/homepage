@@ -170,3 +170,321 @@ body[data-startpage-profile="work"] #chat-container {
     padding: .58rem .65rem;
   }
 }
+
+/* Start Desk 5 — Widgets, phase 1 : surfaces communes.
+   Harmonisation visuelle uniquement, sans toucher au contenu ni au comportement. */
+:root {
+  --sd-widget-surface: rgba(255,255,255,.14);
+  --sd-widget-border: rgba(255,255,255,.24);
+  --sd-widget-highlight: rgba(255,255,255,.28);
+  --sd-widget-shadow: 0 12px 36px rgba(15,23,42,.085), inset 0 1px 0 var(--sd-widget-highlight);
+  --sd-widget-shadow-hover: 0 17px 44px rgba(15,23,42,.115), inset 0 1px 0 rgba(255,255,255,.34);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --sd-widget-surface: rgba(34,34,38,.44);
+  --sd-widget-border: rgba(255,255,255,.105);
+  --sd-widget-highlight: rgba(255,255,255,.075);
+  --sd-widget-shadow: 0 16px 40px rgba(0,0,0,.22), inset 0 1px 0 var(--sd-widget-highlight);
+  --sd-widget-shadow-hover: 0 20px 48px rgba(0,0,0,.29), inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+html.start-desk body:not(.focus-mode) :is(
+  .weather-container,
+  #weather-details,
+  #calendar-widget,
+  #news-container,
+  #chat-container
+) {
+  border: 1px solid var(--sd-widget-border) !important;
+  border-radius: 22px !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.012)),
+    var(--sd-widget-surface) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
+  backdrop-filter: blur(22px) saturate(145%) !important;
+  box-shadow: var(--sd-widget-shadow) !important;
+  transition:
+    transform 220ms cubic-bezier(.2,.8,.2,1),
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk body:not(.focus-mode) :is(
+    .weather-container,
+    #calendar-widget,
+    #news-container
+  ):hover {
+    transform: translateY(-2px) !important;
+    border-color: color-mix(in srgb, var(--fg) 15%, var(--sd-widget-border)) !important;
+    box-shadow: var(--sd-widget-shadow-hover) !important;
+  }
+}
+
+html.start-desk body:not(.focus-mode) :is(
+  #weather-details,
+  #chat-container
+):hover {
+  transform: none !important;
+  box-shadow: var(--sd-widget-shadow) !important;
+}
+
+html.start-desk body:not(.focus-mode) .weather-day {
+  border: 1px solid color-mix(in srgb, var(--sd-widget-border) 72%, transparent) !important;
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--fg) 5%, transparent) !important;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body:not(.focus-mode) :is(
+    .weather-container,
+    #weather-details,
+    #calendar-widget,
+    #news-container,
+    #chat-container
+  ) {
+    border-radius: 20px !important;
+  }
+}
+
+/* Start Desk 5 — Widgets, phase 2 : hiérarchie interne et contrôles. */
+html.start-desk body:not(.focus-mode) .widget-shell .widget-toolbar {
+  min-height: 46px;
+  padding: 0 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--sd-widget-border) 72%, transparent);
+  background: linear-gradient(180deg, rgba(255,255,255,.07), transparent);
+}
+
+html.start-desk body:not(.focus-mode) .widget-shell .widget-title {
+  color: var(--fg);
+  font-size: .86rem;
+  font-weight: 680;
+  letter-spacing: -.012em;
+}
+
+html.start-desk body:not(.focus-mode) .widget-shell .widget-body {
+  padding: 14px;
+}
+
+html.start-desk body:not(.focus-mode) .widget-window-controls {
+  gap: 7px;
+}
+
+html.start-desk body:not(.focus-mode) .widget-window-controls .light-dot,
+html.start-desk body:not(.focus-mode) .widget-close-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  background: color-mix(in srgb, var(--fg) 9%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .widget-close-dot {
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+html.start-desk body:not(.focus-mode) .widget-close-dot:hover {
+  transform: scale(1.12);
+  border-color: color-mix(in srgb, #ff5f57 48%, transparent);
+  background: color-mix(in srgb, #ff5f57 72%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .chat-tabs {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid color-mix(in srgb, var(--sd-widget-border) 72%, transparent);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .chat-tab {
+  min-height: 32px;
+  padding: 5px 11px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--secondaryFg);
+  font: inherit;
+  font-size: .8rem;
+  font-weight: 620;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+html.start-desk body:not(.focus-mode) .chat-tab:hover {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .chat-tab.active {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  box-shadow: 0 4px 12px rgba(15,23,42,.07), inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .chat-form {
+  gap: 8px;
+  padding-top: 10px;
+}
+
+html.start-desk body:not(.focus-mode) .chat-form input {
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid color-mix(in srgb, var(--sd-widget-border) 78%, transparent);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  color: var(--fg);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .chat-form input:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--start-accent) 36%, var(--sd-widget-border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--start-accent) 14%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .chat-form button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid color-mix(in srgb, var(--start-accent) 24%, transparent);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--start-accent) 18%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 680;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+html.start-desk body:not(.focus-mode) .chat-form button:hover {
+  background: color-mix(in srgb, var(--start-accent) 26%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) .chat-form button:active {
+  transform: scale(.98);
+}
+
+html.start-desk body:not(.focus-mode) .chat-messages {
+  border-radius: 14px;
+  scrollbar-width: thin;
+}
+
+html.start-desk body:not(.focus-mode) .chat-messages .msg {
+  border-radius: 13px;
+  line-height: 1.45;
+}
+
+html.start-desk body:not(.focus-mode) #news-container h3 {
+  color: var(--fg) !important;
+  border-bottom-color: color-mix(in srgb, var(--sd-widget-border) 76%, transparent) !important;
+  font-size: .9rem !important;
+  font-weight: 680 !important;
+  letter-spacing: -.01em;
+}
+
+html.start-desk body:not(.focus-mode) .hint {
+  margin-top: 10px;
+  color: var(--secondaryFg);
+  font-size: .74rem;
+  opacity: .78;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body:not(.focus-mode) .widget-shell .widget-toolbar {
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+
+  html.start-desk body:not(.focus-mode) .widget-shell .widget-body {
+    padding: 12px;
+  }
+}
+
+/* Start Desk 5 — Widgets, phase 4 : contenu météo, agenda et actualités. */
+html.start-desk body:not(.focus-mode) .weather-container {
+  overflow: hidden;
+}
+
+html.start-desk body:not(.focus-mode) .weather-container :is(.temperature, .weather-temp, .current-temp) {
+  color: var(--fg);
+  font-weight: 720;
+  letter-spacing: -.035em;
+}
+
+html.start-desk body:not(.focus-mode) #weather-details {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+html.start-desk body:not(.focus-mode) .weather-day {
+  min-width: 0;
+  padding: 10px 8px !important;
+  text-align: center;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+html.start-desk body:not(.focus-mode) .weather-day:hover {
+  border-color: color-mix(in srgb, var(--fg) 14%, var(--sd-widget-border)) !important;
+  background: color-mix(in srgb, var(--fg) 8%, transparent) !important;
+}
+
+html.start-desk body:not(.focus-mode) #calendar-widget {
+  overflow: hidden;
+}
+
+html.start-desk body:not(.focus-mode) #calendar-widget :is(iframe, .calendar-frame) {
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) #calendar-widget :is(.event, .calendar-event, li) {
+  border-radius: 12px;
+}
+
+html.start-desk body:not(.focus-mode) #news-container .news-grid {
+  gap: 14px !important;
+}
+
+html.start-desk body:not(.focus-mode) #news-container .news-grid > * {
+  min-width: 0;
+}
+
+html.start-desk body:not(.focus-mode) #news-container :is(a, .news-item) {
+  border-radius: 12px;
+  transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+html.start-desk body:not(.focus-mode) #news-container a:hover {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+html.start-desk body:not(.focus-mode) #news-container :is(ul, ol) {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+html.start-desk body:not(.focus-mode) #news-container li + li {
+  margin-top: .45rem;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body:not(.focus-mode) #weather-details {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  html.start-desk body:not(.focus-mode) #news-container .news-grid {
+    gap: 12px !important;
+  }
+}

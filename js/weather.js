@@ -26,6 +26,14 @@
       const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
       const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
 
+      if (!weatherCard || !details) return;
+
+      function syncDetailsVisibility() {
+        const hidden = details.hasAttribute('hidden');
+        details.style.display = hidden ? 'none' : '';
+        weatherCard.setAttribute('aria-expanded', String(!hidden));
+      }
+
       async function getWeather5dCached() {
         try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data, location } = JSON.parse(raw); const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels'; if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data; } } catch {}
         
@@ -51,9 +59,12 @@
         if (isHidden && !loaded) { 
             try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } 
             catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } 
-        } 
-        details.toggleAttribute("hidden"); weatherCard.setAttribute("aria-expanded", String(!details.hasAttribute("hidden"))); 
+        }
+        details.toggleAttribute("hidden");
+        syncDetailsVisibility();
       }
+
+      syncDetailsVisibility();
       weatherCard.addEventListener("click", toggleDetails);
       weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
     })();

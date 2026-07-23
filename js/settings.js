@@ -193,9 +193,20 @@
     return document.getElementById(`${widgetId}-toggle`);
   }
 
+  function persistWidgetVisibility(widgetId, hidden, hiddenState) {
+    hiddenState[widgetId] = !!hidden;
+    writeJson(HIDDEN_KEY, hiddenState);
+    if (widgetId === 'news') localStorage.setItem('showNews', hidden ? 'false' : 'true');
+    if (widgetId === 'chat') localStorage.setItem('showChat', hidden ? 'false' : 'true');
+    if (widgetId === 'calendar') localStorage.setItem('calendarHidden', hidden ? '1' : '0');
+  }
+
   function applyHiddenState(widgetId, hidden) {
     const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
-    if (widget) widget.style.display = hidden ? 'none' : '';
+    if (widget) {
+      widget.style.removeProperty('display');
+      widget.hidden = !!hidden;
+    }
     document.body.classList.toggle(`${widgetId}-hidden`, !!hidden);
     const toggle = getPanelToggle(widgetId);
     if (toggle) toggle.checked = !hidden;
@@ -246,8 +257,7 @@
       closeBtn?.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
-        hiddenState[widgetId] = true;
-        writeJson(HIDDEN_KEY, hiddenState);
+        persistWidgetVisibility(widgetId, true, hiddenState);
         applyHiddenState(widgetId, true);
         emit('settings:widget-visibility-changed', { widgetId, visible: false });
       });
@@ -258,14 +268,34 @@
       if (!toggle) return;
       toggle.checked = !hiddenState[widgetId];
       toggle.addEventListener('change', () => {
-        hiddenState[widgetId] = !toggle.checked;
-        writeJson(HIDDEN_KEY, hiddenState);
-        applyHiddenState(widgetId, hiddenState[widgetId]);
+        const hidden = !toggle.checked;
+        persistWidgetVisibility(widgetId, hidden, hiddenState);
+        applyHiddenState(widgetId, hidden);
         if (widgetId === 'news' && toggle.checked && typeof global.loadNews === 'function' && !global.__newsLoaded) {
           global.loadNews();
         }
         emit('settings:widget-visibility-changed', { widgetId, visible: toggle.checked });
       });
+    });
+
+    const syncFromBodyClasses = () => {
+      ['news', 'chat', 'calendar'].forEach((widgetId) => {
+        const hidden = document.body.classList.contains(`${widgetId}-hidden`);
+        if (hiddenState[widgetId] === hidden) return;
+        persistWidgetVisibility(widgetId, hidden, hiddenState);
+        const widget = document.querySelector(`[data-widget-id="${widgetId}"]`);
+        if (widget) {
+          widget.style.removeProperty('display');
+          widget.hidden = hidden;
+        }
+        const toggle = getPanelToggle(widgetId);
+        if (toggle) toggle.checked = !hidden;
+      });
+    };
+
+    new MutationObserver(syncFromBodyClasses).observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class']
     });
   }
 
