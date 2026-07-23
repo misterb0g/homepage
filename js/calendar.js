@@ -1,4 +1,4 @@
-// --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
+            // --- Mini calendrier intégré + événements Google Calendar via /api/calendar ---
     (function () {
       const grid = document.getElementById('calendar-grid');
       const label = document.getElementById('calendar-month-label');
@@ -297,3 +297,5 @@
       renderCalendar();
       loadEvents();
     })();
+
+

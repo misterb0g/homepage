@@ -20,9 +20,8 @@
         } catch (err) { console.error("Météo:", err); weatherEl.innerHTML = `<div class="inline">${err.message}</div>`; }
     }
     function weatherCodeToFr(code) { const map={0:"Ciel dégagé",1:"Plutôt dégagé",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",48:"Brouillard givrant",51:"Bruine",61:"Pluie",63:"Pluie forte",71:"Neige",73:"Neige forte",80:"Averses",81:"Averses fortes",95:"Orages"}; return map[code] ?? "Météo"; }
-
-
-// --- Météo détaillée (5 jours) ---
+    
+    // --- Météo détaillée (5 jours) ---
     (function () {
       const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
       const WEATHER_CACHE_KEY = 'weather5d_cache_v1', WEATHER_TTL_MS = 3600000;
@@ -58,3 +57,4 @@
       weatherCard.addEventListener("click", toggleDetails);
       weatherCard.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleDetails(); } });
     })();
+

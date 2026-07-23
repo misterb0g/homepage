@@ -1,4 +1,4 @@
-// --- Chat Logic ---
+    // --- Chat Logic ---
     (function() {
       let gptHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }], geminiHistory = [{ role: 'system', content: 'Tu es un assistant utile et concis. Réponds en français.' }];
       function addBubble(container, text, who) { const bubble = document.createElement('div'); bubble.className = `msg ${who}`; bubble.textContent = text; container.appendChild(bubble); container.scrollTop = container.scrollHeight; return bubble; }
@@ -45,3 +45,4 @@
       $('#gpt-form').addEventListener('submit', (e) => handleChatSubmit(e, gptHistory, $("#chat-panel-gpt .chat-messages"), '/api/chat'));
       $('#gemini-form').addEventListener('submit', (e) => handleChatSubmit(e, geminiHistory, $("#chat-panel-gemini .chat-messages"), '/api/gemini'));
     })();
+    

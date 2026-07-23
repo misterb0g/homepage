@@ -1,4 +1,4 @@
-// --- Favoris ---
+    // --- Favoris ---
     function setupBookmarks() {
       if (typeof bookmarks === 'undefined') return;
 
@@ -19,9 +19,8 @@
       }
 
       const el = $("#bookmark-container");
-      el.classList.add('tiles-awaiting-reveal');
-      el.innerHTML = bookmarks.map((b) => `
-        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}">
+      el.innerHTML = bookmarks.map((b, index) => `
+        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
           <div class="bookmark-header">
             <div class="bookmark-title">${escapeHtml(b.title)}</div>
             <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
@@ -35,18 +34,6 @@
           </div>
         </section>`).join("");
 
-      if (window.StartpagePlus?.applyProfile) {
-        let savedProfile = 'silex';
-        try { savedProfile = localStorage.getItem('startpage_profile_v2') || 'silex'; } catch (_) {}
-        window.StartpagePlus.applyProfile(savedProfile, false);
-      }
-
-      requestAnimationFrame(() => {
-        const visibleTiles = Array.from(el.querySelectorAll('.bookmark-set:not(.profile-hidden)'));
-        visibleTiles.forEach(tile => tile.classList.add('initial-revealing'));
-        el.classList.remove('tiles-awaiting-reveal');
-        window.setTimeout(() => visibleTiles.forEach(tile => tile.classList.remove('initial-revealing')), 180);
-      });
-
       initTileSortable();
     }
+
