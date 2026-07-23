@@ -31,6 +31,7 @@
   const engineIconUse = $("#engine-icon-use");
   const engineMenu = $("#engine-menu");
   const engineOptions = engineMenu ? Array.from($$(".engine-option", engineMenu)) : [];
+  let clearButton = null;
 
   function keepSpotlightFocused() {
     try { searchInput && searchInput.focus({ preventScroll: true }); }
@@ -74,6 +75,95 @@
     });
   }
 
+  function updateClearButton() {
+    if (!clearButton || !searchInput) return;
+    const visible = searchInput.value.length > 0;
+    clearButton.classList.toggle("is-visible", visible);
+    clearButton.tabIndex = visible ? 0 : -1;
+    clearButton.setAttribute("aria-hidden", visible ? "false" : "true");
+  }
+
+  function clearSearch() {
+    if (!searchInput) return;
+    searchInput.value = "";
+    applyDefaultEngine(getDefaultEngineId());
+    updateClearButton();
+    searchInput.dispatchEvent(new Event("input", { bubbles: true }));
+    keepSpotlightFocused();
+    window.StartDesk?.emit?.("search:cleared");
+  }
+
+  function installClearButton() {
+    if (!searchForm || !searchInput || searchForm.querySelector(".search-clear-button")) return;
+
+    clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.className = "search-clear-button";
+    clearButton.setAttribute("aria-label", "Effacer la recherche");
+    clearButton.setAttribute("title", "Effacer");
+    clearButton.setAttribute("aria-hidden", "true");
+    clearButton.tabIndex = -1;
+    clearButton.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.35 6.35a.9.9 0 0 1 1.27 0L10 8.73l2.38-2.38a.9.9 0 1 1 1.27 1.27L11.27 10l2.38 2.38a.9.9 0 1 1-1.27 1.27L10 11.27l-2.38 2.38a.9.9 0 1 1-1.27-1.27L8.73 10 6.35 7.62a.9.9 0 0 1 0-1.27Z"/></svg>';
+
+    const submitButton = searchForm.querySelector('button[type="submit"]');
+    searchForm.insertBefore(clearButton, submitButton || null);
+
+    clearButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      clearSearch();
+    });
+
+    const style = document.createElement("style");
+    style.id = "start-desk-search-clear-style";
+    style.textContent = `
+      html.start-desk #search-form.spotlight .search-clear-button {
+        flex: 0 0 auto;
+        display: inline-grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        margin-right: 12px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--fg) 8%, transparent);
+        color: var(--secondaryFg);
+        opacity: 0;
+        transform: scale(.82);
+        pointer-events: none;
+        cursor: pointer;
+        transition: opacity 140ms ease, transform 180ms cubic-bezier(.22,1,.36,1), background-color 140ms ease, color 140ms ease;
+      }
+      html.start-desk #search-form.spotlight .search-clear-button.is-visible {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+      }
+      html.start-desk #search-form.spotlight .search-clear-button:hover {
+        background: color-mix(in srgb, var(--fg) 13%, transparent);
+        color: var(--fg);
+      }
+      html.start-desk #search-form.spotlight .search-clear-button:active {
+        transform: scale(.92);
+      }
+      html.start-desk #search-form.spotlight .search-clear-button:focus-visible {
+        outline: 2px solid color-mix(in srgb, var(--start-accent) 70%, transparent);
+        outline-offset: 2px;
+      }
+      html.start-desk #search-form.spotlight .search-clear-button svg {
+        width: 17px;
+        height: 17px;
+        fill: currentColor;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html.start-desk #search-form.spotlight .search-clear-button { transition: none !important; }
+      }
+    `;
+    if (!document.getElementById(style.id)) document.head.appendChild(style);
+    updateClearButton();
+  }
+
   function openEngineMenu() {
     if (!engineMenu || !engineBtn) return;
     engineMenu.hidden = false;
@@ -108,6 +198,7 @@
 
   function init() {
     applyDefaultEngine(getDefaultEngineId());
+    installClearButton();
   }
 
   init();
@@ -154,6 +245,14 @@
     } else {
       applyDefaultEngine(getDefaultEngineId());
     }
+    updateClearButton();
+  });
+
+  searchInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && searchInput.value) {
+      event.preventDefault();
+      clearSearch();
+    }
   });
 
   searchForm?.addEventListener("submit", () => {
@@ -161,6 +260,7 @@
     const prefix = detectPrefixEngine(query);
     if (!prefix) return;
     searchInput.value = query.substring(prefix.length).trim();
+    updateClearButton();
   });
 
   // Raccourcis clavier
@@ -190,6 +290,7 @@
   window.StartDesk?.register?.("search", {
     init,
     focus,
+    clear: clearSearch,
     getDefaultEngine: getDefaultEngineId,
     setDefaultEngine: setDefaultEngineId,
     applyDefaultEngine,
