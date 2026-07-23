@@ -1,0 +1,391 @@
+/* Start Desk 5 — Phase 6.1/6.2 : panneau Paramètres compact + Motion Foundation */
+:root {
+  --sd-settings-surface: rgba(255,255,255,.18);
+  --sd-settings-row: rgba(255,255,255,.16);
+  --sd-settings-border: rgba(255,255,255,.26);
+  --sd-settings-shadow: 0 26px 80px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.38);
+  --sd-motion-fast: 140ms;
+  --sd-motion-medium: 190ms;
+  --sd-motion-slow: 260ms;
+  --sd-motion-curve: cubic-bezier(.22,1,.36,1);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --sd-settings-surface: rgba(29,31,38,.68);
+  --sd-settings-row: rgba(255,255,255,.065);
+  --sd-settings-border: rgba(255,255,255,.11);
+  --sd-settings-shadow: 0 30px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.09);
+}
+
+html.start-desk #control-panel.glass {
+  width: min(395px, calc(100vw - 28px)) !important;
+  border-color: var(--sd-settings-border) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), transparent 34%),
+    var(--sd-settings-surface) !important;
+  box-shadow: var(--sd-settings-shadow) !important;
+  transform-origin: top right;
+  will-change: transform, opacity;
+  transition:
+    transform var(--sd-motion-medium) var(--sd-motion-curve),
+    opacity var(--sd-motion-fast) ease-out,
+    box-shadow var(--sd-motion-medium) ease-out !important;
+}
+
+html.start-desk body:not(.panel-open) #control-panel.glass {
+  opacity: 0;
+  transform: translate3d(8px,-4px,0) scale(.97);
+  pointer-events: none;
+}
+
+html.start-desk body.panel-open #control-panel.glass {
+  opacity: 1;
+  transform: translate3d(0,0,0) scale(1);
+  pointer-events: auto;
+}
+
+html.start-desk #overlay {
+  transition:
+    opacity var(--sd-motion-medium) ease-out,
+    backdrop-filter var(--sd-motion-medium) ease-out !important;
+}
+
+html.start-desk #control-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 14px;
+}
+
+html.start-desk #control-panel .panel-header h3 {
+  margin: 0;
+  font-size: .96rem;
+  font-weight: 700;
+  letter-spacing: -.025em;
+}
+
+html.start-desk #control-panel .panel-header .btn-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+}
+
+html.start-desk #control-panel .panel-content {
+  height: calc(100% - 55px);
+  padding: 10px;
+  scroll-padding-block: 10px;
+}
+
+html.start-desk #control-panel .panel-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0 0 7px;
+  padding: 8px 10px;
+  border: 1px solid var(--sd-settings-border);
+  border-radius: 14px;
+  background: var(--sd-settings-row);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 15%, transparent);
+  box-sizing: border-box;
+  transition:
+    transform var(--sd-motion-fast) var(--sd-motion-curve),
+    border-color var(--sd-motion-medium) ease,
+    background-color var(--sd-motion-medium) ease,
+    box-shadow var(--sd-motion-medium) ease;
+}
+
+html.start-desk body.panel-open #control-panel .panel-section {
+  animation: sd-settings-row-in var(--sd-motion-slow) var(--sd-motion-curve) both;
+}
+
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(2) { animation-delay: 18ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(3) { animation-delay: 32ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(4) { animation-delay: 46ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(5) { animation-delay: 60ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(n+6) { animation-delay: 72ms; }
+
+@keyframes sd-settings-row-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+html.start-desk #control-panel .panel-section:last-child {
+  margin-bottom: 0;
+}
+
+html.start-desk #control-panel .panel-section > label:first-child,
+html.start-desk #control-panel .panel-section > div > label:first-child {
+  margin: 0;
+  color: var(--fg);
+  font-size: .8rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+html.start-desk #control-panel .panel-section:has(.segmented-control),
+html.start-desk #control-panel .panel-section:has(.input-group) {
+  display: block;
+  min-height: 0;
+  padding-block: 9px;
+}
+
+html.start-desk #control-panel .panel-section:has(.segmented-control) > label,
+html.start-desk #control-panel .panel-section:has(.input-group) > label {
+  display: block;
+  margin-bottom: 7px;
+}
+
+html.start-desk #control-panel .segmented-control {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  width: 100%;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--sd-settings-border) 80%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  box-sizing: border-box;
+}
+
+html.start-desk #control-panel .segmented-control button {
+  min-width: 0;
+  min-height: 28px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--secondaryFg);
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+html.start-desk #control-panel button,
+html.start-desk #control-panel .btn-icon,
+html.start-desk #control-panel .slider {
+  transition:
+    transform var(--sd-motion-fast) var(--sd-motion-curve),
+    background-color var(--sd-motion-fast) ease,
+    border-color var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease,
+    color var(--sd-motion-fast) ease,
+    filter var(--sd-motion-fast) ease !important;
+}
+
+html.start-desk #control-panel button:active,
+html.start-desk #control-panel .btn-icon:active {
+  transform: scale(.96) !important;
+}
+
+html.start-desk #control-panel .segmented-control button:hover {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+html.start-desk #control-panel .segmented-control button.active {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 12%, transparent);
+  box-shadow: 0 2px 7px rgba(15,23,42,.08), inset 0 1px 0 color-mix(in srgb, white 14%, transparent);
+}
+
+/* Champ météo : le bouton reste dans la carte, même avec un nom de ville long. */
+html.start-desk #control-panel .input-group {
+  display: flex !important;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  gap: 7px;
+  box-sizing: border-box;
+}
+
+html.start-desk #control-panel .input-group input {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--sd-settings-border) 82%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: .8rem;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    border-color var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease,
+    background-color var(--sd-motion-fast) ease;
+}
+
+html.start-desk #control-panel .input-group input:focus {
+  border-color: color-mix(in srgb, var(--start-accent) 65%, var(--sd-settings-border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--start-accent) 17%, transparent);
+}
+
+html.start-desk #control-panel .input-group button {
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  max-width: 42px;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--start-accent) 42%, var(--sd-settings-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--start-accent) 18%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: .74rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+html.start-desk #control-panel .input-group button:hover {
+  filter: brightness(1.045);
+}
+
+html.start-desk #control-panel .toggle-switch {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+}
+
+html.start-desk #control-panel .toggle-switch .slider {
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+html.start-desk #control-panel .toggle-switch .slider::before {
+  width: 20px;
+  height: 20px;
+  left: 2px;
+  bottom: 2px;
+  transition: transform var(--sd-motion-medium) var(--sd-motion-curve) !important;
+}
+
+html.start-desk #control-panel .toggle-switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+/* Hover volontairement lumineux et discret : la carte réagit à la lumière sans s'assombrir. */
+html.start-desk #control-panel .panel-section:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, white 9%, var(--sd-settings-border));
+  background: color-mix(in srgb, white 3%, var(--sd-settings-row));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 21%, transparent),
+    0 7px 18px rgba(15,23,42,.038);
+}
+
+:root[data-theme="dark"] html.start-desk #control-panel .panel-section:hover,
+:root[data-theme="macos-dark"] html.start-desk #control-panel .panel-section:hover {
+  border-color: color-mix(in srgb, white 4%, var(--sd-settings-border));
+  background: color-mix(in srgb, white 2.2%, var(--sd-settings-row));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    0 8px 20px rgba(0,0,0,.12);
+}
+
+html.start-desk #control-panel .muted {
+  color: var(--secondaryFg);
+  font-size: .68rem;
+  line-height: 1.2;
+}
+
+/* Phase 6.2 — micro-interactions des favoris. */
+html.start-desk #bookmark-container .bookmark-set {
+  transition:
+    transform 180ms var(--sd-motion-curve),
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease !important;
+  will-change: transform;
+}
+
+html.start-desk #bookmark-container .bookmark-set:hover {
+  transform: translate3d(0,-2px,0) scale(1.006) !important;
+  box-shadow:
+    0 20px 58px rgba(15,23,42,.13),
+    inset 0 1px 0 rgba(255,255,255,.27) !important;
+}
+
+html.start-desk #bookmark-container .bookmark {
+  transition:
+    transform 180ms var(--sd-motion-curve),
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease !important;
+}
+
+html.start-desk #bookmark-container .bookmark:hover {
+  transform: translate3d(0,-1px,0);
+  filter: brightness(1.025);
+}
+
+html.start-desk #bookmark-container .bookmark:active {
+  transform: translate3d(0,0,0) scale(.97);
+  transition-duration: 80ms !important;
+}
+
+html.start-desk #bookmark-container .bookmark:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  html.start-desk #control-panel.glass {
+    width: auto !important;
+    max-height: calc(100dvh - 20px);
+    transform-origin: top center;
+  }
+
+  html.start-desk #control-panel .panel-header {
+    min-height: 52px;
+    padding-inline: 12px;
+  }
+
+  html.start-desk #control-panel .panel-content {
+    height: calc(100% - 53px);
+    padding: 8px;
+  }
+
+  html.start-desk #control-panel .panel-section {
+    border-radius: 13px;
+    padding-inline: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk #control-panel.glass,
+  html.start-desk #overlay,
+  html.start-desk #control-panel .panel-section,
+  html.start-desk #control-panel button,
+  html.start-desk #control-panel .btn-icon,
+  html.start-desk #control-panel .slider,
+  html.start-desk #control-panel .slider::before,
+  html.start-desk #control-panel input,
+  html.start-desk #bookmark-container .bookmark-set,
+  html.start-desk #bookmark-container .bookmark {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-set:hover,
+  html.start-desk #bookmark-container .bookmark:hover,
+  html.start-desk #bookmark-container .bookmark:active {
+    transform: none !important;
+  }
+}

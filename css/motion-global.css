@@ -1,0 +1,155 @@
+/* Start Desk 5 — Phase 6.4 / Phase 7 : polish global et optimisation */
+
+:root {
+  --sd-global-motion-fast: 140ms;
+  --sd-global-motion-medium: 190ms;
+  --sd-global-motion-slow: 260ms;
+  --sd-global-motion-curve: cubic-bezier(.22, 1, .36, 1);
+}
+
+html.start-desk #search-form.spotlight,
+html.start-desk .startpage-quick-controls,
+html.start-desk .quick-command-hint,
+html.start-desk .start-desk-status,
+html.start-desk .start-desk-dock,
+html.start-desk .start-desk-panel,
+html.start-desk .engine-menu,
+html.start-desk .command-palette {
+  transition:
+    transform var(--sd-global-motion-medium) var(--sd-global-motion-curve),
+    opacity var(--sd-global-motion-fast) ease,
+    border-color var(--sd-global-motion-medium) ease,
+    box-shadow var(--sd-global-motion-medium) ease,
+    background-color var(--sd-global-motion-medium) ease !important;
+}
+
+html.start-desk #search-form.spotlight:focus-within {
+  transform: translate3d(0, -1px, 0);
+}
+
+html.start-desk .startpage-profile-pill,
+html.start-desk .startpage-focus-pill,
+html.start-desk .startpage-auto-pill,
+html.start-desk .start-desk-dock button,
+html.start-desk .engine-button,
+html.start-desk .engine-option,
+html.start-desk .command-item,
+html.start-desk .close-panel,
+html.start-desk .reset-stats {
+  transition:
+    transform var(--sd-global-motion-fast) var(--sd-global-motion-curve),
+    opacity var(--sd-global-motion-fast) ease,
+    color var(--sd-global-motion-fast) ease,
+    background-color var(--sd-global-motion-fast) ease,
+    border-color var(--sd-global-motion-fast) ease,
+    box-shadow var(--sd-global-motion-fast) ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk .startpage-profile-pill:hover,
+  html.start-desk .startpage-focus-pill:hover,
+  html.start-desk .startpage-auto-pill:hover,
+  html.start-desk .start-desk-dock button:hover,
+  html.start-desk .engine-button:hover,
+  html.start-desk .engine-option:hover,
+  html.start-desk .command-item:hover,
+  html.start-desk .close-panel:hover,
+  html.start-desk .reset-stats:hover {
+    transform: translate3d(0, -1px, 0);
+  }
+}
+
+html.start-desk .startpage-profile-pill:active,
+html.start-desk .startpage-focus-pill:active,
+html.start-desk .startpage-auto-pill:active,
+html.start-desk .start-desk-dock button:active,
+html.start-desk .engine-button:active,
+html.start-desk .engine-option:active,
+html.start-desk .command-item:active,
+html.start-desk .close-panel:active,
+html.start-desk .reset-stats:active {
+  transform: scale(.96);
+  transition-duration: 80ms !important;
+}
+
+html.start-desk .startpage-profile-pill:focus-visible,
+html.start-desk .startpage-focus-pill:focus-visible,
+html.start-desk .startpage-auto-pill:focus-visible,
+html.start-desk .start-desk-dock button:focus-visible,
+html.start-desk .engine-button:focus-visible,
+html.start-desk .engine-option:focus-visible,
+html.start-desk .command-item:focus-visible,
+html.start-desk .close-panel:focus-visible,
+html.start-desk .reset-stats:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+html.start-desk .engine-menu:not([hidden]),
+html.start-desk .command-palette:not([hidden]),
+html.start-desk .start-desk-panel.is-open {
+  animation: sd-global-pop-in var(--sd-global-motion-slow) var(--sd-global-motion-curve) both;
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+@keyframes sd-global-pop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+html.start-desk .quick-command-hint {
+  opacity: .68;
+}
+
+html.start-desk .quick-command-hint:hover,
+html.start-desk #search-form.spotlight:focus-within + .quick-command-hint {
+  opacity: .92;
+}
+
+/* Phase 7 : pas de couche GPU permanente sur les éléments fixes. */
+html.start-desk .start-desk-status,
+html.start-desk .start-desk-dock {
+  will-change: auto;
+}
+
+@media (max-width: 767px) {
+  html.start-desk #search-form.spotlight:focus-within,
+  html.start-desk .startpage-profile-pill:hover,
+  html.start-desk .startpage-focus-pill:hover,
+  html.start-desk .startpage-auto-pill:hover,
+  html.start-desk .start-desk-dock button:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk #search-form.spotlight,
+  html.start-desk .startpage-quick-controls,
+  html.start-desk .quick-command-hint,
+  html.start-desk .start-desk-status,
+  html.start-desk .start-desk-dock,
+  html.start-desk .start-desk-panel,
+  html.start-desk .engine-menu,
+  html.start-desk .command-palette,
+  html.start-desk .startpage-profile-pill,
+  html.start-desk .startpage-focus-pill,
+  html.start-desk .startpage-auto-pill,
+  html.start-desk .start-desk-dock button,
+  html.start-desk .engine-button,
+  html.start-desk .engine-option,
+  html.start-desk .command-item,
+  html.start-desk .close-panel,
+  html.start-desk .reset-stats {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+}

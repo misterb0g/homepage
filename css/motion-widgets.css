@@ -1,0 +1,156 @@
+/* Start Desk 5 — Phase 6.3 : micro-interactions des widgets */
+
+:root {
+  --sd-widget-motion-fast: 140ms;
+  --sd-widget-motion-medium: 190ms;
+  --sd-widget-motion-slow: 260ms;
+  --sd-widget-motion-curve: cubic-bezier(.22, 1, .36, 1);
+}
+
+html.start-desk .widget-shell,
+html.start-desk #weather-card,
+html.start-desk #calendar-container,
+html.start-desk #news-container {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform var(--sd-widget-motion-medium) var(--sd-widget-motion-curve),
+    border-color var(--sd-widget-motion-medium) ease,
+    box-shadow var(--sd-widget-motion-medium) ease,
+    background-color var(--sd-widget-motion-medium) ease,
+    opacity var(--sd-widget-motion-fast) ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk .widget-shell:hover,
+  html.start-desk #weather-card:hover,
+  html.start-desk #calendar-container:hover,
+  html.start-desk #news-container:hover {
+    transform: translate3d(0, -2px, 0);
+    border-color: color-mix(in srgb, white 7%, var(--start-border)) !important;
+    box-shadow:
+      0 22px 64px rgba(15, 23, 42, .13),
+      inset 0 1px 0 rgba(255, 255, 255, .25) !important;
+  }
+
+  :root[data-theme="dark"] html.start-desk .widget-shell:hover,
+  :root[data-theme="dark"] html.start-desk #weather-card:hover,
+  :root[data-theme="dark"] html.start-desk #calendar-container:hover,
+  :root[data-theme="dark"] html.start-desk #news-container:hover,
+  :root[data-theme="macos-dark"] html.start-desk .widget-shell:hover,
+  :root[data-theme="macos-dark"] html.start-desk #weather-card:hover,
+  :root[data-theme="macos-dark"] html.start-desk #calendar-container:hover,
+  :root[data-theme="macos-dark"] html.start-desk #news-container:hover {
+    border-color: rgba(255, 255, 255, .14) !important;
+    box-shadow:
+      0 24px 68px rgba(0, 0, 0, .30),
+      inset 0 1px 0 rgba(255, 255, 255, .10) !important;
+  }
+}
+
+html.start-desk .widget-toolbar,
+html.start-desk .widget-title,
+html.start-desk .widget-window-controls,
+html.start-desk .widget-close-dot,
+html.start-desk .chat-tab,
+html.start-desk #weather-toggle,
+html.start-desk #calendar-toggle-details {
+  transition:
+    transform var(--sd-widget-motion-fast) var(--sd-widget-motion-curve),
+    opacity var(--sd-widget-motion-fast) ease,
+    background-color var(--sd-widget-motion-fast) ease,
+    border-color var(--sd-widget-motion-fast) ease,
+    color var(--sd-widget-motion-fast) ease,
+    box-shadow var(--sd-widget-motion-fast) ease !important;
+}
+
+html.start-desk .widget-close-dot:hover,
+html.start-desk .chat-tab:hover,
+html.start-desk #weather-toggle:hover,
+html.start-desk #calendar-toggle-details:hover {
+  transform: translate3d(0, -1px, 0);
+}
+
+html.start-desk .widget-close-dot:active,
+html.start-desk .chat-tab:active,
+html.start-desk #weather-toggle:active,
+html.start-desk #calendar-toggle-details:active {
+  transform: scale(.94);
+  transition-duration: 80ms !important;
+}
+
+html.start-desk .widget-close-dot:focus-visible,
+html.start-desk .chat-tab:focus-visible,
+html.start-desk #weather-toggle:focus-visible,
+html.start-desk #calendar-toggle-details:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+html.start-desk #weather-details:not([hidden]),
+html.start-desk .chat-panel:not([hidden]),
+html.start-desk .widget-body:not([hidden]) {
+  animation: sd-widget-content-in var(--sd-widget-motion-slow) var(--sd-widget-motion-curve) both;
+}
+
+html.start-desk .widget-shell.is-collapsed .widget-body,
+html.start-desk #weather-details[hidden] {
+  animation: none;
+}
+
+@keyframes sd-widget-content-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 5px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+html.start-desk .widget-resizer {
+  opacity: .34;
+  transition:
+    opacity var(--sd-widget-motion-fast) ease,
+    transform var(--sd-widget-motion-fast) var(--sd-widget-motion-curve) !important;
+}
+
+html.start-desk .widget-shell:hover .widget-resizer {
+  opacity: .64;
+}
+
+html.start-desk .widget-resizer:active {
+  opacity: .9;
+  transform: scale(1.08);
+}
+
+@media (max-width: 767px) {
+  html.start-desk .widget-shell:hover,
+  html.start-desk #weather-card:hover,
+  html.start-desk #calendar-container:hover,
+  html.start-desk #news-container:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk .widget-shell,
+  html.start-desk #weather-card,
+  html.start-desk #calendar-container,
+  html.start-desk #news-container,
+  html.start-desk .widget-toolbar,
+  html.start-desk .widget-title,
+  html.start-desk .widget-window-controls,
+  html.start-desk .widget-close-dot,
+  html.start-desk .chat-tab,
+  html.start-desk #weather-toggle,
+  html.start-desk #calendar-toggle-details,
+  html.start-desk #weather-details,
+  html.start-desk .chat-panel,
+  html.start-desk .widget-body,
+  html.start-desk .widget-resizer {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
