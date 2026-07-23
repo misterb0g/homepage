@@ -6,6 +6,7 @@
   const REQUEST_TIMEOUT = 30000;
 
   function addBubble(container, text, who) {
+    if (!container) return null;
     const bubble = document.createElement('div');
     bubble.className = `msg ${who}`;
     bubble.textContent = text;
@@ -22,8 +23,8 @@
     return rawText || `Le service a répondu avec le statut ${status}.`;
   }
 
-  const tabs = $$('.chat-tab');
-  const panels = $$('.chat-panel');
+  const tabs = Array.from($$('.chat-tab'));
+  const panels = Array.from($$('.chat-panel'));
   const savedTab = localStorage.getItem(CHAT_TAB_KEY) || 'gpt';
 
   function activateTab(targetId) {
@@ -42,11 +43,11 @@
 
   async function handleChatSubmit(event, history, messagesContainer, apiEndpoint) {
     event.preventDefault();
-    const form = event.target;
-    const input = form.querySelector('input');
-    const submitButton = form.querySelector('button[type="submit"]');
+    const form = event.currentTarget || event.target;
+    const input = form?.querySelector('input');
+    const submitButton = form?.querySelector('button[type="submit"]');
     const prompt = input?.value.trim();
-    if (!prompt || form.dataset.pending === '1') return;
+    if (!form || !input || !messagesContainer || !prompt || form.dataset.pending === '1') return;
 
     form.dataset.pending = '1';
     input.disabled = true;
@@ -61,9 +62,9 @@
     input.value = '';
 
     const botBubble = addBubble(messagesContainer, 'Réflexion en cours…', 'bot');
-    botBubble.classList.add('pending');
-    botBubble.setAttribute('role', 'status');
-    botBubble.setAttribute('aria-live', 'polite');
+    botBubble?.classList.add('pending');
+    botBubble?.setAttribute('role', 'status');
+    botBubble?.setAttribute('aria-live', 'polite');
 
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
@@ -86,17 +87,19 @@
       const answer = typeof data?.text === 'string' && data.text.trim()
         ? data.text.trim()
         : 'Le service n’a renvoyé aucune réponse.';
-      botBubble.textContent = answer;
+      if (botBubble) botBubble.textContent = answer;
       history.push({ role: 'assistant', content: answer });
     } catch (error) {
       history.pop();
-      botBubble.classList.add('error');
-      botBubble.textContent = error?.name === 'AbortError'
-        ? 'La réponse prend trop de temps. Vous pouvez réessayer.'
-        : `Impossible de joindre le service : ${error?.message || 'erreur inconnue'}`;
+      botBubble?.classList.add('error');
+      if (botBubble) {
+        botBubble.textContent = error?.name === 'AbortError'
+          ? 'La réponse prend trop de temps. Vous pouvez réessayer.'
+          : `Impossible de joindre le service : ${error?.message || 'erreur inconnue'}`;
+      }
     } finally {
       window.clearTimeout(timeoutId);
-      botBubble.classList.remove('pending');
+      botBubble?.classList.remove('pending');
       form.dataset.pending = '0';
       input.disabled = false;
       if (submitButton) {
@@ -107,8 +110,10 @@
     }
   }
 
-  $('#gpt-form')?.addEventListener('submit', event =>
+  const gptForm = $('#gpt-form');
+  const geminiForm = $('#gemini-form');
+  gptForm?.addEventListener('submit', event =>
     handleChatSubmit(event, gptHistory, $('#chat-panel-gpt .chat-messages'), '/api/chat'));
-  $('#gemini-form')?.addEventListener('submit', event =>
+  geminiForm?.addEventListener('submit', event =>
     handleChatSubmit(event, geminiHistory, $('#chat-panel-gemini .chat-messages'), '/api/gemini'));
 })();
