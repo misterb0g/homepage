@@ -1,4 +1,4 @@
-/* Start Desk 5 — Phase 5 : panneau Paramètres */
+/* Start Desk 5 — Phase 5.1 : panneau Paramètres compact */
 :root {
   --sd-settings-surface: rgba(255,255,255,.18);
   --sd-settings-row: rgba(255,255,255,.16);
@@ -15,6 +15,7 @@
 }
 
 html.start-desk #control-panel.glass {
+  width: min(395px, calc(100vw - 28px)) !important;
   border-color: var(--sd-settings-border) !important;
   background:
     linear-gradient(180deg, rgba(255,255,255,.18), transparent 34%),
@@ -26,78 +27,97 @@ html.start-desk #control-panel .panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 64px;
-  padding: 0 16px;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 14px;
 }
 
 html.start-desk #control-panel .panel-header h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: .96rem;
   font-weight: 700;
   letter-spacing: -.025em;
 }
 
+html.start-desk #control-panel .panel-header .btn-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+}
+
 html.start-desk #control-panel .panel-content {
-  padding: 12px;
-  scroll-padding-block: 12px;
+  height: calc(100% - 55px);
+  padding: 10px;
+  scroll-padding-block: 10px;
 }
 
 html.start-desk #control-panel .panel-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  min-height: 54px;
-  margin: 0 0 9px;
-  padding: 11px 12px;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0 0 7px;
+  padding: 8px 10px;
   border: 1px solid var(--sd-settings-border);
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--sd-settings-row);
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 15%, transparent);
+  box-sizing: border-box;
+}
+
+html.start-desk #control-panel .panel-section:last-child {
+  margin-bottom: 0;
 }
 
 html.start-desk #control-panel .panel-section > label:first-child,
 html.start-desk #control-panel .panel-section > div > label:first-child {
   margin: 0;
   color: var(--fg);
-  font-size: .82rem;
+  font-size: .8rem;
   font-weight: 650;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 html.start-desk #control-panel .panel-section:has(.segmented-control),
 html.start-desk #control-panel .panel-section:has(.input-group) {
   display: block;
+  min-height: 0;
+  padding-block: 9px;
 }
 
 html.start-desk #control-panel .panel-section:has(.segmented-control) > label,
 html.start-desk #control-panel .panel-section:has(.input-group) > label {
   display: block;
-  margin-bottom: 9px;
+  margin-bottom: 7px;
 }
 
 html.start-desk #control-panel .segmented-control {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 3px;
-  padding: 3px;
+  grid-auto-columns: minmax(0, 1fr);
+  width: 100%;
+  gap: 2px;
+  padding: 2px;
   border: 1px solid color-mix(in srgb, var(--sd-settings-border) 80%, transparent);
-  border-radius: 12px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--fg) 5%, transparent);
+  box-sizing: border-box;
 }
 
 html.start-desk #control-panel .segmented-control button {
-  min-height: 32px;
-  padding: 5px 8px;
+  min-width: 0;
+  min-height: 28px;
+  padding: 4px 6px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 8px;
   background: transparent;
   color: var(--secondaryFg);
   font: inherit;
-  font-size: .76rem;
-  font-weight: 620;
+  font-size: .72rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -109,26 +129,34 @@ html.start-desk #control-panel .segmented-control button:hover {
 html.start-desk #control-panel .segmented-control button.active {
   color: var(--fg);
   background: color-mix(in srgb, var(--fg) 12%, transparent);
-  box-shadow: 0 3px 10px rgba(15,23,42,.08), inset 0 1px 0 color-mix(in srgb, white 14%, transparent);
+  box-shadow: 0 2px 7px rgba(15,23,42,.08), inset 0 1px 0 color-mix(in srgb, white 14%, transparent);
 }
 
+/* Champ météo : le bouton reste dans la carte, même avec un nom de ville long. */
 html.start-desk #control-panel .input-group {
-  display: grid;
-  grid-template-columns: minmax(0,1fr) auto;
+  display: flex !important;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
   gap: 7px;
+  box-sizing: border-box;
 }
 
 html.start-desk #control-panel .input-group input {
+  flex: 1 1 auto;
+  width: 0;
   min-width: 0;
-  min-height: 38px;
-  padding: 0 11px;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 0 10px;
   border: 1px solid color-mix(in srgb, var(--sd-settings-border) 82%, transparent);
-  border-radius: 11px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--fg) 5%, transparent);
   color: var(--fg);
   font: inherit;
-  font-size: .82rem;
+  font-size: .8rem;
   outline: none;
+  box-sizing: border-box;
 }
 
 html.start-desk #control-panel .input-group input:focus {
@@ -137,25 +165,44 @@ html.start-desk #control-panel .input-group input:focus {
 }
 
 html.start-desk #control-panel .input-group button {
+  flex: 0 0 42px;
+  width: 42px;
   min-width: 42px;
-  min-height: 38px;
-  padding: 0 12px;
+  max-width: 42px;
+  min-height: 34px;
+  padding: 0;
   border: 1px solid color-mix(in srgb, var(--start-accent) 42%, var(--sd-settings-border));
-  border-radius: 11px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--start-accent) 18%, transparent);
   color: var(--fg);
   font: inherit;
-  font-size: .78rem;
+  font-size: .74rem;
   font-weight: 700;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 html.start-desk #control-panel .toggle-switch {
   flex: 0 0 auto;
+  width: 42px;
+  height: 24px;
+  margin: 0;
 }
 
 html.start-desk #control-panel .toggle-switch .slider {
+  border-radius: 999px;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+html.start-desk #control-panel .toggle-switch .slider::before {
+  width: 20px;
+  height: 20px;
+  left: 2px;
+  bottom: 2px;
+}
+
+html.start-desk #control-panel .toggle-switch input:checked + .slider::before {
+  transform: translateX(18px);
 }
 
 html.start-desk #control-panel .panel-section:hover {
@@ -165,25 +212,29 @@ html.start-desk #control-panel .panel-section:hover {
 
 html.start-desk #control-panel .muted {
   color: var(--secondaryFg);
-  font-size: .72rem;
+  font-size: .68rem;
+  line-height: 1.2;
 }
 
 @media (max-width: 767px) {
   html.start-desk #control-panel.glass {
+    width: auto !important;
     max-height: calc(100dvh - 20px);
   }
 
   html.start-desk #control-panel .panel-header {
-    min-height: 58px;
-    padding-inline: 14px;
+    min-height: 52px;
+    padding-inline: 12px;
   }
 
   html.start-desk #control-panel .panel-content {
-    padding: 10px;
+    height: calc(100% - 53px);
+    padding: 8px;
   }
 
   html.start-desk #control-panel .panel-section {
-    border-radius: 15px;
+    border-radius: 13px;
+    padding-inline: 9px;
   }
 }
 
