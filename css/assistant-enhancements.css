@@ -122,7 +122,7 @@ body.focus-mode #weather-details {
 html.start-desk body.focus-mode #search-form.spotlight {
   width: min(760px, calc(100vw - 36px)) !important;
   min-height: 58px !important;
-  padding: 7px 11px 7px 8px !important;
+  padding: 7px 15px 7px 8px !important;
   gap: 7px !important;
   border: 1px solid var(--sd-border) !important;
   border-radius: 24px !important;
@@ -210,7 +210,7 @@ html.start-desk body.focus-mode #search-form.spotlight .search-icon {
 html.start-desk body.focus-mode #search-input {
   min-width: 0 !important;
   height: var(--sd-control-height) !important;
-  padding: 0 4px 0 1px !important;
+  padding: 0 14px 0 1px !important;
   border: 0 !important;
   background: transparent !important;
   color: var(--fg) !important;
@@ -225,6 +225,31 @@ html.start-desk body.focus-mode #search-input {
 html.start-desk body.focus-mode #search-input::placeholder {
   color: color-mix(in srgb, var(--secondaryFg) 80%, transparent) !important;
   opacity: 1 !important;
+}
+
+html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 28px !important;
+  height: 28px !important;
+  margin-left: 12px !important;
+  border-radius: 999px !important;
+  cursor: pointer !important;
+  opacity: .72 !important;
+  background:
+    linear-gradient(45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
+    linear-gradient(-45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
+    color-mix(in srgb, var(--fg) 10%, transparent) !important;
+  color: var(--secondaryFg) !important;
+  transition: opacity var(--sd-motion-fast) ease, background var(--sd-motion-fast) ease !important;
+}
+
+html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button:hover {
+  opacity: .95 !important;
+  background:
+    linear-gradient(45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
+    linear-gradient(-45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
+    color-mix(in srgb, var(--fg) 15%, transparent) !important;
 }
 
 html.start-desk body.focus-mode #search-form.spotlight :is(input, button):focus,
@@ -286,7 +311,7 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
 @media (max-width: 760px) {
   html.start-desk body.focus-mode #search-form.spotlight {
     min-height: 54px !important;
-    padding: 6px 9px 6px 6px !important;
+    padding: 6px 12px 6px 6px !important;
     gap: 6px !important;
     border-radius: 21px !important;
   }
@@ -310,7 +335,14 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
 
   html.start-desk body.focus-mode #search-input {
     height: 40px !important;
+    padding-right: 10px !important;
     font-size: .98rem !important;
+  }
+
+  html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button {
+    width: 26px !important;
+    height: 26px !important;
+    margin-left: 8px !important;
   }
 
   html.start-desk body.focus-mode #search-form.spotlight .engine-menu {
