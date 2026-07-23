@@ -1,4 +1,4 @@
-/* Start Desk 5 — Phase 6.4 : polish global des transitions */
+/* Start Desk 5 — Phase 6.4 / Phase 7 : polish global et optimisation */
 
 :root {
   --sd-global-motion-fast: 140ms;
@@ -90,6 +90,7 @@ html.start-desk .command-palette:not([hidden]),
 html.start-desk .start-desk-panel.is-open {
   animation: sd-global-pop-in var(--sd-global-motion-slow) var(--sd-global-motion-curve) both;
   transform-origin: top center;
+  will-change: transform, opacity;
 }
 
 @keyframes sd-global-pop-in {
@@ -112,9 +113,10 @@ html.start-desk #search-form.spotlight:focus-within + .quick-command-hint {
   opacity: .92;
 }
 
+/* Phase 7 : pas de couche GPU permanente sur les éléments fixes. */
 html.start-desk .start-desk-status,
 html.start-desk .start-desk-dock {
-  will-change: transform, opacity;
+  will-change: auto;
 }
 
 @media (max-width: 767px) {
@@ -148,5 +150,6 @@ html.start-desk .start-desk-dock {
     animation: none !important;
     transition: none !important;
     transform: none !important;
+    will-change: auto !important;
   }
 }
