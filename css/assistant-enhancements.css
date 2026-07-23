@@ -233,31 +233,29 @@ html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button {
   width: 28px !important;
   height: 28px !important;
   margin: 0 0 0 12px !important;
+  padding: 0 !important;
+  border: 0 !important;
   border-radius: 999px !important;
+  box-sizing: border-box !important;
   cursor: pointer !important;
   opacity: .72 !important;
   vertical-align: middle !important;
-  transform: translateY(0) !important;
-  background:
-    linear-gradient(45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
-    linear-gradient(-45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
-    color-mix(in srgb, var(--fg) 10%, transparent) !important;
-  background-position: center, center, center !important;
-  background-size: 12px 12px, 12px 12px, auto !important;
+  transform: translateY(1px) !important;
+  background-color: color-mix(in srgb, var(--fg) 10%, transparent) !important;
+  background-image:
+    linear-gradient(45deg, transparent calc(50% - 1px), var(--secondaryFg) calc(50% - 1px), var(--secondaryFg) calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(-45deg, transparent calc(50% - 1px), var(--secondaryFg) calc(50% - 1px), var(--secondaryFg) calc(50% + 1px), transparent calc(50% + 1px)) !important;
+  background-position: 50% 50%, 50% 50% !important;
+  background-size: 12px 12px, 12px 12px !important;
   background-repeat: no-repeat !important;
-  color: var(--secondaryFg) !important;
-  transition: opacity var(--sd-motion-fast) ease, background-color var(--sd-motion-fast) ease !important;
+  transition:
+    opacity var(--sd-motion-fast) ease,
+    background-color var(--sd-motion-fast) ease !important;
 }
 
 html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button:hover {
   opacity: .95 !important;
-  background:
-    linear-gradient(45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
-    linear-gradient(-45deg, transparent 46%, currentColor 47% 53%, transparent 54%),
-    color-mix(in srgb, var(--fg) 15%, transparent) !important;
-  background-position: center, center, center !important;
-  background-size: 12px 12px, 12px 12px, auto !important;
-  background-repeat: no-repeat !important;
+  background-color: color-mix(in srgb, var(--fg) 15%, transparent) !important;
 }
 
 html.start-desk body.focus-mode #search-form.spotlight :is(input, button):focus,
@@ -351,7 +349,8 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
     width: 26px !important;
     height: 26px !important;
     margin-left: 8px !important;
-    background-size: 11px 11px, 11px 11px, auto !important;
+    transform: translateY(1px) !important;
+    background-size: 11px 11px, 11px 11px !important;
   }
 
   html.start-desk body.focus-mode #search-form.spotlight .engine-menu {
