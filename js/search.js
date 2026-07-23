@@ -15,6 +15,7 @@
         };
 
         const ENGINES = {
+  startpage:  { iconId: "i-startpage",  name: "Startpage",    url: "https://www.startpage.com/sp/search", queryParam: "query" },
   google:     { iconId: "i-google",     name: "Google",       url: "https://www.google.com/search", queryParam: "q" },
   duckduckgo: { iconId: "i-duckduckgo", name: "DuckDuckGo",    url: "https://duckduckgo.com/",      queryParam: "q" },
   bing:       { iconId: "i-bing",       name: "Bing",         url: "https://www.bing.com/search",  queryParam: "q" },
@@ -42,7 +43,7 @@
 
         function getDefaultEngineId() {
           const saved = localStorage.getItem(SEARCH_DEFAULT_ENGINE_KEY);
-          return (saved && ENGINES[saved]) ? saved : "google";
+          return (saved && ENGINES[saved]) ? saved : "startpage";
         }
 
         function setDefaultEngineId(engineId) {
@@ -52,14 +53,14 @@
         }
 
         function setEngineIcon(iconId) {
-  const href = "#" + (iconId || "i-google");
+  const href = "#" + (iconId || "i-startpage");
   // Safari: on met href ET xlink:href
   engineIconUse.setAttribute("href", href);
   engineIconUse.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", href);
 }
 
 function applyDefaultEngine(engineId) {
-          const engine = ENGINES[engineId] || ENGINES.google;
+          const engine = ENGINES[engineId] || ENGINES.startpage;
           searchForm.action = engine.url;
           searchInput.name  = engine.queryParam;
           setEngineIcon(engine.iconId);
