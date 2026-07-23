@@ -31,6 +31,7 @@
   --sd-card-border: rgba(255,255,255,.25);
   --sd-card-highlight: rgba(255,255,255,.27);
   --sd-card-shadow: 0 10px 30px rgba(15,23,42,.075), inset 0 1px 0 var(--sd-card-highlight);
+  --sd-card-shadow-hover: 0 15px 36px rgba(15,23,42,.10), inset 0 1px 0 rgba(255,255,255,.34);
 }
 
 :root[data-theme="dark"],
@@ -48,6 +49,7 @@
   --sd-card-border: rgba(255,255,255,.105);
   --sd-card-highlight: rgba(255,255,255,.07);
   --sd-card-shadow: 0 14px 34px rgba(0,0,0,.20), inset 0 1px 0 var(--sd-card-highlight);
+  --sd-card-shadow-hover: 0 18px 42px rgba(0,0,0,.27), inset 0 1px 0 rgba(255,255,255,.095);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -141,6 +143,30 @@ html.start-desk body.focus-mode #bookmark-container .bookmark-set {
   -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
   backdrop-filter: blur(22px) saturate(145%) !important;
   box-shadow: var(--sd-card-shadow) !important;
+  transform: translateY(0) !important;
+  transition:
+    transform var(--sd-motion-normal) var(--sd-ease-standard),
+    border-color var(--sd-motion-normal) ease,
+    box-shadow var(--sd-motion-normal) ease,
+    background var(--sd-motion-normal) ease !important;
+  will-change: transform;
+}
+
+/* Start Desk 4 — Favoris, phase 2 : survol discret et stable. */
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk body.focus-mode #bookmark-container .bookmark-set:hover {
+    transform: translateY(-3px) !important;
+    border-color: color-mix(in srgb, var(--fg) 15%, var(--sd-card-border)) !important;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.095), rgba(255,255,255,.018)),
+      var(--sd-card-surface) !important;
+    box-shadow: var(--sd-card-shadow-hover) !important;
+  }
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-set:active {
+  transform: translateY(-1px) !important;
+  transition-duration: var(--sd-motion-fast) !important;
 }
 
 html.start-desk body.focus-mode #bookmark-container .bookmark-header {
