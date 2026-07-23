@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" class="js">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -105,14 +105,12 @@
       to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
     
-    /* Les tuiles sont révélées par JavaScript après application du profil.
-       Cela évite le double affichage au chargement. */
-    #news-container {
-      opacity: 0;
-      animation: fadeInUp 0.46s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    .bookmark-set, #news-container {
+      opacity: 0; 
+      animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       will-change: transform, opacity, filter;
-      animation-delay: 0.1s;
     }
+    #news-container { animation-delay: 0.1s; }
 
     #weather-details:not([hidden]) {
       animation: fadeInUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -684,14 +682,9 @@
       box-shadow: 0 12px 44px rgba(15, 23, 42, .08), inset 0 1px 0 rgba(255,255,255,.22) !important;
     }
 
-    body:not(.focus-mode) #bookmark-container .bookmark-set {
-      transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
-    }
-
     body:not(.focus-mode) #bookmark-container .bookmark-set:hover {
-      transform: translateY(-3px) scale(1.012) !important;
-      border-color: color-mix(in srgb, var(--start-accent) 48%, var(--start-border)) !important;
-      box-shadow: 0 22px 70px rgba(15, 23, 42, .16), inset 0 1px 0 rgba(255,255,255,.28) !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 18px 56px rgba(15, 23, 42, .11), inset 0 1px 0 rgba(255,255,255,.28) !important;
     }
 
     body:not(.focus-mode) #bookmark-container .bookmark-inner-container,
@@ -746,6 +739,10 @@
   
   <!-- Icons (monochrome, charte "macOS-ish") -->
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="i-startpage" viewBox="0 0 24 24">
+      <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 2a8 8 0 1 1-8 8 8 8 0 0 1 8-8z"/>
+      <path d="M8.2 8.1c.7-1.4 2.1-2.2 3.9-2.2 1.7 0 3.1.6 4.1 1.8l-1.5 1.4c-.7-.8-1.5-1.2-2.6-1.2-.9 0-1.6.3-1.9.8-.3.5-.1 1 .6 1.3l2.3.9c2 .8 3 1.9 3 3.5 0 2.3-1.8 3.8-4.5 3.8-2.1 0-3.8-.8-4.9-2.4l1.6-1.4c.8 1.1 1.9 1.7 3.3 1.7 1.3 0 2.1-.5 2.1-1.3 0-.6-.5-1-1.5-1.4l-2.1-.8c-1.8-.7-2.7-1.8-2.7-3.3 0-.4.1-.8.2-1.2z"/>
+    </symbol>
     <symbol id="i-google" viewBox="0 0 24 24">
       <path d="M10 2a8 8 0 1 0 4.9 14.3l4.4 4.4 1.4-1.4-4.4-4.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/>
     </symbol>
@@ -905,13 +902,17 @@
     </section>
 
     
-    <form id="search-form" class="spotlight glass" action="https://www.google.com/search" method="GET" autocomplete="off">
-      <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche" title="Google">
-  <svg class="engine-icon" viewBox="0 0 24 24" aria-hidden="true"><use id="engine-icon-use" href="#i-google"></use></svg>
+    <form id="search-form" class="spotlight glass" action="https://www.startpage.com/sp/search" method="GET" autocomplete="off">
+      <button type="button" id="engine-button" class="engine-button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir la cible de recherche" title="Startpage">
+  <svg class="engine-icon" viewBox="0 0 24 24" aria-hidden="true"><use id="engine-icon-use" href="#i-startpage"></use></svg>
   <span class="engine-caret" aria-hidden="true">▾</span>
 </button>
       <div id="engine-menu" class="engine-menu" role="listbox" aria-label="Recherche" hidden>
   <div class="engine-menu-section">Moteurs</div>
+  <button type="button" class="engine-option" role="option" data-engine="startpage">
+    <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-startpage"></use></svg>
+    <span>Startpage</span>
+  </button>
   <button type="button" class="engine-option" role="option" data-engine="google">
     <svg class="engine-option-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-google"></use></svg>
     <span>Google</span>
@@ -1198,9 +1199,8 @@ function setTileSortableEnabled(enabled) {
       }
 
       const el = $("#bookmark-container");
-      el.classList.add('tiles-awaiting-reveal');
-      el.innerHTML = bookmarks.map((b) => `
-        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}">
+      el.innerHTML = bookmarks.map((b, index) => `
+        <section class="bookmark-set card glass" data-tile-title="${escapeHtml(b.title)}" style="animation-delay: ${200 + (index * 100)}ms">
           <div class="bookmark-header">
             <div class="bookmark-title">${escapeHtml(b.title)}</div>
             <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">
@@ -1213,22 +1213,6 @@ function setTileSortableEnabled(enabled) {
             ${b.links.map(l => `<a class="bookmark" href="${l.url}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.name)}</a>`).join("")}
           </div>
         </section>`).join("");
-
-      // Le profil est appliqué dans le même cycle de rendu, avant le premier affichage.
-      if (window.StartpagePlus?.applyProfile) {
-        let savedProfile = 'silex';
-        try { savedProfile = localStorage.getItem('startpage_profile_v2') || 'silex'; } catch (_) {}
-        window.StartpagePlus.applyProfile(savedProfile, false);
-      }
-
-      requestAnimationFrame(() => {
-        const visibleTiles = Array.from(el.querySelectorAll('.bookmark-set:not(.profile-hidden)'));
-        visibleTiles.forEach(tile => tile.classList.add('initial-revealing'));
-        el.classList.remove('tiles-awaiting-reveal');
-        window.setTimeout(() => {
-          visibleTiles.forEach(tile => tile.classList.remove('initial-revealing'));
-        }, 180);
-      });
 
       initTileSortable();
     }
@@ -1317,6 +1301,7 @@ function setTileSortableEnabled(enabled) {
         };
 
         const ENGINES = {
+  startpage:  { iconId: "i-startpage",  name: "Startpage",    url: "https://www.startpage.com/sp/search", queryParam: "query" },
   google:     { iconId: "i-google",     name: "Google",       url: "https://www.google.com/search", queryParam: "q" },
   duckduckgo: { iconId: "i-duckduckgo", name: "DuckDuckGo",    url: "https://duckduckgo.com/",      queryParam: "q" },
   bing:       { iconId: "i-bing",       name: "Bing",         url: "https://www.bing.com/search",  queryParam: "q" },
@@ -1344,7 +1329,7 @@ function setTileSortableEnabled(enabled) {
 
         function getDefaultEngineId() {
           const saved = localStorage.getItem(SEARCH_DEFAULT_ENGINE_KEY);
-          return (saved && ENGINES[saved]) ? saved : "google";
+          return (saved && ENGINES[saved]) ? saved : "startpage";
         }
 
         function setDefaultEngineId(engineId) {
@@ -1354,14 +1339,14 @@ function setTileSortableEnabled(enabled) {
         }
 
         function setEngineIcon(iconId) {
-  const href = "#" + (iconId || "i-google");
+  const href = "#" + (iconId || "i-startpage");
   // Safari: on met href ET xlink:href
   engineIconUse.setAttribute("href", href);
   engineIconUse.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", href);
 }
 
 function applyDefaultEngine(engineId) {
-          const engine = ENGINES[engineId] || ENGINES.google;
+          const engine = ENGINES[engineId] || ENGINES.startpage;
           searchForm.action = engine.url;
           searchInput.name  = engine.queryParam;
           setEngineIcon(engine.iconId);
