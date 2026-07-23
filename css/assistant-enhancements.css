@@ -32,6 +32,7 @@
   --sd-card-highlight: rgba(255,255,255,.27);
   --sd-card-shadow: 0 10px 30px rgba(15,23,42,.075), inset 0 1px 0 var(--sd-card-highlight);
   --sd-card-shadow-hover: 0 15px 36px rgba(15,23,42,.10), inset 0 1px 0 rgba(255,255,255,.34);
+  --sd-card-focus-ring: 0 0 0 3px color-mix(in srgb, var(--start-accent) 24%, transparent);
 }
 
 :root[data-theme="dark"],
@@ -50,6 +51,7 @@
   --sd-card-highlight: rgba(255,255,255,.07);
   --sd-card-shadow: 0 14px 34px rgba(0,0,0,.20), inset 0 1px 0 var(--sd-card-highlight);
   --sd-card-shadow-hover: 0 18px 42px rgba(0,0,0,.27), inset 0 1px 0 rgba(255,255,255,.095);
+  --sd-card-focus-ring: 0 0 0 3px color-mix(in srgb, var(--start-accent) 34%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -127,8 +129,8 @@ body.focus-mode #weather-details {
   border-color: color-mix(in srgb, var(--mac-brand) 28%, var(--glass-border));
 }
 
-/* Start Desk 4 — Favoris, phases 1 à 4.
-   Cartes compactes, survol discret, iconographie alignée et grille régulière. */
+/* Start Desk 4 — Favoris, phases 1 à 5.
+   Cartes compactes, mouvements doux, iconographie alignée et grille régulière. */
 html.start-desk body.focus-mode #bookmark-container {
   width: min(100%, 1016px) !important;
   margin-inline: auto !important;
@@ -213,7 +215,8 @@ html.start-desk body.focus-mode #bookmark-container .tile-handle {
   line-height: 0 !important;
   transition:
     color var(--sd-motion-fast) ease,
-    background var(--sd-motion-fast) ease !important;
+    background var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease !important;
 }
 
 html.start-desk body.focus-mode #bookmark-container .tile-handle svg {
@@ -246,6 +249,28 @@ html.start-desk body.focus-mode #bookmark-container .bookmark {
   padding: 6px 8px !important;
   border-radius: var(--sd-radius-sm) !important;
   line-height: 1.35 !important;
+  transition:
+    background var(--sd-motion-fast) ease,
+    color var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease !important;
+}
+
+/* Phase 5 : focus clavier lisible mais discret, sans modifier la géométrie. */
+html.start-desk body.focus-mode #bookmark-container :is(.bookmark, .tile-handle):focus {
+  outline: none !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark:focus-visible {
+  outline: none !important;
+  background: color-mix(in srgb, var(--start-accent) 9%, transparent) !important;
+  box-shadow: var(--sd-card-focus-ring) !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .tile-handle:focus-visible {
+  outline: none !important;
+  color: var(--fg) !important;
+  background: color-mix(in srgb, var(--start-accent) 10%, transparent) !important;
+  box-shadow: var(--sd-card-focus-ring) !important;
 }
 
 @media (max-width: 1020px) {
