@@ -2,6 +2,35 @@
 :root {
   --focus-ring: color-mix(in srgb, var(--mac-brand) 42%, transparent);
   --surface-subtle: color-mix(in srgb, var(--fg) 7%, transparent);
+
+  /* Start Desk 4 — fondations partagées */
+  --sd-space-1: 4px;
+  --sd-space-2: 8px;
+  --sd-space-3: 12px;
+  --sd-space-4: 16px;
+  --sd-space-5: 20px;
+  --sd-space-6: 24px;
+  --sd-radius-sm: 12px;
+  --sd-radius-md: 16px;
+  --sd-radius-lg: 22px;
+  --sd-radius-xl: 28px;
+  --sd-motion-fast: 140ms;
+  --sd-motion-normal: 220ms;
+  --sd-ease-standard: cubic-bezier(.2, .8, .2, 1);
+  --sd-surface: rgba(255,255,255,.13);
+  --sd-border: rgba(255,255,255,.22);
+  --sd-highlight: rgba(255,255,255,.32);
+  --sd-search-shadow: 0 14px 38px rgba(15,23,42,.09), inset 0 1px 0 var(--sd-highlight);
+  --sd-search-shadow-focus: 0 18px 46px rgba(15,23,42,.11), inset 0 1px 0 var(--sd-highlight);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --sd-surface: rgba(34,34,38,.52);
+  --sd-border: rgba(255,255,255,.11);
+  --sd-highlight: rgba(255,255,255,.08);
+  --sd-search-shadow: 0 16px 42px rgba(0,0,0,.24), inset 0 1px 0 var(--sd-highlight);
+  --sd-search-shadow-focus: 0 20px 52px rgba(0,0,0,.29), inset 0 1px 0 var(--sd-highlight);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -79,167 +108,101 @@ body.focus-mode #weather-details {
   border-color: color-mix(in srgb, var(--mac-brand) 28%, var(--glass-border));
 }
 
-/* Start Desk 4 — Native Experience / Foundation */
-:root {
-  --sd-space-1: 4px;
-  --sd-space-2: 8px;
-  --sd-space-3: 12px;
-  --sd-space-4: 16px;
-  --sd-space-5: 20px;
-  --sd-space-6: 24px;
-  --sd-space-8: 32px;
-  --sd-radius-sm: 12px;
-  --sd-radius-md: 16px;
-  --sd-radius-lg: 22px;
-  --sd-radius-xl: 28px;
-  --sd-motion-fast: 140ms;
-  --sd-motion-normal: 220ms;
-  --sd-ease-standard: cubic-bezier(.2, .8, .2, 1);
-  --sd-ease-spring: cubic-bezier(.22, 1, .36, 1);
-  --sd-surface: rgba(255,255,255,.14);
-  --sd-surface-strong: rgba(255,255,255,.24);
-  --sd-surface-hover: rgba(255,255,255,.30);
-  --sd-border: rgba(255,255,255,.24);
-  --sd-border-subtle: rgba(255,255,255,.14);
-  --sd-highlight: rgba(255,255,255,.34);
-  --sd-shadow-1: 0 6px 18px rgba(15,23,42,.06), inset 0 1px 0 var(--sd-highlight);
-  --sd-shadow-2: 0 14px 38px rgba(15,23,42,.09), inset 0 1px 0 var(--sd-highlight);
-  --sd-shadow-3: 0 20px 54px rgba(15,23,42,.11), inset 0 1px 0 var(--sd-highlight);
-}
-
-:root[data-theme="dark"],
-:root[data-theme="macos-dark"] {
-  --sd-surface: rgba(34,34,38,.54);
-  --sd-surface-strong: rgba(55,55,60,.66);
-  --sd-surface-hover: rgba(72,72,78,.72);
-  --sd-border: rgba(255,255,255,.12);
-  --sd-border-subtle: rgba(255,255,255,.07);
-  --sd-highlight: rgba(255,255,255,.08);
-  --sd-shadow-1: 0 7px 20px rgba(0,0,0,.18), inset 0 1px 0 var(--sd-highlight);
-  --sd-shadow-2: 0 16px 42px rgba(0,0,0,.25), inset 0 1px 0 var(--sd-highlight);
-  --sd-shadow-3: 0 24px 64px rgba(0,0,0,.32), inset 0 1px 0 var(--sd-highlight);
-}
-
-html.start-desk body {
-  text-rendering: optimizeLegibility;
-}
-
-html.start-desk body.focus-mode .container {
-  gap: var(--sd-space-5) !important;
-}
-
+/* Start Desk 4 — composant Recherche
+   Une seule couche visuelle, proportions plus calmes et focus discret. */
 html.start-desk body.focus-mode #search-form.spotlight {
-  min-height: 66px !important;
-  border-radius: var(--sd-radius-xl) !important;
+  width: min(760px, calc(100vw - 36px)) !important;
+  min-height: 58px !important;
+  padding: 6px 10px 6px 8px !important;
+  gap: 8px !important;
   border: 1px solid var(--sd-border) !important;
-  background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.025)), var(--sd-surface) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
-  backdrop-filter: blur(28px) saturate(150%) !important;
-  box-shadow: var(--sd-shadow-2) !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.015)), var(--sd-surface) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(145%) !important;
+  backdrop-filter: blur(24px) saturate(145%) !important;
+  box-shadow: var(--sd-search-shadow) !important;
   transition: border-color var(--sd-motion-normal) ease, box-shadow var(--sd-motion-normal) ease, background var(--sd-motion-normal) ease !important;
+}
+
+html.start-desk body.focus-mode #search-form.spotlight:hover {
+  border-color: color-mix(in srgb, var(--fg) 16%, var(--sd-border)) !important;
 }
 
 html.start-desk body.focus-mode #search-form.spotlight:focus-within {
   transform: none !important;
-  border-color: color-mix(in srgb, var(--start-accent) 24%, var(--sd-border)) !important;
-  box-shadow: 0 16px 42px rgba(15,23,42,.10), 0 0 0 2px color-mix(in srgb, var(--start-accent) 7%, transparent), inset 0 1px 0 var(--sd-highlight) !important;
+  border-color: color-mix(in srgb, var(--start-accent) 18%, var(--sd-border)) !important;
+  box-shadow: var(--sd-search-shadow-focus) !important;
 }
 
-html.start-desk body.focus-mode #search-input,
-html.start-desk body.focus-mode #search-input:focus,
-html.start-desk body.focus-mode #search-input:focus-visible,
-html.start-desk body.focus-mode #search-form.spotlight select:focus,
-html.start-desk body.focus-mode #search-form.spotlight select:focus-visible,
-html.start-desk body.focus-mode #search-form.spotlight button:focus,
-html.start-desk body.focus-mode #search-form.spotlight button:focus-visible {
+html.start-desk body.focus-mode #search-form.spotlight .engine-button {
+  flex: 0 0 42px !important;
+  width: 42px !important;
+  min-width: 42px !important;
+  height: 42px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 15px !important;
+  background: color-mix(in srgb, var(--fg) 6%, transparent) !important;
+  box-shadow: none !important;
+  transition: background var(--sd-motion-fast) ease, transform var(--sd-motion-fast) var(--sd-ease-standard) !important;
+}
+
+html.start-desk body.focus-mode #search-form.spotlight .engine-button:hover {
+  background: color-mix(in srgb, var(--fg) 10%, transparent) !important;
+  transform: none !important;
+}
+
+html.start-desk body.focus-mode #search-form.spotlight .search-icon {
+  width: 21px !important;
+  height: 21px !important;
+  margin: 0 2px 0 0 !important;
+  color: var(--secondaryFg) !important;
+  fill: currentColor !important;
+  opacity: .82 !important;
+}
+
+html.start-desk body.focus-mode #search-input {
+  min-width: 0 !important;
+  height: 42px !important;
+  padding: 0 4px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--fg) !important;
+  font-size: 1.02rem !important;
+  font-weight: 500 !important;
+  letter-spacing: -.016em !important;
+  line-height: 1.2 !important;
+  box-shadow: none !important;
+}
+
+html.start-desk body.focus-mode #search-input::placeholder {
+  color: color-mix(in srgb, var(--secondaryFg) 82%, transparent) !important;
+  opacity: 1 !important;
+}
+
+html.start-desk body.focus-mode #search-form.spotlight :is(input, button):focus,
+html.start-desk body.focus-mode #search-form.spotlight :is(input, button):focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
 
-html.start-desk body.focus-mode #search-input {
-  letter-spacing: -.018em !important;
-}
-
-html.start-desk body.focus-mode #bookmark-container {
-  gap: var(--sd-space-4) !important;
-  margin-top: var(--sd-space-2) !important;
-}
-
-html.start-desk body.focus-mode #bookmark-container .bookmark-set {
-  border-radius: var(--sd-radius-lg) !important;
-  border: 1px solid var(--sd-border-subtle) !important;
-  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.02)), var(--sd-surface) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(145%) !important;
-  backdrop-filter: blur(24px) saturate(145%) !important;
-  box-shadow: var(--sd-shadow-1) !important;
-  transition: transform var(--sd-motion-normal) var(--sd-ease-spring), border-color var(--sd-motion-fast) ease, background var(--sd-motion-normal) ease, box-shadow var(--sd-motion-normal) ease !important;
-}
-
-html.start-desk body.focus-mode #bookmark-container .bookmark-set:hover {
-  transform: translateY(-3px) scale(1.008) !important;
-  border-color: color-mix(in srgb, var(--start-accent) 28%, var(--sd-border)) !important;
-  box-shadow: var(--sd-shadow-2) !important;
-}
-
-html.start-desk body.focus-mode #bookmark-container .bookmark-title {
-  font-weight: 650 !important;
-  letter-spacing: -.018em !important;
-}
-
-html.start-desk body.focus-mode #bookmark-container .bookmark {
-  border-radius: var(--sd-radius-sm) !important;
-  transition: background var(--sd-motion-fast) ease, transform var(--sd-motion-fast) var(--sd-ease-standard) !important;
-}
-
-html.start-desk body.focus-mode #bookmark-container .bookmark:hover {
-  transform: translateX(2px) !important;
-}
-
-html.start-desk .start-desk-status,
-html.start-desk .start-desk-dock,
-html.start-desk .start-desk-panel {
-  border-color: var(--sd-border) !important;
-  background: linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.015)), var(--sd-surface) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(150%) !important;
-  backdrop-filter: blur(30px) saturate(150%) !important;
-  box-shadow: var(--sd-shadow-2) !important;
-}
-
-html.start-desk .start-desk-dock {
-  padding: 6px !important;
-  gap: 4px !important;
-}
-
-html.start-desk .start-desk-dock button {
-  transition: background var(--sd-motion-fast) ease, transform var(--sd-motion-fast) var(--sd-ease-standard), color var(--sd-motion-fast) ease !important;
-}
-
-html.start-desk .start-desk-dock button:hover {
-  transform: translateY(-1px) !important;
-  background: var(--sd-surface-hover) !important;
-}
-
-html.start-desk .start-desk-panel {
-  border-radius: var(--sd-radius-xl) !important;
-  transition: opacity var(--sd-motion-fast) ease, transform var(--sd-motion-normal) var(--sd-ease-spring) !important;
-}
-
-html.start-desk .start-desk-panel header {
-  border-bottom-color: var(--sd-border-subtle) !important;
-}
-
-html.start-desk :is(button, a, textarea):focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--start-accent) 52%, white) !important;
-  outline-offset: 2px !important;
-}
-
 @media (max-width: 760px) {
   html.start-desk body.focus-mode #search-form.spotlight {
-    min-height: 62px !important;
-    border-radius: 24px !important;
+    min-height: 54px !important;
+    padding: 5px 8px 5px 6px !important;
+    border-radius: 21px !important;
   }
 
-  html.start-desk body.focus-mode #bookmark-container {
-    gap: var(--sd-space-3) !important;
+  html.start-desk body.focus-mode #search-form.spotlight .engine-button {
+    flex-basis: 40px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
+  }
+
+  html.start-desk body.focus-mode #search-input {
+    height: 40px !important;
+    font-size: .98rem !important;
   }
 }
