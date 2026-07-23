@@ -2,6 +2,45 @@
 :root {
   --focus-ring: color-mix(in srgb, var(--mac-brand) 42%, transparent);
   --surface-subtle: color-mix(in srgb, var(--fg) 7%, transparent);
+
+  /* Start Desk 4 — Native Experience / Foundation */
+  --sd-space-1: 4px;
+  --sd-space-2: 8px;
+  --sd-space-3: 12px;
+  --sd-space-4: 16px;
+  --sd-space-5: 20px;
+  --sd-space-6: 24px;
+  --sd-space-8: 32px;
+  --sd-radius-sm: 12px;
+  --sd-radius-md: 16px;
+  --sd-radius-lg: 22px;
+  --sd-radius-xl: 28px;
+  --sd-motion-fast: 140ms;
+  --sd-motion-normal: 220ms;
+  --sd-ease-standard: cubic-bezier(.2, .8, .2, 1);
+  --sd-ease-spring: cubic-bezier(.22, 1, .36, 1);
+  --sd-surface: rgba(255, 255, 255, .16);
+  --sd-surface-strong: rgba(255, 255, 255, .28);
+  --sd-surface-hover: rgba(255, 255, 255, .34);
+  --sd-border: rgba(255, 255, 255, .34);
+  --sd-border-subtle: rgba(255, 255, 255, .18);
+  --sd-highlight: rgba(255, 255, 255, .44);
+  --sd-shadow-1: 0 6px 20px rgba(15, 23, 42, .08), inset 0 1px 0 var(--sd-highlight);
+  --sd-shadow-2: 0 16px 44px rgba(15, 23, 42, .12), inset 0 1px 0 var(--sd-highlight);
+  --sd-shadow-3: 0 26px 80px rgba(15, 23, 42, .16), inset 0 1px 0 var(--sd-highlight);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --sd-surface: rgba(34, 34, 38, .58);
+  --sd-surface-strong: rgba(55, 55, 60, .72);
+  --sd-surface-hover: rgba(72, 72, 78, .78);
+  --sd-border: rgba(255, 255, 255, .14);
+  --sd-border-subtle: rgba(255, 255, 255, .08);
+  --sd-highlight: rgba(255, 255, 255, .10);
+  --sd-shadow-1: 0 8px 24px rgba(0, 0, 0, .22), inset 0 1px 0 var(--sd-highlight);
+  --sd-shadow-2: 0 18px 52px rgba(0, 0, 0, .30), inset 0 1px 0 var(--sd-highlight);
+  --sd-shadow-3: 0 30px 90px rgba(0, 0, 0, .42), inset 0 1px 0 var(--sd-highlight);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -77,4 +116,119 @@ body.focus-mode #weather-details {
 .bookmark-set[data-tile-title="Administration"],
 .bookmark-set[data-tile-title="Banques & Finance"] {
   border-color: color-mix(in srgb, var(--mac-brand) 28%, var(--glass-border));
+}
+
+/* Start Desk 4 — Native Experience / Foundation
+   Sélecteurs volontairement renforcés pour conserver cette couche non destructive. */
+html.start-desk body {
+  text-rendering: optimizeLegibility;
+}
+
+html.start-desk body.focus-mode .container {
+  gap: var(--sd-space-5) !important;
+}
+
+html.start-desk body.focus-mode #search-form.spotlight {
+  min-height: 68px !important;
+  border-radius: var(--sd-radius-xl) !important;
+  border: 1px solid var(--sd-border) !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,.035)), var(--sd-surface) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(165%) !important;
+  backdrop-filter: blur(32px) saturate(165%) !important;
+  box-shadow: var(--sd-shadow-3) !important;
+  transition: transform var(--sd-motion-normal) var(--sd-ease-spring), border-color var(--sd-motion-normal) ease, box-shadow var(--sd-motion-normal) ease !important;
+}
+
+html.start-desk body.focus-mode #search-form.spotlight:focus-within {
+  transform: translateY(-2px) scale(1.004) !important;
+  border-color: color-mix(in srgb, var(--start-accent) 55%, var(--sd-border)) !important;
+  box-shadow: 0 28px 90px rgba(15, 23, 42, .18), 0 0 0 4px color-mix(in srgb, var(--start-accent) 12%, transparent), inset 0 1px 0 var(--sd-highlight) !important;
+}
+
+html.start-desk body.focus-mode #search-input {
+  letter-spacing: -.018em !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container {
+  gap: var(--sd-space-4) !important;
+  margin-top: var(--sd-space-2) !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-set {
+  border-radius: var(--sd-radius-lg) !important;
+  border: 1px solid var(--sd-border-subtle) !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.025)), var(--sd-surface) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(155%) !important;
+  backdrop-filter: blur(26px) saturate(155%) !important;
+  box-shadow: var(--sd-shadow-1) !important;
+  transition: transform var(--sd-motion-normal) var(--sd-ease-spring), border-color var(--sd-motion-fast) ease, background var(--sd-motion-normal) ease, box-shadow var(--sd-motion-normal) ease !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-set:hover {
+  transform: translateY(-4px) scale(1.01) !important;
+  border-color: color-mix(in srgb, var(--start-accent) 38%, var(--sd-border)) !important;
+  box-shadow: var(--sd-shadow-2) !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark-title {
+  font-weight: 650 !important;
+  letter-spacing: -.018em !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark {
+  border-radius: var(--sd-radius-sm) !important;
+  transition: background var(--sd-motion-fast) ease, transform var(--sd-motion-fast) var(--sd-ease-standard) !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .bookmark:hover {
+  transform: translateX(2px) !important;
+}
+
+html.start-desk .start-desk-status,
+html.start-desk .start-desk-dock,
+html.start-desk .start-desk-panel {
+  border-color: var(--sd-border) !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.02)), var(--sd-surface) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(165%) !important;
+  backdrop-filter: blur(34px) saturate(165%) !important;
+  box-shadow: var(--sd-shadow-2) !important;
+}
+
+html.start-desk .start-desk-dock {
+  padding: 6px !important;
+  gap: 4px !important;
+}
+
+html.start-desk .start-desk-dock button {
+  transition: background var(--sd-motion-fast) ease, transform var(--sd-motion-fast) var(--sd-ease-standard), color var(--sd-motion-fast) ease !important;
+}
+
+html.start-desk .start-desk-dock button:hover {
+  transform: translateY(-1px) !important;
+  background: var(--sd-surface-hover) !important;
+}
+
+html.start-desk .start-desk-panel {
+  border-radius: var(--sd-radius-xl) !important;
+  transition: opacity var(--sd-motion-fast) ease, transform var(--sd-motion-normal) var(--sd-ease-spring) !important;
+}
+
+html.start-desk .start-desk-panel header {
+  border-bottom-color: var(--sd-border-subtle) !important;
+}
+
+html.start-desk :is(button, a, input, textarea):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 78%, white) !important;
+  outline-offset: 3px !important;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body.focus-mode #search-form.spotlight {
+    min-height: 62px !important;
+    border-radius: 24px !important;
+  }
+
+  html.start-desk body.focus-mode #bookmark-container {
+    gap: var(--sd-space-3) !important;
+  }
 }
