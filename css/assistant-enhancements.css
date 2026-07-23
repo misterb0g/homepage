@@ -127,8 +127,21 @@ body.focus-mode #weather-details {
   border-color: color-mix(in srgb, var(--mac-brand) 28%, var(--glass-border));
 }
 
-/* Start Desk 4 — Favoris, phases 1 à 3.
-   Cartes compactes, survol discret et iconographie parfaitement alignée. */
+/* Start Desk 4 — Favoris, phases 1 à 4.
+   Cartes compactes, survol discret, iconographie alignée et grille régulière. */
+html.start-desk body.focus-mode #bookmark-container {
+  width: min(100%, 1016px) !important;
+  margin-inline: auto !important;
+  padding-inline: 16px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  align-content: flex-start !important;
+  gap: 18px 16px !important;
+  box-sizing: border-box !important;
+}
+
 html.start-desk body.focus-mode #bookmark-container .bookmark-set {
   flex: 0 1 232px !important;
   width: min(232px, 100%) !important;
@@ -235,7 +248,20 @@ html.start-desk body.focus-mode #bookmark-container .bookmark {
   line-height: 1.35 !important;
 }
 
+@media (max-width: 1020px) {
+  html.start-desk body.focus-mode #bookmark-container {
+    width: min(100%, 768px) !important;
+    gap: 16px !important;
+  }
+}
+
 @media (max-width: 760px) {
+  html.start-desk body.focus-mode #bookmark-container {
+    width: 100% !important;
+    padding-inline: 14px !important;
+    gap: 14px !important;
+  }
+
   html.start-desk body.focus-mode #bookmark-container .bookmark-set {
     flex-basis: min(100%, 430px) !important;
     width: min(100%, 430px) !important;
