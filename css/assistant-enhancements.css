@@ -127,8 +127,8 @@ body.focus-mode #weather-details {
   border-color: color-mix(in srgb, var(--mac-brand) 28%, var(--glass-border));
 }
 
-/* Start Desk 4 — Favoris, phase 1 : fondations des cartes.
-   Proportions plus calmes, rayons cohérents et profondeur contenue. */
+/* Start Desk 4 — Favoris, phases 1 à 3.
+   Cartes compactes, survol discret et iconographie parfaitement alignée. */
 html.start-desk body.focus-mode #bookmark-container .bookmark-set {
   flex: 0 1 232px !important;
   width: min(232px, 100%) !important;
@@ -152,7 +152,6 @@ html.start-desk body.focus-mode #bookmark-container .bookmark-set {
   will-change: transform;
 }
 
-/* Start Desk 4 — Favoris, phase 2 : survol discret et stable. */
 @media (hover: hover) and (pointer: fine) {
   html.start-desk body.focus-mode #bookmark-container .bookmark-set:hover {
     transform: translateY(-3px) !important;
@@ -172,14 +171,57 @@ html.start-desk body.focus-mode #bookmark-container .bookmark-set:active {
 html.start-desk body.focus-mode #bookmark-container .bookmark-header {
   min-height: 30px !important;
   margin: 0 0 9px !important;
-  padding: 0 2px !important;
+  padding: 0 0 0 2px !important;
+  align-items: center !important;
 }
 
 html.start-desk body.focus-mode #bookmark-container .bookmark-title {
+  min-width: 0 !important;
   font-size: .86rem !important;
   font-weight: 650 !important;
   letter-spacing: -.012em !important;
   line-height: 1.2 !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .tile-handle {
+  display: grid !important;
+  place-items: center !important;
+  flex: 0 0 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  margin: 0 -2px 0 6px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  color: color-mix(in srgb, var(--secondaryFg) 78%, transparent) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  line-height: 0 !important;
+  transition:
+    color var(--sd-motion-fast) ease,
+    background var(--sd-motion-fast) ease !important;
+}
+
+html.start-desk body.focus-mode #bookmark-container .tile-handle svg {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  fill: currentColor !important;
+  transform: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk body.focus-mode #bookmark-container .tile-handle:hover {
+    color: var(--fg) !important;
+    background: color-mix(in srgb, var(--fg) 7%, transparent) !important;
+  }
+}
+
+html.start-desk body.focus-mode #bookmark-container .tile-handle:active {
+  background: color-mix(in srgb, var(--fg) 11%, transparent) !important;
 }
 
 html.start-desk body.focus-mode #bookmark-container .bookmark-list {
@@ -190,6 +232,7 @@ html.start-desk body.focus-mode #bookmark-container .bookmark {
   min-height: 34px !important;
   padding: 6px 8px !important;
   border-radius: var(--sd-radius-sm) !important;
+  line-height: 1.35 !important;
 }
 
 @media (max-width: 760px) {
@@ -222,18 +265,15 @@ html.start-desk body.focus-mode #search-form.spotlight {
     box-shadow var(--sd-motion-normal) ease,
     background var(--sd-motion-normal) ease !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight:hover {
   border-color: color-mix(in srgb, var(--fg) 16%, var(--sd-border)) !important;
   box-shadow: var(--sd-search-shadow-hover) !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight:focus-within {
   transform: none !important;
   border-color: color-mix(in srgb, var(--start-accent) 22%, var(--sd-border)) !important;
   box-shadow: var(--sd-search-shadow-focus) !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight .engine-button {
   position: relative !important;
   display: grid !important;
@@ -247,21 +287,14 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-button {
   border-radius: 15px !important;
   background: color-mix(in srgb, var(--fg) 6%, transparent) !important;
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent) !important;
-  transition:
-    background var(--sd-motion-fast) ease,
-    box-shadow var(--sd-motion-fast) ease !important;
+  transition: background var(--sd-motion-fast) ease, box-shadow var(--sd-motion-fast) ease !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight .engine-button:hover {
   background: color-mix(in srgb, var(--fg) 10%, transparent) !important;
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 14%, transparent) !important;
   transform: none !important;
 }
-
-html.start-desk body.focus-mode #search-form.spotlight .engine-button:active {
-  background: color-mix(in srgb, var(--fg) 13%, transparent) !important;
-}
-
+html.start-desk body.focus-mode #search-form.spotlight .engine-button:active { background: color-mix(in srgb, var(--fg) 13%, transparent) !important; }
 html.start-desk body.focus-mode #search-form.spotlight .engine-icon {
   display: block !important;
   width: 22px !important;
@@ -269,7 +302,6 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-icon {
   margin: 0 !important;
   transform: translateX(-1px) !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight .engine-caret {
   position: absolute !important;
   top: 50% !important;
@@ -281,7 +313,6 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-caret {
   opacity: .48 !important;
   pointer-events: none !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight .search-icon {
   width: 20px !important;
   height: 20px !important;
@@ -291,7 +322,6 @@ html.start-desk body.focus-mode #search-form.spotlight .search-icon {
   opacity: .76 !important;
   transform: translateY(.5px) !important;
 }
-
 html.start-desk body.focus-mode #search-input {
   min-width: 0 !important;
   height: var(--sd-control-height) !important;
@@ -306,29 +336,21 @@ html.start-desk body.focus-mode #search-input {
   box-shadow: none !important;
   caret-color: var(--start-accent) !important;
 }
-
 html.start-desk body.focus-mode #search-input::placeholder {
   color: color-mix(in srgb, var(--secondaryFg) 80%, transparent) !important;
   opacity: 1 !important;
 }
-
-/* Le contrôle natif WebKit ne peut pas être positionné de manière fiable dans
-   cette composition flex. On le masque pour éviter tout chevauchement avec
-   l'indication des commandes située à droite. */
 html.start-desk body.focus-mode #search-input::-webkit-search-cancel-button,
 html.start-desk body.focus-mode #search-input::-webkit-search-decoration {
   display: none !important;
   -webkit-appearance: none !important;
   appearance: none !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight :is(input, button):focus,
 html.start-desk body.focus-mode #search-form.spotlight :is(input, button):focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
-
-/* Menu des moteurs — même langage visuel que la recherche. */
 html.start-desk body.focus-mode #search-form.spotlight .engine-menu {
   left: 0 !important;
   top: calc(100% + 10px) !important;
@@ -342,7 +364,6 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-menu {
   box-shadow: var(--sd-menu-shadow) !important;
   transform-origin: top left !important;
 }
-
 html.start-desk body.focus-mode #search-form.spotlight .engine-option {
   min-height: 42px !important;
   gap: 10px !important;
@@ -352,23 +373,11 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-option {
   font-size: .94rem !important;
   font-weight: 500 !important;
   letter-spacing: -.01em !important;
-  transition:
-    background var(--sd-motion-fast) ease,
-    transform var(--sd-motion-fast) var(--sd-ease-standard) !important;
+  transition: background var(--sd-motion-fast) ease, transform var(--sd-motion-fast) var(--sd-ease-standard) !important;
 }
-
-html.start-desk body.focus-mode #search-form.spotlight .engine-option:hover {
-  background: color-mix(in srgb, var(--fg) 8%, transparent) !important;
-}
-
-html.start-desk body.focus-mode #search-form.spotlight .engine-option:active {
-  transform: scale(.985) !important;
-}
-
-html.start-desk body.focus-mode #search-form.spotlight .engine-option.is-active {
-  background: color-mix(in srgb, var(--start-accent) 12%, transparent) !important;
-}
-
+html.start-desk body.focus-mode #search-form.spotlight .engine-option:hover { background: color-mix(in srgb, var(--fg) 8%, transparent) !important; }
+html.start-desk body.focus-mode #search-form.spotlight .engine-option:active { transform: scale(.985) !important; }
+html.start-desk body.focus-mode #search-form.spotlight .engine-option.is-active { background: color-mix(in srgb, var(--start-accent) 12%, transparent) !important; }
 html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
   width: 30px !important;
   height: 30px !important;
@@ -377,7 +386,6 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
   background: color-mix(in srgb, var(--fg) 7%, transparent) !important;
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent) !important;
 }
-
 @media (max-width: 760px) {
   html.start-desk body.focus-mode #search-form.spotlight {
     min-height: 54px !important;
@@ -385,7 +393,6 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
     gap: 6px !important;
     border-radius: 21px !important;
   }
-
   html.start-desk body.focus-mode #search-form.spotlight .engine-button {
     flex-basis: 50px !important;
     width: 50px !important;
@@ -393,24 +400,8 @@ html.start-desk body.focus-mode #search-form.spotlight .engine-dot {
     height: 40px !important;
     border-radius: 14px !important;
   }
-
-  html.start-desk body.focus-mode #search-form.spotlight .engine-icon {
-    width: 21px !important;
-    height: 21px !important;
-  }
-
-  html.start-desk body.focus-mode #search-form.spotlight .engine-caret {
-    right: 6px !important;
-  }
-
-  html.start-desk body.focus-mode #search-input {
-    height: 40px !important;
-    padding-right: 10px !important;
-    font-size: .98rem !important;
-  }
-
-  html.start-desk body.focus-mode #search-form.spotlight .engine-menu {
-    left: -1px !important;
-    width: min(224px, calc(100vw - 48px)) !important;
-  }
+  html.start-desk body.focus-mode #search-form.spotlight .engine-icon { width: 21px !important; height: 21px !important; }
+  html.start-desk body.focus-mode #search-form.spotlight .engine-caret { right: 6px !important; }
+  html.start-desk body.focus-mode #search-input { height: 40px !important; padding-right: 10px !important; font-size: .98rem !important; }
+  html.start-desk body.focus-mode #search-form.spotlight .engine-menu { left: -1px !important; width: min(224px, calc(100vw - 48px)) !important; }
 }
