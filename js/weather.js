@@ -77,3 +77,13 @@ if (window.StartDesk && typeof window.StartDesk.register === 'function') {
     describeCode: weatherCodeToFr
   });
 }
+
+// --- Start Desk 5 : feuille de style du panneau Paramètres ---
+(function loadSettingsPolishStylesheet() {
+  if (document.querySelector('link[data-startdesk-settings-polish]')) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'css/settings-polish.css';
+  link.dataset.startdeskSettingsPolish = '1';
+  document.head.appendChild(link);
+})();
