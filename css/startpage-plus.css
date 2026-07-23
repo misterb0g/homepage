@@ -170,3 +170,82 @@ body[data-startpage-profile="work"] #chat-container {
     padding: .58rem .65rem;
   }
 }
+
+/* Start Desk 5 — Widgets, phase 1 : surfaces communes.
+   Harmonisation visuelle uniquement, sans toucher au contenu ni au comportement. */
+:root {
+  --sd-widget-surface: rgba(255,255,255,.14);
+  --sd-widget-border: rgba(255,255,255,.24);
+  --sd-widget-highlight: rgba(255,255,255,.28);
+  --sd-widget-shadow: 0 12px 36px rgba(15,23,42,.085), inset 0 1px 0 var(--sd-widget-highlight);
+  --sd-widget-shadow-hover: 0 17px 44px rgba(15,23,42,.115), inset 0 1px 0 rgba(255,255,255,.34);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --sd-widget-surface: rgba(34,34,38,.44);
+  --sd-widget-border: rgba(255,255,255,.105);
+  --sd-widget-highlight: rgba(255,255,255,.075);
+  --sd-widget-shadow: 0 16px 40px rgba(0,0,0,.22), inset 0 1px 0 var(--sd-widget-highlight);
+  --sd-widget-shadow-hover: 0 20px 48px rgba(0,0,0,.29), inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+html.start-desk body:not(.focus-mode) :is(
+  .weather-container,
+  #weather-details,
+  #calendar-widget,
+  #news-container,
+  #chat-container
+) {
+  border: 1px solid var(--sd-widget-border) !important;
+  border-radius: 22px !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.012)),
+    var(--sd-widget-surface) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
+  backdrop-filter: blur(22px) saturate(145%) !important;
+  box-shadow: var(--sd-widget-shadow) !important;
+  transition:
+    transform 220ms cubic-bezier(.2,.8,.2,1),
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk body:not(.focus-mode) :is(
+    .weather-container,
+    #calendar-widget,
+    #news-container
+  ):hover {
+    transform: translateY(-2px) !important;
+    border-color: color-mix(in srgb, var(--fg) 15%, var(--sd-widget-border)) !important;
+    box-shadow: var(--sd-widget-shadow-hover) !important;
+  }
+}
+
+html.start-desk body:not(.focus-mode) :is(
+  #weather-details,
+  #chat-container
+):hover {
+  transform: none !important;
+  box-shadow: var(--sd-widget-shadow) !important;
+}
+
+html.start-desk body:not(.focus-mode) .weather-day {
+  border: 1px solid color-mix(in srgb, var(--sd-widget-border) 72%, transparent) !important;
+  border-radius: 14px !important;
+  background: color-mix(in srgb, var(--fg) 5%, transparent) !important;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body:not(.focus-mode) :is(
+    .weather-container,
+    #weather-details,
+    #calendar-widget,
+    #news-container,
+    #chat-container
+  ) {
+    border-radius: 20px !important;
+  }
+}
