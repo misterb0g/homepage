@@ -1,62 +1,58 @@
-/* Start Desk v1 — couche d’expérience au-dessus de la page existante. */
+/* Start Desk — interface Focus et composants principaux */
+
 :root {
-  --start-accent: #37c8bd;
-  --start-accent-soft: rgba(55, 200, 189, .16);
-  --start-glass: rgba(255, 255, 255, .18);
-  --start-glass-strong: rgba(255, 255, 255, .28);
-  --start-border: rgba(255, 255, 255, .32);
-  --start-shadow: 0 24px 80px rgba(15, 23, 42, .14), inset 0 1px 0 rgba(255, 255, 255, .32);
+  --start-glass: color-mix(in srgb, var(--glass-bg) 86%, transparent);
+  --start-glass-strong: color-mix(in srgb, var(--glass-bg) 94%, transparent);
+  --start-border: color-mix(in srgb, var(--glass-border) 92%, transparent);
+  --start-shadow: 0 18px 60px rgba(15, 23, 42, .12), inset 0 1px 0 rgba(255,255,255,.26);
+  --start-accent: #55d6c2;
 }
 
-:root[data-theme="dark"],
-:root[data-theme="macos-dark"] {
-  --start-glass: rgba(255, 255, 255, .075);
-  --start-glass-strong: rgba(255, 255, 255, .12);
-  --start-border: rgba(255, 255, 255, .13);
-  --start-shadow: 0 26px 86px rgba(0, 0, 0, .38), inset 0 1px 0 rgba(255, 255, 255, .09);
+html.start-desk body {
+  min-height: 100dvh;
+  padding-bottom: 92px;
 }
 
-body.focus-mode {
-  background:
-    radial-gradient(circle at 50% 18%, rgba(55, 200, 189, .20), transparent 34rem),
-    radial-gradient(circle at 18% 78%, rgba(105, 120, 255, .11), transparent 28rem),
-    var(--bg);
+html.start-desk .topbar {
+  display: none !important;
 }
 
-.start-desk-status {
+html.start-desk main {
+  padding-top: 0 !important;
+}
+
+html.start-desk .hero {
+  width: 100%;
+}
+
+html.start-desk .start-desk-status {
   position: fixed;
-  z-index: 35;
-  top: clamp(18px, 4vh, 42px);
+  z-index: 38;
+  top: max(14px, env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
-  display: none;
+  display: flex;
   align-items: center;
-  gap: .52rem;
-  max-width: calc(100vw - 36px);
-  padding: .48rem .78rem;
+  justify-content: center;
+  gap: .45rem;
+  max-width: calc(100vw - 24px);
+  padding: .42rem .72rem;
   border: 1px solid var(--start-border);
   border-radius: 999px;
   background: var(--start-glass);
-  -webkit-backdrop-filter: blur(28px) saturate(175%);
-  backdrop-filter: blur(28px) saturate(175%);
-  box-shadow: var(--start-shadow);
-  color: var(--fg);
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: -.012em;
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: 0 10px 34px rgba(15, 23, 42, .08), inset 0 1px 0 rgba(255,255,255,.22);
+  color: var(--secondaryFg);
+  font-size: .74rem;
   white-space: nowrap;
 }
 
-.start-desk-status .muted {
-  color: var(--secondaryFg);
-  font-weight: 500;
-}
-
-body.focus-mode .start-desk-status {
-  display: inline-flex;
-}
-
 body.focus-mode .container {
+  min-height: 100dvh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
   justify-content: center !important;
   padding-top: clamp(110px, 18vh, 180px) !important;
   padding-bottom: clamp(104px, 15vh, 150px) !important;
@@ -179,174 +175,94 @@ body.focus-mode #bookmark-container .bookmark {
   border-bottom: 1px solid rgba(255, 255, 255, .16);
 }
 
-.start-desk-panel h3 {
+.start-desk-panel header h3 {
   margin: 0;
-  font-size: .98rem;
-  letter-spacing: -.02em;
+  font-size: .92rem;
+  letter-spacing: -.018em;
 }
 
-.start-desk-panel .close-panel {
-  border: 0;
-  border-radius: 999px;
-  background: var(--start-glass-strong);
-  color: inherit;
+.start-desk-panel .panel-close {
   width: 30px;
   height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--start-glass-strong);
+  color: inherit;
+  font: inherit;
   cursor: pointer;
 }
 
-.start-desk-panel textarea {
-  display: block;
-  width: 100%;
-  min-height: 210px;
-  box-sizing: border-box;
+.start-desk-panel .panel-body {
   padding: 1rem;
-  border: 0;
-  outline: none;
-  resize: vertical;
-  background: transparent;
-  color: var(--fg);
-  font: inherit;
-  line-height: 1.45;
 }
 
-.start-desk-panel .panel-hint {
-  padding: 0 1rem 1rem;
+.start-desk-panel .panel-empty {
+  margin: 0;
   color: var(--secondaryFg);
-  font-size: .78rem;
+  font-size: .82rem;
 }
 
-body:not(.focus-mode) .start-desk-status {
-  display: none;
+body.focus-mode .widget-shell,
+body.focus-mode #news-container,
+body.focus-mode #chat-container,
+body.focus-mode #calendar-container,
+body.focus-mode #weather-container {
+  display: none !important;
 }
 
-@media (max-width: 620px) {
-  .start-desk-dock {
-    overflow-x: auto;
-    justify-content: flex-start;
-  }
-  .start-desk-dock button {
-    white-space: nowrap;
-  }
-  body.focus-mode .container {
-    padding-top: 108px !important;
-  }
-  body.focus-mode #bookmark-container .bookmark-set {
-    flex-basis: 100% !important;
-    max-width: 430px !important;
-  }
+/* Dock panels */
+.start-desk-notes textarea {
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  border: 0;
+  outline: 0;
+  border-radius: 18px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, .10);
+  color: inherit;
+  font: inherit;
+  line-height: 1.5;
 }
 
-/* Start Desk v2 — raffinement visuel et usage clavier */
-html.start-desk body.focus-mode #bookmark-container {
-  justify-content: center !important;
-  align-content: center !important;
+.start-desk-agenda-list,
+.start-desk-app-list {
+  display: grid;
+  gap: .55rem;
 }
 
-html.start-desk body.focus-mode #bookmark-container .bookmark-set {
-  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+.start-desk-agenda-list a,
+.start-desk-app-list a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  min-height: 42px;
+  padding: .66rem .78rem;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, .08);
+  color: inherit;
+  text-decoration: none;
 }
 
-html.start-desk body.focus-mode #bookmark-container .bookmark-set:hover {
-  transform: translateY(-3px) scale(1.012);
-  border-color: color-mix(in srgb, var(--start-accent) 48%, var(--start-border)) !important;
-  box-shadow: 0 22px 70px rgba(15, 23, 42, .16), inset 0 1px 0 rgba(255,255,255,.28) !important;
+.start-desk-agenda-list a:hover,
+.start-desk-app-list a:hover {
+  background: rgba(255, 255, 255, .14);
 }
 
-html.start-desk .quick-command-hint {
-  opacity: .72;
-  transition: opacity .18s ease;
-}
-
-html.start-desk .quick-command-hint:hover {
-  opacity: 1;
-}
-
-html.start-desk .command-palette {
-  overflow: hidden;
-}
-
-html.start-desk .command-item span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-html.start-desk .command-item small {
-  max-width: 44%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.start-desk-dock button {
-  position: relative;
-}
-
-.start-desk-dock button.is-active::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 5px;
-  width: 4px;
-  height: 4px;
-  border-radius: 999px;
-  transform: translateX(-50%);
-  background: var(--start-accent);
-  box-shadow: 0 0 16px rgba(55, 200, 189, .72);
-}
-
-.start-desk-status::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--start-accent);
-  box-shadow: 0 0 18px rgba(55, 200, 189, .72);
-}
-
-.start-desk-panel textarea::placeholder {
-  color: color-mix(in srgb, var(--secondaryFg) 70%, transparent);
-}
-
-@media (max-width: 760px) {
-  .start-desk-status {
-    top: 14px;
-    font-size: .76rem;
-    max-width: calc(100vw - 24px);
-  }
-
-  .start-desk-dock {
-    border-radius: 24px;
-    padding: .34rem;
-  }
-
-  .start-desk-dock button {
-    min-height: 34px;
-    padding: .38rem .68rem;
-    font-size: .78rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html.start-desk body.focus-mode #bookmark-container .bookmark-set,
-  .start-desk-panel,
-  .quick-command-hint {
-    transition: none !important;
-  }
-}
-
-
-/* Start Desk v3 — contexte, fonds temporels et meilleure ergonomie mobile */
+/* Contextual background */
 html[data-start-desk-period="morning"] body.focus-mode {
   background:
-    radial-gradient(circle at 50% 16%, rgba(118, 216, 210, .24), transparent 34rem),
-    radial-gradient(circle at 17% 80%, rgba(255, 211, 145, .13), transparent 30rem),
+    radial-gradient(circle at 50% 16%, rgba(55, 200, 189, .18), transparent 34rem),
+    radial-gradient(circle at 78% 82%, rgba(255, 198, 121, .10), transparent 30rem),
+    radial-gradient(circle at 18% 78%, rgba(105, 120, 255, .11), transparent 28rem),
     var(--bg);
 }
 
 html[data-start-desk-period="day"] body.focus-mode {
   background:
-    radial-gradient(circle at 50% 18%, rgba(55, 200, 189, .22), transparent 34rem),
+    radial-gradient(circle at 50% 16%, rgba(55, 200, 189, .15), transparent 34rem),
+    radial-gradient(circle at 78% 82%, rgba(255, 198, 121, .08), transparent 30rem),
     radial-gradient(circle at 18% 78%, rgba(105, 120, 255, .11), transparent 28rem),
     var(--bg);
 }
@@ -380,9 +296,13 @@ html[data-start-desk-period="night"] body.focus-mode {
 body.focus-mode #search-form.spotlight::after {
   content: 'focus · silex · perso · code · stats…';
   position: absolute;
-  right: 22px;
+  right: 62px;
   top: 50%;
   transform: translateY(-50%);
+  max-width: calc(100% - 180px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--secondaryFg);
   font-size: .72rem;
   font-weight: 650;
@@ -520,334 +440,26 @@ body.focus-mode #search-form.spotlight:focus-within::after {
 
 .start-desk-stats-panel .stats-list li {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .7rem;
   align-items: center;
-  gap: .64rem;
-  padding: .58rem .68rem;
+  padding: .66rem .72rem;
   border-radius: 15px;
-  background: rgba(255, 255, 255, .075);
-}
-
-.start-desk-stats-panel .stats-list li > span {
-  min-width: 0;
+  background: rgba(255, 255, 255, .08);
 }
 
 .start-desk-stats-panel .stats-list strong,
-.start-desk-stats-panel .stats-list em {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.start-desk-stats-panel .stats-list strong {
-  font-size: .86rem;
-}
-
 .start-desk-stats-panel .stats-list em,
 .start-desk-stats-panel .stats-list small {
-  font-size: .72rem;
+  min-width: 0;
+}
+
+.start-desk-stats-panel .stats-list em {
   font-style: normal;
 }
 
-.start-desk-stats-panel .stats-list b {
-  min-width: 2.1rem;
-  padding: .18rem .42rem;
-  border-radius: 999px;
-  background: var(--start-accent-soft);
-  color: var(--fg);
-  text-align: center;
-  font-size: .78rem;
-}
-
-.start-desk-stats-panel .stats-list .empty {
-  display: block;
-  color: var(--secondaryFg);
-  font-size: .82rem;
-}
-
-.start-desk-stats-panel .stats-list-never li {
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-@media (max-width: 620px) {
-  .start-desk-stats-panel .stats-body {
-    padding: .82rem;
-  }
-
+@media (max-width: 560px) {
   .start-desk-stats-panel .stats-summary {
     grid-template-columns: 1fr;
-  }
-
-  .start-desk-stats-panel .stats-list li {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .start-desk-stats-panel .stats-list small {
-    display: none;
-  }
-}
-
-/* =========================================================
-   Start Desk v3.1g — Barre Spotlight harmonisée
-   Même rendu en mode complet et en mode Focus.
-   ========================================================= */
-
-/* La barre complète adopte les dimensions et le rendu du mode Focus. */
-body #search-form.spotlight {
-  position: relative;
-  width: min(780px, calc(100vw - 34px)) !important;
-  min-height: 66px !important;
-  border-radius: 30px !important;
-  border-color: var(--start-border) !important;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, .36), rgba(255, 255, 255, .10)),
-    var(--start-glass) !important;
-  -webkit-backdrop-filter: blur(32px) saturate(185%) !important;
-  backdrop-filter: blur(32px) saturate(185%) !important;
-  box-shadow: var(--start-shadow) !important;
-}
-
-body #search-input {
-  font-size: 1.06rem !important;
-  font-weight: 500;
-  letter-spacing: -.018em;
-  padding-right: 245px !important;
-}
-
-/* L'ancienne aide sous la barre n'est plus nécessaire. */
-html.start-desk .quick-command-hint {
-  display: none !important;
-}
-
-/* Aide compacte intégrée dans la barre, comme en mode Focus. */
-body #search-form.spotlight::after {
-  content: 'focus · silex · perso · code · stats…';
-  position: absolute;
-  right: 22px;
-  top: 50%;
-  transform: translateY(-50%);
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--secondaryFg);
-  font-size: .72rem;
-  font-weight: 650;
-  opacity: .46;
-  pointer-events: none;
-  transition: opacity .16s ease;
-}
-
-body #search-form.spotlight:focus-within::after {
-  opacity: 0;
-}
-
-@media (max-width: 760px) {
-  body #search-input {
-    padding-right: 24px !important;
-  }
-
-  body #search-form.spotlight::after {
-    display: none;
-  }
-}
-
-/* =========================================================
-   Start Desk v3.1h — Correction centrage Spotlight au focus
-   La règle v3.1g ne doit pas écraser le positionnement modal.
-   ========================================================= */
-@supports(selector(:has(*))) {
-  body:has(#search-form.spotlight:focus-within) #search-form.spotlight {
-    position: fixed !important;
-    left: 50% !important;
-    top: 18vh !important;
-    right: auto !important;
-    bottom: auto !important;
-    transform: translateX(-50%) !important;
-    width: min(780px, calc(100vw - 34px)) !important;
-    margin: 0 !important;
-    z-index: 901 !important;
-  }
-}
-
-/* =========================================================
-   Start Desk v3.1i — Survol des favoris affiné
-   Halo plus généreux, texte mieux dégagé et alignement régulier.
-   ========================================================= */
-html.start-desk .bookmark-inner-container .bookmark,
-html.start-desk .bookmark-inner-container a {
-  box-sizing: border-box;
-  width: auto;
-  margin-left: -5px !important;
-  margin-right: -5px !important;
-  padding: .56rem .82rem !important;
-  border-radius: 16px !important;
-}
-
-html.start-desk .bookmark-inner-container .bookmark:hover,
-html.start-desk .bookmark-inner-container a:hover,
-html.start-desk .bookmark-inner-container .bookmark:focus-visible,
-html.start-desk .bookmark-inner-container a:focus-visible {
-  transform: none !important;
-  background: color-mix(in srgb, var(--fg) 6%, var(--glass-bg)) !important;
-  border-color: color-mix(in srgb, var(--fg) 11%, transparent) !important;
-  box-shadow:
-    0 4px 12px rgba(15, 23, 42, .055),
-    inset 0 1px 0 rgba(255, 255, 255, .30) !important;
-}
-
-/* Garde une respiration identique à gauche et à droite de chaque tuile. */
-html.start-desk .bookmark-inner-container {
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-/* =========================================================
-   Start Desk v3.1j — Correctifs responsive et robustesse
-   ========================================================= */
-html.start-desk body {
-  padding-bottom: calc(88px + env(safe-area-inset-bottom));
-}
-
-html.start-desk body.focus-mode .container {
-  min-height: 100dvh;
-  justify-content: center !important;
-  padding-top: clamp(104px, 15dvh, 164px) !important;
-  padding-bottom: calc(112px + env(safe-area-inset-bottom)) !important;
-  box-sizing: border-box;
-}
-
-html.start-desk body.focus-mode #bookmark-container {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: center !important;
-  align-items: flex-start !important;
-  align-content: flex-start !important;
-  width: min(1060px, calc(100vw - 40px)) !important;
-  max-width: 1060px !important;
-  margin: clamp(1rem, 2.4dvh, 1.5rem) auto 0 !important;
-  gap: clamp(.78rem, 1.15vw, 1rem) !important;
-  box-sizing: border-box !important;
-  overflow: visible !important;
-  padding: 4px !important;
-}
-
-html.start-desk body.focus-mode #bookmark-container .bookmark-set {
-  flex: 0 1 248px !important;
-  width: 248px !important;
-  max-width: 258px !important;
-  min-width: 0 !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
-  overflow: clip !important;
-}
-
-html.start-desk body:not(.focus-mode) #bookmark-container {
-  overflow: visible !important;
-  padding: 4px !important;
-}
-
-html.start-desk body:not(.focus-mode) #bookmark-container .bookmark-set {
-  overflow: clip !important;
-}
-
-@media (max-width: 920px) {
-  html.start-desk body #search-input {
-    padding-right: 24px !important;
-  }
-
-  html.start-desk body #search-form.spotlight::after {
-    display: none !important;
-  }
-}
-
-html.start-desk body.spotlight-active #search-form.spotlight {
-  position: fixed !important;
-  left: 50% !important;
-  top: clamp(88px, 18dvh, 180px) !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translateX(-50%) !important;
-  width: min(780px, calc(100vw - 34px)) !important;
-  margin: 0 !important;
-  z-index: 901 !important;
-}
-
-html.start-desk .start-desk-dock {
-  max-width: calc(100vw - 24px);
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  overscroll-behavior-inline: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-html.start-desk .start-desk-dock::-webkit-scrollbar {
-  display: none;
-}
-
-html.start-desk .start-desk-status {
-  max-width: calc(100vw - 28px);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@media (max-width: 760px) {
-  html.start-desk body.focus-mode .container {
-    justify-content: flex-start !important;
-    padding-top: clamp(102px, 14dvh, 128px) !important;
-  }
-
-  html.start-desk body.focus-mode #bookmark-container {
-    width: min(620px, calc(100vw - 28px)) !important;
-  }
-
-  html.start-desk body.focus-mode #bookmark-container .bookmark-set {
-    flex: 1 1 calc(50% - .5rem) !important;
-    width: auto !important;
-    max-width: 300px !important;
-  }
-}
-
-@media (max-width: 560px) {
-  html.start-desk body {
-    padding-bottom: calc(82px + env(safe-area-inset-bottom));
-  }
-
-  html.start-desk body.focus-mode .container {
-    padding-top: 100px !important;
-    padding-bottom: calc(102px + env(safe-area-inset-bottom)) !important;
-  }
-
-  html.start-desk body.focus-mode #bookmark-container {
-    width: min(430px, calc(100vw - 24px)) !important;
-    gap: .78rem !important;
-  }
-
-  html.start-desk body.focus-mode #bookmark-container .bookmark-set {
-    flex: 1 1 100% !important;
-    width: 100% !important;
-    max-width: 430px !important;
-  }
-
-  html.start-desk .start-desk-status .muted {
-    display: none;
-  }
-
-  html.start-desk .start-desk-dock {
-    left: 12px;
-    right: 12px;
-    width: auto;
-    transform: none;
-    justify-content: flex-start;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html.start-desk #news-container {
-    opacity: 1 !important;
-    animation: none !important;
-    transition: none !important;
   }
 }
