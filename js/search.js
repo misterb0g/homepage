@@ -108,6 +108,11 @@
     const submitButton = searchForm.querySelector('button[type="submit"]');
     searchForm.insertBefore(clearButton, submitButton || null);
 
+    // Évite le petit saut de focus au pointer-down : le champ reste le centre de Spotlight.
+    clearButton.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+    });
+
     clearButton.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -117,23 +122,38 @@
     const style = document.createElement("style");
     style.id = "start-desk-search-clear-style";
     style.textContent = `
+      html.start-desk #search-form.spotlight #search-input {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      html.start-desk #search-form.spotlight #search-input::-webkit-search-cancel-button,
+      html.start-desk #search-form.spotlight #search-input::-webkit-search-decoration,
+      html.start-desk #search-form.spotlight #search-input::-webkit-search-results-button,
+      html.start-desk #search-form.spotlight #search-input::-webkit-search-results-decoration {
+        -webkit-appearance: none;
+        appearance: none;
+        display: none;
+      }
       html.start-desk #search-form.spotlight .search-clear-button {
-        flex: 0 0 auto;
+        flex: 0 0 28px;
         display: inline-grid;
         place-items: center;
-        width: 30px;
-        height: 30px;
-        margin-right: 12px;
+        width: 28px;
+        height: 28px;
+        margin: 0 2px 0 10px;
         padding: 0;
         border: 0;
         border-radius: 999px;
         background: color-mix(in srgb, var(--fg) 8%, transparent);
         color: var(--secondaryFg);
         opacity: 0;
-        transform: scale(.82);
+        transform: scale(.86);
         pointer-events: none;
         cursor: pointer;
-        transition: opacity 140ms ease, transform 180ms cubic-bezier(.22,1,.36,1), background-color 140ms ease, color 140ms ease;
+        transition: opacity 120ms ease, transform 160ms cubic-bezier(.22,1,.36,1), background-color 120ms ease, color 120ms ease;
       }
       html.start-desk #search-form.spotlight .search-clear-button.is-visible {
         opacity: 1;
@@ -145,16 +165,18 @@
         color: var(--fg);
       }
       html.start-desk #search-form.spotlight .search-clear-button:active {
-        transform: scale(.92);
+        transform: scale(.94);
       }
       html.start-desk #search-form.spotlight .search-clear-button:focus-visible {
         outline: 2px solid color-mix(in srgb, var(--start-accent) 70%, transparent);
         outline-offset: 2px;
       }
       html.start-desk #search-form.spotlight .search-clear-button svg {
-        width: 17px;
-        height: 17px;
+        display: block;
+        width: 15px;
+        height: 15px;
         fill: currentColor;
+        pointer-events: none;
       }
       @media (prefers-reduced-motion: reduce) {
         html.start-desk #search-form.spotlight .search-clear-button { transition: none !important; }

@@ -53,6 +53,16 @@ html.start-desk .command-item.is-active .command-item-kind {
   background: color-mix(in srgb, var(--start-accent) 7%, transparent);
 }
 
+/* La croix occupe désormais sa propre zone à droite de Spotlight.
+   On décale uniquement l'aide visuelle, sans toucher au positionnement du formulaire. */
+html.start-desk body.focus-mode #search-form.spotlight::after {
+  right: 62px !important;
+  max-width: calc(100% - 190px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   html.start-desk .command-item-copy {
     display: grid;
