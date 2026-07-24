@@ -1,0 +1,65 @@
+/* Start Desk 5.2 — recherche enrichie */
+
+html.start-desk .command-palette {
+  overflow: hidden;
+  padding: .38rem;
+}
+
+html.start-desk .command-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  min-height: 44px;
+  border-radius: 11px;
+}
+
+html.start-desk .command-item-copy {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: .55rem;
+  text-align: left;
+}
+
+html.start-desk .command-item-copy > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.start-desk .command-item-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: .58;
+}
+
+html.start-desk .command-item-kind {
+  flex: 0 0 auto;
+  padding: .14rem .42rem;
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+  border-radius: 999px;
+  font-size: .64rem;
+  font-weight: 650;
+  letter-spacing: .015em;
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+html.start-desk .command-item.is-active .command-item-kind {
+  color: color-mix(in srgb, var(--start-accent) 72%, var(--fg));
+  border-color: color-mix(in srgb, var(--start-accent) 16%, transparent);
+  background: color-mix(in srgb, var(--start-accent) 7%, transparent);
+}
+
+@media (max-width: 640px) {
+  html.start-desk .command-item-copy {
+    display: grid;
+    gap: .08rem;
+  }
+
+  html.start-desk .command-item-kind {
+    display: none;
+  }
+}
