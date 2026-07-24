@@ -1,0 +1,29 @@
+/* Start Desk — dégagement du dock
+   Le dock reste plus près du bord inférieur, à la manière de macOS,
+   tandis que la page réserve davantage d'espace aux dernières tuiles. */
+
+html.start-desk .start-desk-dock {
+  bottom: max(8px, env(safe-area-inset-bottom)) !important;
+}
+
+html.start-desk body {
+  padding-bottom: calc(104px + env(safe-area-inset-bottom)) !important;
+}
+
+html.start-desk body.focus-mode .container {
+  padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+}
+
+@media (max-width: 560px) {
+  html.start-desk .start-desk-dock {
+    bottom: max(7px, env(safe-area-inset-bottom)) !important;
+  }
+
+  html.start-desk body {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
+  }
+
+  html.start-desk body.focus-mode .container {
+    padding-bottom: calc(116px + env(safe-area-inset-bottom)) !important;
+  }
+}
