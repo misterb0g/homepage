@@ -1,0 +1,73 @@
+/* Start Desk 5.2 — météo contextuelle, limitée au widget */
+
+html.start-desk #weather {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    background-color 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease !important;
+}
+
+html.start-desk #weather::before {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+html.start-desk #weather.is-weather-clear::before {
+  opacity: .48;
+  background: radial-gradient(circle at 76% 22%, rgba(255,216,112,.34), transparent 40%);
+}
+
+html.start-desk #weather.is-weather-cloudy::before {
+  opacity: .36;
+  background: radial-gradient(circle at 72% 20%, rgba(190,205,224,.24), transparent 44%);
+}
+
+html.start-desk #weather.is-weather-rain::before,
+html.start-desk #weather.is-weather-storm::before {
+  opacity: .38;
+  background: radial-gradient(circle at 72% 20%, rgba(112,154,194,.28), transparent 44%);
+}
+
+html.start-desk #weather.is-weather-snow::before {
+  opacity: .46;
+  background: radial-gradient(circle at 72% 18%, rgba(232,244,255,.42), transparent 42%);
+}
+
+html.start-desk #weather.is-weather-fog::before {
+  opacity: .34;
+  background: radial-gradient(circle at 70% 20%, rgba(220,224,228,.30), transparent 46%);
+}
+
+html.start-desk #weather.is-weather-night::before {
+  opacity: .38;
+  background: radial-gradient(circle at 76% 20%, rgba(107,123,181,.24), transparent 42%);
+}
+
+html.start-desk #weather.is-weather-storm {
+  border-color: color-mix(in srgb, #7892b5 22%, var(--start-border)) !important;
+}
+
+:root[data-theme="dark"] html.start-desk #weather.is-weather-clear::before,
+:root[data-theme="macos-dark"] html.start-desk #weather.is-weather-clear::before {
+  opacity: .26;
+}
+
+:root[data-theme="dark"] html.start-desk #weather.is-weather-night::before,
+:root[data-theme="macos-dark"] html.start-desk #weather.is-weather-night::before {
+  opacity: .24;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk #weather,
+  html.start-desk #weather::before {
+    transition: none !important;
+  }
+}

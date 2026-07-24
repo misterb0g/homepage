@@ -126,9 +126,6 @@
     if (!q) return [];
     return Object.entries(CONFIG.commandAliases || {})
       .map(([name, command]) => {
-        // Les alias qui ouvrent simplement un favori sont volontairement exclus
-        // de la palette "Commande" : le favori correspondant apparaît déjà
-        // comme résultat unique, avec sa catégorie.
         if (command?.type === 'bookmark') return null;
         const n = normalize(name);
         let score = 0;
@@ -140,7 +137,6 @@
       .sort((a, b) => b.score - a.score)
       .slice(0, 6);
   }
-
 
   function getPrefixMatches(query) {
     const raw = String(query || '').trim();
@@ -163,6 +159,31 @@
         raw,
         score: 95
       }))
+      .slice(0, 3);
+  }
+
+  function getSearchTargetMatches(query) {
+    const q = normalize(query);
+    if (q.length < 2) return [];
+    const targets = [
+      { key: 'w', label: 'Rechercher sur Wikipédia', meta: 'w + recherche' },
+      { key: 'a', label: 'Rechercher sur Amazon', meta: 'a + recherche' },
+      { key: 'y', label: 'Rechercher sur YouTube', meta: 'y + recherche' },
+      { key: 'cal', label: 'Chercher dans Google Agenda', meta: 'cal + recherche' },
+      { key: 'drive', label: 'Chercher dans Google Drive', meta: 'drive + recherche' },
+      { key: 'gh', label: 'Chercher sur GitHub', meta: 'gh + recherche' },
+      { key: 'ai', label: 'Envoyer à ChatGPT', meta: 'ai + question' }
+    ];
+    return targets
+      .map(target => {
+        const haystack = normalize(`${target.key} ${target.label} ${target.meta}`);
+        if (!haystack.includes(q)) return null;
+        const label = normalize(target.label);
+        const score = label.startsWith(q) ? 68 : 42;
+        return { type: 'target', ...target, score };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score)
       .slice(0, 3);
   }
 
@@ -229,7 +250,6 @@
     return false;
   }
 
-
   function updateFocusUi(on) {
     $$('.startpage-focus-pill').forEach(btn => {
       btn.classList.toggle('active', !!on);
@@ -268,8 +288,6 @@
       if (wasHidden && !shouldHide) newlyVisibleTiles.push(tile);
     });
 
-    // Révélation courte uniquement pour les tuiles réellement ajoutées à l'écran.
-    // Pas de flou : meilleure lisibilité et animation plus stable sur Safari.
     requestAnimationFrame(() => {
       newlyVisibleTiles.forEach(tile => {
         tile.classList.remove('profile-revealing');
@@ -286,11 +304,8 @@
       else if (shouldShow) setWidgetVisible(widget, true);
     });
 
-    if (['silex', 'focus', 'code'].includes(profileId)) {
-      setFocusMode(true, false);
-    } else if (profileId === 'full') {
-      setFocusMode(false, false);
-    }
+    if (['silex', 'focus', 'code'].includes(profileId)) setFocusMode(true, false);
+    else if (profileId === 'full') setFocusMode(false, false);
 
     updateProfileUi(profileId);
     if (notify) toast(`Profil ${profile.label || profileId} activé`);
@@ -388,11 +403,21 @@
     palette.className = 'command-palette glass';
     palette.hidden = true;
     palette.setAttribute('role', 'listbox');
+    palette.setAttribute('aria-label', 'Suggestions de recherche');
     form.appendChild(palette);
 
     function render() {
       const query = input.value.trim();
-      const entries = [...getPrefixMatches(query), ...getCommandMatches(query), ...getBookmarkMatches(query)].slice(0, 8);
+      const entries = [
+        ...getPrefixMatches(query),
+        ...getCommandMatches(query),
+        ...getBookmarkMatches(query),
+        ...getSearchTargetMatches(query)
+      ]
+        .sort((a, b) => (b.score || 0) - (a.score || 0))
+        .filter((entry, index, list) => list.findIndex(candidate => `${candidate.type}:${candidate.label}` === `${entry.type}:${entry.label}`) === index)
+        .slice(0, 8);
+
       if (!query || !entries.length) {
         palette.hidden = true;
         palette.innerHTML = '';
@@ -400,10 +425,17 @@
       }
       palette.hidden = false;
       palette.innerHTML = entries.map((entry, index) => {
-        const meta = entry.type === 'command' ? 'Commande' : (entry.type === 'prefix' ? entry.meta : entry.group);
-        return `<button type="button" class="command-item${index === 0 ? ' is-active' : ''}" data-index="${index}" role="option">
-          <span>${escapeHtml(entry.label)}</span>
-          <small>${escapeHtml(meta)}</small>
+        const meta = entry.type === 'command'
+          ? 'Commande'
+          : entry.type === 'prefix'
+            ? entry.meta
+            : entry.type === 'target'
+              ? entry.meta
+              : entry.group;
+        const kind = entry.type === 'bookmark' ? 'Favori' : entry.type === 'command' ? 'Commande' : 'Recherche';
+        return `<button type="button" class="command-item${index === 0 ? ' is-active' : ''}" data-index="${index}" role="option" aria-selected="${index === 0 ? 'true' : 'false'}">
+          <span class="command-item-copy"><span>${escapeHtml(entry.label)}</span><small>${escapeHtml(meta)}</small></span>
+          <span class="command-item-kind">${kind}</span>
         </button>`;
       }).join('');
       palette._entries = entries;
@@ -415,6 +447,12 @@
       if (entry.type === 'prefix') {
         input.value = entry.raw;
         form.requestSubmit();
+        return true;
+      }
+      if (entry.type === 'target') {
+        input.value = `${entry.key} `;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.focus();
         return true;
       }
       if (entry.type === 'bookmark') {
@@ -432,7 +470,12 @@
 
     function setActive(index) {
       const items = $$('.command-item', palette);
-      items.forEach((btn, i) => btn.classList.toggle('is-active', i === index));
+      items.forEach((btn, i) => {
+        const active = i === index;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+        if (active) btn.scrollIntoView({ block: 'nearest' });
+      });
     }
 
     input.addEventListener('input', render);
@@ -442,6 +485,10 @@
     });
 
     input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !palette.hidden) {
+        palette.hidden = true;
+        return;
+      }
       if (palette.hidden) return;
       const items = $$('.command-item', palette);
       if (!items.length) return;
@@ -451,15 +498,35 @@
       } else if (event.key === 'ArrowUp') {
         event.preventDefault();
         setActive((activeIndex() - 1 + items.length) % items.length);
+      } else if (event.key === 'Enter') {
+        const idx = activeIndex();
+        if (idx > 0) {
+          event.preventDefault();
+          executeEntry(palette._entries?.[idx]);
+          palette.hidden = true;
+        }
       } else if (event.key === 'Tab') {
         const idx = Math.max(0, activeIndex());
         const entry = palette._entries?.[idx];
         if (entry) {
           event.preventDefault();
-          input.value = entry.type === 'command' ? entry.key : (entry.type === 'prefix' ? entry.raw : entry.label);
+          input.value = entry.type === 'command'
+            ? entry.key
+            : entry.type === 'prefix'
+              ? entry.raw
+              : entry.type === 'target'
+                ? `${entry.key} `
+                : entry.label;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
           render();
         }
       }
+    });
+
+    palette.addEventListener('mousemove', (event) => {
+      const btn = event.target.closest('.command-item');
+      if (!btn) return;
+      setActive(Number(btn.dataset.index));
     });
 
     palette.addEventListener('click', (event) => {
@@ -524,8 +591,6 @@
     installFocusPill();
     placeQuickControls();
     installCommandPalette();
-    // Le profil est appliqué de façon synchrone lors du rendu des favoris.
-    // Ici, on initialise uniquement l'interface avant leur injection.
     updateProfileUi(localStorage.getItem(PROFILE_KEY) || 'silex');
   });
 })();
