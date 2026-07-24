@@ -8,25 +8,25 @@ html.start-desk {
   --sd-time-shadow: rgba(15,23,42,.045);
 }
 
-html.start-desk[data-time-ambience="morning"] {
+html.start-desk[data-start-desk-period="morning"] {
   --sd-time-warmth: rgba(255,210,156,.028);
   --sd-time-highlight: rgba(255,247,232,.19);
   --sd-time-shadow: rgba(92,65,38,.045);
 }
 
-html.start-desk[data-time-ambience="day"] {
+html.start-desk[data-start-desk-period="day"] {
   --sd-time-warmth: rgba(210,232,255,.018);
   --sd-time-highlight: rgba(255,255,255,.19);
   --sd-time-shadow: rgba(15,23,42,.04);
 }
 
-html.start-desk[data-time-ambience="evening"] {
+html.start-desk[data-start-desk-period="evening"] {
   --sd-time-warmth: rgba(255,178,124,.026);
   --sd-time-highlight: rgba(255,236,218,.15);
   --sd-time-shadow: rgba(66,42,33,.055);
 }
 
-html.start-desk[data-time-ambience="night"] {
+html.start-desk[data-start-desk-period="night"] {
   --sd-time-warmth: rgba(118,144,196,.018);
   --sd-time-highlight: rgba(218,230,255,.11);
   --sd-time-shadow: rgba(5,10,24,.07);
@@ -41,15 +41,15 @@ html.start-desk body::before {
   pointer-events: none;
   background: linear-gradient(180deg, var(--sd-time-warmth), transparent 42%);
   opacity: 1;
-  transition: background-color 900ms ease, opacity 900ms ease;
+  transition: opacity 900ms ease;
 }
 
 /* Nuance commune aux surfaces de verre, sans toucher à leur couleur de base. */
-html.start-desk[data-time-ambience] #search-form.spotlight,
-html.start-desk[data-time-ambience] .widget,
-html.start-desk[data-time-ambience] .start-desk-panel,
-html.start-desk[data-time-ambience] .command-palette,
-html.start-desk[data-time-ambience] .engine-menu {
+html.start-desk[data-start-desk-period] #search-form.spotlight,
+html.start-desk[data-start-desk-period] .widget-shell,
+html.start-desk[data-start-desk-period] .start-desk-panel,
+html.start-desk[data-start-desk-period] .command-palette,
+html.start-desk[data-start-desk-period] .engine-menu {
   box-shadow:
     inset 0 1px 0 var(--sd-time-highlight),
     0 10px 30px var(--sd-time-shadow);
@@ -61,8 +61,8 @@ html.start-desk[data-time-ambience] .engine-menu {
   --sd-time-highlight: rgba(255,255,255,.065);
 }
 
-:root[data-theme="dark"] html.start-desk[data-time-ambience="night"],
-:root[data-theme="macos-dark"] html.start-desk[data-time-ambience="night"] {
+:root[data-theme="dark"] html.start-desk[data-start-desk-period="night"],
+:root[data-theme="macos-dark"] html.start-desk[data-start-desk-period="night"] {
   --sd-time-warmth: rgba(86,112,168,.014);
   --sd-time-highlight: rgba(220,232,255,.055);
   --sd-time-shadow: rgba(0,0,0,.12);
