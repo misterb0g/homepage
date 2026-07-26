@@ -59,23 +59,11 @@
     flex: 0 0 28px !important;
   }
 
-  /* Le texte d'aide permanent est redondant sur téléphone. */
-  html.start-desk .quick-command-hint {
-    display: none !important;
-  }
-
+  /* Sur mobile, Spotlight est le centre de commande : les aides et les
+     contrôles de profil restent accessibles via le dock ou les commandes. */
+  html.start-desk .quick-command-hint,
   html.start-desk .startpage-quick-controls {
-    margin-top: .28rem;
-    max-width: calc(100vw - 32px);
-    gap: .3rem;
-  }
-
-  html.start-desk .startpage-profile-pill,
-  html.start-desk .startpage-focus-pill,
-  html.start-desk .startpage-auto-pill {
-    min-height: 31px;
-    padding: .3rem .58rem;
-    font-size: .76rem;
+    display: none !important;
   }
 
   /* Favoris mobiles : services pratiques et personnels uniquement.
@@ -93,7 +81,7 @@
   html.start-desk body.focus-mode #bookmark-container,
   html.start-desk #bookmark-container {
     width: calc(100vw - 24px) !important;
-    margin-top: .72rem !important;
+    margin-top: .5rem !important;
     margin-bottom: 1rem !important;
     gap: .62rem !important;
   }
