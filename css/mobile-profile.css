@@ -13,27 +13,50 @@
     padding-bottom: calc(106px + env(safe-area-inset-bottom)) !important;
   }
 
-  /* Spotlight reste l'élément principal. */
+  /* Spotlight reste l'élément principal : plus compact, strictement centré
+     et toujours contenu dans le viewport. */
+  html.start-desk .hero {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    width: 100% !important;
+    padding-inline: 0 !important;
+  }
+
   html.start-desk #search-form.spotlight,
   html.start-desk body.focus-mode #search-form.spotlight {
-    width: calc(100vw - 24px) !important;
-    min-height: 58px !important;
-    border-radius: 24px !important;
-    padding-inline: .78rem !important;
+    width: min(92vw, 430px) !important;
+    max-width: calc(100vw - 28px) !important;
+    min-height: 56px !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 999px !important;
+    padding-inline: .72rem !important;
+    overflow: hidden;
   }
 
   html.start-desk #search-input {
-    font-size: 1rem !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: .98rem !important;
+    text-align: left !important;
   }
 
   html.start-desk .engine-button {
+    flex: 0 0 auto;
     min-width: 38px;
-    padding-inline: .5rem !important;
+    padding-inline: .46rem !important;
   }
 
   html.start-desk .engine-button .engine-label,
   html.start-desk #engine-name {
     display: none !important;
+  }
+
+  html.start-desk #search-clear {
+    flex: 0 0 28px !important;
   }
 
   /* Le texte d'aide permanent est redondant sur téléphone. */
@@ -42,9 +65,9 @@
   }
 
   html.start-desk .startpage-quick-controls {
-    margin-top: .42rem;
-    max-width: calc(100vw - 28px);
-    gap: .34rem;
+    margin-top: .28rem;
+    max-width: calc(100vw - 32px);
+    gap: .3rem;
   }
 
   html.start-desk .startpage-profile-pill,
@@ -70,7 +93,7 @@
   html.start-desk body.focus-mode #bookmark-container,
   html.start-desk #bookmark-container {
     width: calc(100vw - 24px) !important;
-    margin-top: .82rem !important;
+    margin-top: .72rem !important;
     margin-bottom: 1rem !important;
     gap: .62rem !important;
   }
