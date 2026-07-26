@@ -1,0 +1,197 @@
+/* Start Desk — profil responsive mobile
+   La version Mac reste inchangée. Sur petit écran, Start Desk se recentre
+   sur Spotlight, les favoris utiles en mobilité et un dock raccourci. */
+
+@media (max-width: 680px) {
+  html.start-desk body {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  }
+
+  html.start-desk body.focus-mode .container {
+    justify-content: flex-start !important;
+    padding-top: max(82px, calc(env(safe-area-inset-top) + 70px)) !important;
+    padding-bottom: calc(106px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Spotlight reste l'élément principal : plus compact, strictement centré
+     et toujours contenu dans le viewport. */
+  html.start-desk .hero {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    width: 100% !important;
+    padding-inline: 0 !important;
+  }
+
+  html.start-desk #search-form.spotlight,
+  html.start-desk body.focus-mode #search-form.spotlight {
+    width: min(92vw, 430px) !important;
+    max-width: calc(100vw - 28px) !important;
+    min-height: 56px !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 999px !important;
+    padding-inline: .72rem !important;
+    overflow: visible !important;
+  }
+
+  html.start-desk #search-input {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: .98rem !important;
+    text-align: left !important;
+  }
+
+  html.start-desk .engine-button {
+    flex: 0 0 auto;
+    min-width: 38px;
+    padding-inline: .46rem !important;
+  }
+
+  html.start-desk .engine-button .engine-label,
+  html.start-desk #engine-name {
+    display: none !important;
+  }
+
+  html.start-desk #search-clear {
+    flex: 0 0 28px !important;
+  }
+
+  /* Sur mobile, Spotlight est le centre de commande : les aides et les
+     contrôles de profil restent accessibles via le dock ou les commandes. */
+  html.start-desk .quick-command-hint,
+  html.start-desk .startpage-quick-controls {
+    display: none !important;
+  }
+
+  /* Favoris mobiles : services pratiques et personnels uniquement.
+     Les catégories professionnelles lourdes restent disponibles sur Mac
+     et restent trouvables via Spotlight. */
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Ressources Humaines"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Administration"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Banques & Finance"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Répertoire Pro"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Web-admin"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Admin Page"] {
+    display: none !important;
+  }
+
+  html.start-desk body.focus-mode #bookmark-container,
+  html.start-desk #bookmark-container {
+    width: calc(100vw - 24px) !important;
+    margin-top: .5rem !important;
+    margin-bottom: 1rem !important;
+    gap: .62rem !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-set {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 20px !important;
+    padding: .58rem !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-header {
+    margin-bottom: .18rem;
+    padding-bottom: .28rem;
+  }
+
+  html.start-desk #bookmark-container .bookmark-title {
+    font-size: .8rem !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-inner-container {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark {
+    margin-block: .12rem !important;
+    padding: .52rem .62rem !important;
+    font-size: .9rem !important;
+  }
+
+  /* En mode complet sur mobile, garder seulement la météo.
+     Les gros widgets restent réservés aux écrans plus larges. */
+  html.start-desk #calendar-container,
+  html.start-desk #news-container,
+  html.start-desk #chat-container {
+    display: none !important;
+  }
+
+  html.start-desk #weather-container {
+    width: calc(100vw - 24px) !important;
+    max-width: none !important;
+    margin-inline: auto !important;
+    border-radius: 20px !important;
+  }
+
+  html.start-desk #weather-container .widget-toolbar {
+    min-height: 38px !important;
+  }
+
+  html.start-desk #weather-container .widget-body {
+    padding: 10px !important;
+  }
+
+  /* Dock mobile : quatre actions réellement utiles. */
+  html.start-desk .start-desk-dock [data-action="code"],
+  html.start-desk .start-desk-dock [data-action="apps"],
+  html.start-desk .start-desk-dock [data-action="agenda"],
+  html.start-desk .start-desk-dock [data-action="stats"] {
+    display: none !important;
+  }
+
+  html.start-desk .start-desk-dock {
+    left: 50% !important;
+    right: auto !important;
+    bottom: max(7px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    transform: translateX(-50%) !important;
+    justify-content: center !important;
+    overflow: visible !important;
+    padding: .3rem !important;
+    gap: .18rem !important;
+    border-radius: 22px !important;
+  }
+
+  html.start-desk .start-desk-dock button {
+    min-width: 0 !important;
+    min-height: 34px !important;
+    padding: .38rem .68rem !important;
+    font-size: .76rem !important;
+    white-space: nowrap;
+  }
+
+  /* Les panneaux rapides doivent rester au-dessus du dock raccourci. */
+  html.start-desk .start-desk-panel {
+    bottom: calc(62px + env(safe-area-inset-bottom)) !important;
+    width: calc(100vw - 20px) !important;
+    max-height: calc(100dvh - 94px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    border-radius: 22px !important;
+  }
+
+  html.start-desk .command-palette {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    top: calc(100% + .42rem) !important;
+    max-height: min(52dvh, 420px) !important;
+    overflow-y: auto !important;
+    border-radius: 17px !important;
+    z-index: 920 !important;
+  }
+}
+
+/* Petit format paysage / grands téléphones : deux cartes possibles sans
+   transformer la version iPhone en dashboard de bureau. */
+@media (min-width: 520px) and (max-width: 680px) {
+  html.start-desk #bookmark-container .bookmark-set {
+    flex: 1 1 calc(50% - .4rem) !important;
+    width: auto !important;
+  }
+}
