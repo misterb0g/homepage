@@ -32,6 +32,7 @@
   const engineMenu = $("#engine-menu");
   const engineOptions = engineMenu ? Array.from($$(".engine-option", engineMenu)) : [];
   let clearButton = null;
+  let ignoreSyntheticEngineClickUntil = 0;
 
   function keepSpotlightFocused() {
     try { searchInput && searchInput.focus({ preventScroll: true }); }
@@ -225,19 +226,45 @@
 
   init();
 
+  function markTouchInteractionHandled() {
+    // Safari iOS may emit a synthetic click after touchend. Ignore it so the
+    // menu is not immediately toggled again and an option is not selected twice.
+    ignoreSyntheticEngineClickUntil = Date.now() + 700;
+  }
+
+  function selectEngine(button, { restoreSearchFocus = true } = {}) {
+    const id = button?.dataset.engine;
+    setDefaultEngineId(id);
+    closeEngineMenu({ focusButton: restoreSearchFocus });
+    if (restoreSearchFocus) keepSpotlightFocused();
+  }
+
+  engineBtn?.addEventListener("touchend", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    markTouchInteractionHandled();
+    toggleEngineMenu();
+  }, { passive: false });
+
   engineBtn?.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
+    if (Date.now() < ignoreSyntheticEngineClickUntil) return;
     toggleEngineMenu();
   });
 
   engineOptions.forEach((button) => {
+    button.addEventListener("touchend", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      markTouchInteractionHandled();
+      selectEngine(button, { restoreSearchFocus: false });
+    }, { passive: false });
+
     button.addEventListener("click", (event) => {
       event.preventDefault();
-      const id = button.dataset.engine;
-      setDefaultEngineId(id);
-      closeEngineMenu({ focusButton: true });
-      searchInput?.focus();
+      if (Date.now() < ignoreSyntheticEngineClickUntil) return;
+      selectEngine(button);
     });
   });
 
