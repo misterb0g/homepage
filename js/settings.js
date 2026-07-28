@@ -141,6 +141,7 @@
       if (preference === 'mac') effective = colorScheme.matches ? 'macos-dark' : 'macos-light';
       root.setAttribute('data-theme', effective);
       root.setAttribute('data-theme-pref', preference);
+      root.style.colorScheme = effective.includes('dark') ? 'dark' : 'light';
     };
 
     const refreshSystemTheme = () => {
