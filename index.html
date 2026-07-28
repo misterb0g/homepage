@@ -5,24 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Start Desk</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="css/assistant-enhancements.css" />
-  <link rel="stylesheet" href="css/startpage-plus.css" />
-  <link rel="stylesheet" href="css/start-desk.css" />
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <meta name="application-name" content="Start Desk">
-  <meta name="apple-mobile-web-app-title" content="Start Desk">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
-
   <script>
     (function () {
       try {
@@ -41,9 +23,29 @@
 
         root.setAttribute('data-theme', effective);
         root.setAttribute('data-theme-pref', pref);
+        root.style.colorScheme = effective.indexOf('dark') !== -1 ? 'dark' : 'light';
       } catch (e) {}
     })();
   </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/assistant-enhancements.css" />
+  <link rel="stylesheet" href="css/startpage-plus.css" />
+  <link rel="stylesheet" href="css/start-desk.css" />
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="application-name" content="Start Desk">
+  <meta name="apple-mobile-web-app-title" content="Start Desk">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
+
 
   <script>
     /* Préférences par défaut de la version Focus clean.
