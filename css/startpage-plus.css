@@ -488,3 +488,29 @@ html.start-desk body:not(.focus-mode) #news-container li + li {
     gap: 12px !important;
   }
 }
+
+
+/* Retour tactile progressif : vibration si disponible, micro-animation ailleurs. */
+.startpage-profile-pill.is-tactile-feedback,
+.startpage-focus-pill.is-tactile-feedback,
+.startpage-auto-pill.is-tactile-feedback,
+.profile-chip.is-tactile-feedback,
+.engine-option.is-tactile-feedback {
+  animation: startDeskTactileTap 150ms cubic-bezier(.2, .9, .25, 1);
+}
+
+@keyframes startDeskTactileTap {
+  0% { transform: scale(1); }
+  42% { transform: scale(.955); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .startpage-profile-pill.is-tactile-feedback,
+  .startpage-focus-pill.is-tactile-feedback,
+  .startpage-auto-pill.is-tactile-feedback,
+  .profile-chip.is-tactile-feedback,
+  .engine-option.is-tactile-feedback {
+    animation: none;
+  }
+}

@@ -6,6 +6,39 @@
   const USAGE_KEY = 'startdesk_usage_stats_v1';
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const tactileTimers = new WeakMap();
+
+  function triggerTactileFeedback(target, duration = 10) {
+    const element = target?.closest?.('button') || target;
+
+    // Progressive enhancement: supported browsers vibrate; Safari iOS simply
+    // ignores this branch and keeps the visual feedback below.
+    try {
+      if (typeof navigator.vibrate === 'function') navigator.vibrate(duration);
+    } catch (_) {}
+
+    if (!(element instanceof HTMLElement)) return;
+    const previousTimer = tactileTimers.get(element);
+    if (previousTimer) clearTimeout(previousTimer);
+    element.classList.remove('is-tactile-feedback');
+    void element.offsetWidth;
+    element.classList.add('is-tactile-feedback');
+    tactileTimers.set(element, setTimeout(() => {
+      element.classList.remove('is-tactile-feedback');
+      tactileTimers.delete(element);
+    }, 180));
+  }
+
+  window.StartDeskHaptics = Object.assign(window.StartDeskHaptics || {}, {
+    trigger: triggerTactileFeedback
+  });
+
+  document.addEventListener('click', (event) => {
+    const control = event.target.closest(
+      '.startpage-profile-pill, .startpage-focus-pill, .startpage-auto-pill, .profile-chip'
+    );
+    if (control) triggerTactileFeedback(control);
+  });
 
   function openExternal(url) {
     if (!url) return;

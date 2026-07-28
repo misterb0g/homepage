@@ -235,6 +235,7 @@
   function selectEngine(button, { restoreSearchFocus = true } = {}) {
     const id = button?.dataset.engine;
     setDefaultEngineId(id);
+    window.StartDeskHaptics?.trigger?.(button);
     closeEngineMenu({ focusButton: restoreSearchFocus });
     if (restoreSearchFocus) keepSpotlightFocused();
   }
