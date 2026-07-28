@@ -1,0 +1,52 @@
+name: Fix mobile search engine selector
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-mobile-search-engine.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch mobile pointer handling
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '''      const preventFocus = (el) => {
+        if (!el) return;
+        const handler = (e) => { e.preventDefault(); refocus(); };
+        el.addEventListener("pointerdown", handler, { passive: false, capture: true });
+        el.addEventListener("mousedown", handler, { passive: false, capture: true });
+        el.addEventListener("touchstart", handler, { passive: false, capture: true });
+      };'''
+          new = '''      const preventFocus = (el) => {
+        if (!el) return;
+        // Sur desktop, empêcher le transfert de focus conserve l’effet Spotlight.
+        // Sur iPhone/iPad, ne jamais annuler le pointerdown tactile : Safari
+        // peut sinon supprimer le click qui ouvre le menu ou choisit un moteur.
+        const handler = (e) => {
+          if (e.pointerType && e.pointerType !== "mouse") return;
+          e.preventDefault();
+          refocus();
+        };
+        el.addEventListener("pointerdown", handler, { passive: false, capture: true });
+      };'''
+          if old not in s:
+              raise SystemExit('Target block not found; no change made')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Fix mobile search engine selector"
+          git push
