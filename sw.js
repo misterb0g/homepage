@@ -1,6 +1,6 @@
 // Cache applicatif minimal et prudent pour Start Desk.
 const CACHE_PREFIX = 'start-desk-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v2';
+const CACHE_NAME = CACHE_PREFIX + 'v3';
 const APP_SHELL = [
   '/',
   '/index.html',
