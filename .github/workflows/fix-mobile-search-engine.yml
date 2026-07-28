@@ -10,35 +10,69 @@ permissions:
   contents: write
 
 jobs:
-  patch-index:
+  patch-search:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch mobile pointer handling
+      - name: Add reliable touch handling for iPhone
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
+          p = Path('js/search.js')
           s = p.read_text(encoding='utf-8')
-          old = '''      const preventFocus = (el) => {
-        if (!el) return;
-        const handler = (e) => { e.preventDefault(); refocus(); };
-        el.addEventListener("pointerdown", handler, { passive: false, capture: true });
-        el.addEventListener("mousedown", handler, { passive: false, capture: true });
-        el.addEventListener("touchstart", handler, { passive: false, capture: true });
-      };'''
-          new = '''      const preventFocus = (el) => {
-        if (!el) return;
-        // Sur desktop, empêcher le transfert de focus conserve l’effet Spotlight.
-        // Sur iPhone/iPad, ne jamais annuler le pointerdown tactile : Safari
-        // peut sinon supprimer le click qui ouvre le menu ou choisit un moteur.
-        const handler = (e) => {
-          if (e.pointerType && e.pointerType !== "mouse") return;
-          e.preventDefault();
-          refocus();
-        };
-        el.addEventListener("pointerdown", handler, { passive: false, capture: true });
-      };'''
+          old = '''  engineBtn?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleEngineMenu();
+  });
+
+  engineOptions.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      const id = button.dataset.engine;
+      setDefaultEngineId(id);
+      closeEngineMenu({ focusButton: true });
+      searchInput?.focus();
+    });
+  });'''
+          new = '''  let lastTouchEngineActionAt = 0;
+
+  engineBtn?.addEventListener("pointerup", (event) => {
+    if (event.pointerType !== "touch") return;
+    event.preventDefault();
+    event.stopPropagation();
+    lastTouchEngineActionAt = Date.now();
+    toggleEngineMenu();
+  });
+
+  engineBtn?.addEventListener("click", (event) => {
+    if (Date.now() - lastTouchEngineActionAt < 500) return;
+    event.preventDefault();
+    event.stopPropagation();
+    toggleEngineMenu();
+  });
+
+  engineOptions.forEach((button) => {
+    button.addEventListener("pointerup", (event) => {
+      if (event.pointerType !== "touch") return;
+      event.preventDefault();
+      event.stopPropagation();
+      lastTouchEngineActionAt = Date.now();
+      const id = button.dataset.engine;
+      setDefaultEngineId(id);
+      closeEngineMenu();
+      keepSpotlightFocused();
+    });
+
+    button.addEventListener("click", (event) => {
+      if (Date.now() - lastTouchEngineActionAt < 500) return;
+      event.preventDefault();
+      const id = button.dataset.engine;
+      setDefaultEngineId(id);
+      closeEngineMenu({ focusButton: true });
+      searchInput?.focus();
+    });
+  });'''
           if old not in s:
               raise SystemExit('Target block not found; no change made')
           p.write_text(s.replace(old, new, 1), encoding='utf-8')
@@ -47,6 +81,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add js/search.js
           git commit -m "Fix mobile search engine selector"
           git push
