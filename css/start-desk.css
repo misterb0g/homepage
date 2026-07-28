@@ -851,3 +851,19 @@ html.start-desk .start-desk-status {
     transition: none !important;
   }
 }
+
+
+/* Retour explicite au mode mobile : le bouton n’existe visuellement que sur petit écran. */
+.start-desk-dock [data-action="mobile"] {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .start-desk-dock [data-action="mobile"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--start-accent, var(--fg));
+    font-weight: 700;
+  }
+}

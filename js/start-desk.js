@@ -312,6 +312,7 @@
     dock.className = 'start-desk-dock';
     dock.setAttribute('aria-label', 'Start Desk');
     dock.innerHTML = `
+      <button type="button" data-action="mobile" title="Revenir au mode mobile par défaut" aria-label="Revenir au mode mobile par défaut">Mobile</button>
       <button type="button" data-action="focus">Focus</button>
       <button type="button" data-action="silex">Silex</button>
       <button type="button" data-action="personal">Perso</button>
@@ -328,6 +329,15 @@
       const action = btn.dataset.action;
       if (action !== 'notes') toggleNotes(false);
       if (action !== 'stats') toggleStats(false);
+      if (action === 'mobile') {
+        const autoContext = window.StartDeskAutoContext;
+        if (autoContext && typeof autoContext.applyMobileMode === 'function') autoContext.applyMobileMode(true);
+        else {
+          try { localStorage.setItem('startpage_auto_context_v1', '0'); } catch (_) {}
+          applyProfile('silex');
+          setFocus(true);
+        }
+      }
       if (action === 'focus') { applyProfile('focus'); setFocus(true); }
       if (action === 'silex') { applyProfile('silex'); setFocus(true); }
       if (action === 'personal') { applyProfile('personal'); setFocus(true); }

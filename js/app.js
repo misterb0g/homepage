@@ -148,6 +148,29 @@
         else { updateAutoUi(); toast('Mode automatique coupé'); }
       }
 
+      function applyMobileMode(notify = true) {
+        localStorage.setItem(AUTO_KEY, '0');
+        const plus = window.StartpagePlus;
+        if (plus && typeof plus.applyProfile === 'function') plus.applyProfile('silex', false);
+        else document.body.dataset.startpageProfile = 'silex';
+
+        if (plus && typeof plus.setFocusMode === 'function') plus.setFocusMode(true, false);
+        else document.body.classList.add('focus-mode');
+
+        setDensityNormal();
+        setWidgetVisible('news', false);
+        setWidgetVisible('chat', false);
+        localStorage.setItem(LAST_BUCKET_KEY, 'manual-mobile');
+        updateAutoUi(getBucket());
+        if (notify) toast('Mode mobile rétabli · Silex + Focus');
+        window.dispatchEvent(new CustomEvent('startdesk:mobile-mode'));
+      }
+
+      window.StartDeskAutoContext = Object.assign(window.StartDeskAutoContext || {}, {
+        applyMobileMode,
+        isEnabled: isAutoEnabled
+      });
+
       function applyBucket(bucket, notify = false) {
         const plus = window.StartpagePlus;
         if (plus && typeof plus.applyProfile === 'function') plus.applyProfile(bucket.profile, false);
