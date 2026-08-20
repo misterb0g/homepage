@@ -612,10 +612,16 @@
   window.StartpagePlus = { applyProfile, setDensity, getBookmarkMatches, setFocusMode, toggleFocusMode };
 
   window.addEventListener('DOMContentLoaded', () => {
-    let focusOn = true;
+    let focusOn = document.body.classList.contains('focus-mode');
     try {
       const savedFocus = localStorage.getItem(FOCUS_KEY);
-      focusOn = savedFocus === null ? true : savedFocus === '1';
+      const isDesktop = window.matchMedia('(min-width: 769px)').matches;
+
+      // Une préférence explicite gagne toujours. Sans préférence, Focus devient
+      // le défaut sur ordinateur et le balisage existant continue de piloter le mobile.
+      focusOn = savedFocus === null
+        ? (isDesktop || focusOn)
+        : savedFocus === '1';
     } catch (_) {}
     setFocusMode(focusOn, false);
     installProfileControls();
