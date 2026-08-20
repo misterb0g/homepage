@@ -48,59 +48,20 @@
 
 
   <script>
-    /* Préférences par défaut de la version Focus clean.
-       Migration appliquée une fois pour faire du Focus le mode d'accueil par défaut,
-       sans empêcher de revenir ensuite au mode complet via le bouton Focus. */
+    /* Initialise l'affichage sans écraser une préférence Focus existante.
+       Sur ordinateur, Focus est le défaut uniquement quand aucun choix n'a encore été enregistré.
+       Le balisage mobile existant reste inchangé jusqu'à l'initialisation de l'application. */
     (function () {
       try {
-        var migrationKey = 'startpage_focus_clean_default_v2';
-        if (localStorage.getItem(migrationKey) !== '1') {
-          localStorage.setItem('startpage_focus_mode_v1', '1');
-          localStorage.setItem('startpage_auto_context_v1', '0');
-          localStorage.setItem('startpage_profile_v2', 'silex');
-          localStorage.setItem('density', 'cozy');
-          localStorage.setItem('startpage_density_v2', 'cozy');
-          localStorage.setItem(migrationKey, '1');
-        }
-        document.documentElement.classList.add('focus-default');
-      } catch (e) {}
-    })();
-  </script>
+        var focusKey = 'startpage_focus_mode_v1';
+        var savedFocus = localStorage.getItem(focusKey);
+        var isDesktop = window.matchMedia('(min-width: 769px)').matches;
 
-  <script>
-    /* Start Desk v1 : nouveau comportement d’accueil.
-       Appliqué une seule fois pour installer le mode Focus/Silex par défaut. */
-    (function () {
-      try {
-        var key = 'startdesk_v1_defaults_applied';
-        if (localStorage.getItem(key) !== '1') {
-          localStorage.setItem('startpage_focus_mode_v1', '1');
-          localStorage.setItem('startpage_profile_v2', 'silex');
-          localStorage.setItem('showChat', 'false');
-          localStorage.setItem('showNews', 'false');
-          localStorage.setItem('startpage_auto_context_v1', '0');
-          localStorage.setItem('density', 'cozy');
-          localStorage.setItem('startpage_density_v2', 'cozy');
-          localStorage.setItem(key, '1');
+        if (savedFocus === '1' || (savedFocus === null && isDesktop)) {
+          document.documentElement.classList.add('focus-default');
         }
+
         document.documentElement.classList.add('start-desk');
-      } catch (e) {}
-    })();
-  </script>
-
-  <script>
-    /* Start Desk v3.1b : correctif.
-       Force une seule fois le retour au mode Focus/Silex par défaut,
-       même si une ancienne préférence locale avait remis le mode complet. */
-    (function () {
-      try {
-        var key = 'startdesk_v31b_focus_default_fix';
-        if (localStorage.getItem(key) !== '1') {
-          localStorage.setItem('startpage_focus_mode_v1', '1');
-          localStorage.setItem('startpage_profile_v2', 'silex');
-          localStorage.setItem('startpage_auto_context_v1', '0');
-          localStorage.setItem(key, '1');
-        }
       } catch (e) {}
     })();
   </script>
