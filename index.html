@@ -48,14 +48,23 @@
 
 
   <script>
-    /* Initialise l'affichage sans écraser une préférence Focus existante.
-       Sur ordinateur, Focus est le défaut uniquement quand aucun choix n'a encore été enregistré.
-       Le balisage mobile existant reste inchangé jusqu'à l'initialisation de l'application. */
+    /* Migration desktop exécutée une seule fois.
+       Elle active Focus pour les navigateurs existants, puis les choix ultérieurs
+       de l'utilisateur restent prioritaires. Le comportement mobile est inchangé. */
     (function () {
       try {
         var focusKey = 'startpage_focus_mode_v1';
+        var migrationKey = 'startdesk_desktop_focus_default_v1';
+        var isDesktop = window.matchMedia(
+          '(min-width: 769px) and (hover: hover) and (pointer: fine)'
+        ).matches;
         var savedFocus = localStorage.getItem(focusKey);
-        var isDesktop = window.matchMedia('(min-width: 769px)').matches;
+
+        if (isDesktop && localStorage.getItem(migrationKey) !== '1') {
+          localStorage.setItem(focusKey, '1');
+          localStorage.setItem(migrationKey, '1');
+          savedFocus = '1';
+        }
 
         if (savedFocus === '1' || (savedFocus === null && isDesktop)) {
           document.documentElement.classList.add('focus-default');
