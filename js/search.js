@@ -2,6 +2,7 @@
 (function() {
   // --- Recherche (moteur sélectionnable via clic sur le "G") ---
   const SEARCH_DEFAULT_ENGINE_KEY = "startpage_search_default_engine_v1";
+  const GOOGLE_DEFAULT_MIGRATION_KEY = "startdesk_google_default_v1";
 
   // Placeholder "Spotlight-like" (stable, quel que soit le moteur)
   const BASE_PLACEHOLDER = "Rechercher, lancer un outil, poser une question…";
@@ -42,8 +43,20 @@
   }
 
   function getDefaultEngineId() {
-    const saved = localStorage.getItem(SEARCH_DEFAULT_ENGINE_KEY);
-    return (saved && ENGINES[saved]) ? saved : "startpage";
+    try {
+      // Migration unique : remet Google par défaut sur les installations existantes.
+      // Une fois appliquée, les changements manuels restent prioritaires.
+      if (localStorage.getItem(GOOGLE_DEFAULT_MIGRATION_KEY) !== "1") {
+        localStorage.setItem(SEARCH_DEFAULT_ENGINE_KEY, "google");
+        localStorage.setItem(GOOGLE_DEFAULT_MIGRATION_KEY, "1");
+        return "google";
+      }
+
+      const saved = localStorage.getItem(SEARCH_DEFAULT_ENGINE_KEY);
+      return (saved && ENGINES[saved]) ? saved : "google";
+    } catch (_) {
+      return "google";
+    }
   }
 
   function setDefaultEngineId(engineId) {
