@@ -13,6 +13,7 @@
   current.setDate(1);
 
   let loadedEvents = [];
+  let eventsRequested = false;
   let selectedDateKey = null;
 
   const monthFmt = new Intl.DateTimeFormat('fr-BE', { month: 'long', year: 'numeric' });
@@ -334,6 +335,8 @@
   }
 
   async function loadEvents() {
+    if (eventsRequested) return;
+    eventsRequested = true;
     eventsList.innerHTML = '<div class="calendar-event-empty">Chargement des événements…</div>';
 
     try {
@@ -345,10 +348,13 @@
       renderCalendar();
       renderEvents();
     } catch (error) {
+      eventsRequested = false;
       console.error('Calendar API:', error);
       eventsList.innerHTML = '<div class="calendar-event-empty">Calendrier indisponible.</div>';
     }
   }
+
+  window.loadCalendarEvents = loadEvents;
 
   prev.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -370,7 +376,10 @@
   });
 
   renderCalendar();
-  loadEvents();
+  if (!document.body.classList.contains('focus-mode') &&
+      !document.body.classList.contains('calendar-hidden')) {
+    loadEvents();
+  }
 
   // Maintient les libellés « dans X min » à jour sans nouvel appel réseau.
   window.setInterval(() => {
