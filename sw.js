@@ -1,6 +1,6 @@
 // Cache applicatif minimal et prudent pour Start Desk.
 const CACHE_PREFIX = 'start-desk-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v7';
+const CACHE_NAME = CACHE_PREFIX + 'v8';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -13,12 +13,7 @@ const APP_SHELL = [
   '/js/startpage-config.js',
   '/js/startpage-plus.js',
   '/js/pwa.js',
-  '/js/utils.js',
-  '/js/bookmarks-ui.js',
-  '/js/search.js',
-  '/js/settings.js',
-  '/js/app.js',
-  '/js/start-desk.js'
+  '/js/core.js',
 ];
 
 self.addEventListener('install', (event) => {
