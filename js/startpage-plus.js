@@ -292,10 +292,17 @@
   }
 
   function setFocusMode(on, notify) {
-    document.body.classList.toggle('focus-mode', !!on);
-    try { localStorage.setItem(FOCUS_KEY, on ? '1' : '0'); } catch (_) {}
-    updateFocusUi(!!on);
-    if (notify) toast(on ? 'Mode focus activé' : 'Mode focus désactivé');
+    const focusEnabled = !!on;
+    const changed = document.body.classList.contains('focus-mode') !== focusEnabled;
+    document.body.classList.toggle('focus-mode', focusEnabled);
+    try { localStorage.setItem(FOCUS_KEY, focusEnabled ? '1' : '0'); } catch (_) {}
+    updateFocusUi(focusEnabled);
+    if (changed) {
+      window.dispatchEvent(new CustomEvent('startdesk:focus-changed', {
+        detail: { focus: focusEnabled }
+      }));
+    }
+    if (notify) toast(focusEnabled ? 'Mode focus activé' : 'Mode focus désactivé');
   }
 
   function toggleFocusMode() {
