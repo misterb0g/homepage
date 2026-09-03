@@ -51,18 +51,21 @@
     // --- Chargement global des news ---
     let __newsLoaded = false;
     async function loadNews() {
+        if (__newsLoaded) return;
+        __newsLoaded = true;
+        window.__newsLoaded = true;
         const container = $('#news-container');
-        
+
         // On lance les deux requêtes en parallèle pour la rapidité
         await Promise.all([
             fetchAndRenderNews('/api/news', '#macg-list'),    // MacGeneration
             fetchAndRenderNews('/api/lesoir', '#lesoir-list') // Le Soir
         ]);
-        
-        // Affichage du bloc si l'option est activée
-        if (localStorage.getItem('showNews') !== 'false') {
+
+        // Affichage du bloc si l'option est activée et que Focus est désactivé.
+        if (localStorage.getItem('showNews') !== 'false' &&
+            !document.body.classList.contains('focus-mode')) {
             container.style.display = 'block';
         }
-        __newsLoaded = true;
     }
 
