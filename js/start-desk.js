@@ -169,7 +169,7 @@
     const panel = document.createElement('section');
     panel.className = 'start-desk-panel';
     panel.setAttribute('aria-hidden', 'true');
-    panel.inert = true;
+    panel.setAttribute('inert', '');
     panel.innerHTML = `
       <header>
         <h3>Notes rapides</h3>
@@ -193,7 +193,8 @@
     const next = typeof force === 'boolean' ? force : !panel.classList.contains('is-open');
     panel.classList.toggle('is-open', next);
     panel.setAttribute('aria-hidden', next ? 'false' : 'true');
-    panel.inert = !next;
+    if (next) panel.removeAttribute('inert');
+    else panel.setAttribute('inert', '');
     $('.start-desk-dock [data-action="notes"]')?.classList.toggle('is-active', next);
     if (next) {
       toggleStats(false);
@@ -256,7 +257,7 @@
     const panel = document.createElement('section');
     panel.className = 'start-desk-panel start-desk-stats-panel';
     panel.setAttribute('aria-hidden', 'true');
-    panel.inert = true;
+    panel.setAttribute('inert', '');
     panel.innerHTML = `
       <header>
         <h3>Stats favoris</h3>
@@ -282,7 +283,8 @@
     const next = typeof force === 'boolean' ? force : !panel.classList.contains('is-open');
     panel.classList.toggle('is-open', next);
     panel.setAttribute('aria-hidden', next ? 'false' : 'true');
-    panel.inert = !next;
+    if (next) panel.removeAttribute('inert');
+    else panel.setAttribute('inert', '');
     $('.start-desk-dock [data-action="stats"]')?.classList.toggle('is-active', next);
     if (next) toggleNotes(false);
   }
