@@ -11,14 +11,6 @@
   let panelCloseTimer = null;
   let panelPinnedByClick = false;
 
-  function ensureSettingsStylesheet() {
-    if (document.querySelector('link[data-startdesk-settings-polish]')) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'css/settings-polish.css';
-    link.dataset.startdeskSettingsPolish = '1';
-    document.head.appendChild(link);
-  }
 
   function emit(eventName, detail) {
     StartDesk?.emit?.(eventName, detail);
@@ -316,7 +308,7 @@
   function init() {
     if (initialized) return;
     initialized = true;
-    ensureSettingsStylesheet();
+
     setupPanel();
     setupWeatherLocation();
     setupAppearance();

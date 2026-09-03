@@ -1,7 +1,7 @@
 /* =========================
-   Typo : Inter
+   Typographie système native
    ========================= */
-:root { --fontFamily: 'Inter', system-ui, sans-serif; }
+:root { --fontFamily: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
 html, body, input, button, a, textarea { font-family: var(--fontFamily); }
 body { -webkit-font-smoothing: antialiased; }
 
@@ -5617,3 +5617,1225 @@ html.start-desk .start-desk-status {
         width: min(420px, calc(100vw - 28px)) !important;
       }
     }
+
+/* ===== Consolidated: settings polish ===== */
+/* Start Desk — styles contextuels consolidés pour réduire les requêtes. */
+
+/* === settings-polish-base.css === */
+/* Start Desk 5 — Phase 6.1/6.2 : panneau Paramètres compact + Motion Foundation */
+:root {
+  --sd-settings-surface: rgba(255,255,255,.18);
+  --sd-settings-row: rgba(255,255,255,.16);
+  --sd-settings-border: rgba(255,255,255,.26);
+  --sd-settings-shadow: 0 26px 80px rgba(15,23,42,.18), inset 0 1px 0 rgba(255,255,255,.38);
+  --sd-motion-fast: 140ms;
+  --sd-motion-medium: 190ms;
+  --sd-motion-slow: 260ms;
+  --sd-motion-curve: cubic-bezier(.22,1,.36,1);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --sd-settings-surface: rgba(29,31,38,.68);
+  --sd-settings-row: rgba(255,255,255,.065);
+  --sd-settings-border: rgba(255,255,255,.11);
+  --sd-settings-shadow: 0 30px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.09);
+}
+
+html.start-desk #control-panel.glass {
+  width: min(395px, calc(100vw - 28px)) !important;
+  border-color: var(--sd-settings-border) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), transparent 34%),
+    var(--sd-settings-surface) !important;
+  box-shadow: var(--sd-settings-shadow) !important;
+  transform-origin: top right;
+  will-change: transform, opacity;
+  transition:
+    transform var(--sd-motion-medium) var(--sd-motion-curve),
+    opacity var(--sd-motion-fast) ease-out,
+    box-shadow var(--sd-motion-medium) ease-out !important;
+}
+
+html.start-desk body:not(.panel-open) #control-panel.glass {
+  opacity: 0;
+  transform: translate3d(8px,-4px,0) scale(.97);
+  pointer-events: none;
+}
+
+html.start-desk body.panel-open #control-panel.glass {
+  opacity: 1;
+  transform: translate3d(0,0,0) scale(1);
+  pointer-events: auto;
+}
+
+html.start-desk #overlay {
+  transition:
+    opacity var(--sd-motion-medium) ease-out,
+    backdrop-filter var(--sd-motion-medium) ease-out !important;
+}
+
+html.start-desk #control-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 14px;
+}
+
+html.start-desk #control-panel .panel-header h3 {
+  margin: 0;
+  font-size: .96rem;
+  font-weight: 700;
+  letter-spacing: -.025em;
+}
+
+html.start-desk #control-panel .panel-header .btn-icon {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+}
+
+html.start-desk #control-panel .panel-content {
+  height: calc(100% - 55px);
+  padding: 10px;
+  scroll-padding-block: 10px;
+}
+
+html.start-desk #control-panel .panel-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0 0 7px;
+  padding: 8px 10px;
+  border: 1px solid var(--sd-settings-border);
+  border-radius: 14px;
+  background: var(--sd-settings-row);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 15%, transparent);
+  box-sizing: border-box;
+  transition:
+    transform var(--sd-motion-fast) var(--sd-motion-curve),
+    border-color var(--sd-motion-medium) ease,
+    background-color var(--sd-motion-medium) ease,
+    box-shadow var(--sd-motion-medium) ease;
+}
+
+html.start-desk body.panel-open #control-panel .panel-section {
+  animation: sd-settings-row-in var(--sd-motion-slow) var(--sd-motion-curve) both;
+}
+
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(2) { animation-delay: 18ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(3) { animation-delay: 32ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(4) { animation-delay: 46ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(5) { animation-delay: 60ms; }
+html.start-desk body.panel-open #control-panel .panel-section:nth-child(n+6) { animation-delay: 72ms; }
+
+@keyframes sd-settings-row-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+html.start-desk #control-panel .panel-section:last-child {
+  margin-bottom: 0;
+}
+
+html.start-desk #control-panel .panel-section > label:first-child,
+html.start-desk #control-panel .panel-section > div > label:first-child {
+  margin: 0;
+  color: var(--fg);
+  font-size: .8rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+html.start-desk #control-panel .panel-section:has(.segmented-control),
+html.start-desk #control-panel .panel-section:has(.input-group) {
+  display: block;
+  min-height: 0;
+  padding-block: 9px;
+}
+
+html.start-desk #control-panel .panel-section:has(.segmented-control) > label,
+html.start-desk #control-panel .panel-section:has(.input-group) > label {
+  display: block;
+  margin-bottom: 7px;
+}
+
+html.start-desk #control-panel .segmented-control {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  width: 100%;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--sd-settings-border) 80%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  box-sizing: border-box;
+}
+
+html.start-desk #control-panel .segmented-control button {
+  min-width: 0;
+  min-height: 28px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--secondaryFg);
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+html.start-desk #control-panel button,
+html.start-desk #control-panel .btn-icon,
+html.start-desk #control-panel .slider {
+  transition:
+    transform var(--sd-motion-fast) var(--sd-motion-curve),
+    background-color var(--sd-motion-fast) ease,
+    border-color var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease,
+    color var(--sd-motion-fast) ease,
+    filter var(--sd-motion-fast) ease !important;
+}
+
+html.start-desk #control-panel button:active,
+html.start-desk #control-panel .btn-icon:active {
+  transform: scale(.96) !important;
+}
+
+html.start-desk #control-panel .segmented-control button:hover {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+}
+
+html.start-desk #control-panel .segmented-control button.active {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 12%, transparent);
+  box-shadow: 0 2px 7px rgba(15,23,42,.08), inset 0 1px 0 color-mix(in srgb, white 14%, transparent);
+}
+
+/* Champ météo : le bouton reste dans la carte, même avec un nom de ville long. */
+html.start-desk #control-panel .input-group {
+  display: flex !important;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  gap: 7px;
+  box-sizing: border-box;
+}
+
+html.start-desk #control-panel .input-group input {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--sd-settings-border) 82%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: .8rem;
+  outline: none;
+  box-sizing: border-box;
+  transition:
+    border-color var(--sd-motion-fast) ease,
+    box-shadow var(--sd-motion-fast) ease,
+    background-color var(--sd-motion-fast) ease;
+}
+
+html.start-desk #control-panel .input-group input:focus {
+  border-color: color-mix(in srgb, var(--start-accent) 65%, var(--sd-settings-border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--start-accent) 17%, transparent);
+}
+
+html.start-desk #control-panel .input-group button {
+  flex: 0 0 42px;
+  width: 42px;
+  min-width: 42px;
+  max-width: 42px;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--start-accent) 42%, var(--sd-settings-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--start-accent) 18%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: .74rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+html.start-desk #control-panel .input-group button:hover {
+  filter: brightness(1.045);
+}
+
+html.start-desk #control-panel .toggle-switch {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+}
+
+html.start-desk #control-panel .toggle-switch .slider {
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+html.start-desk #control-panel .toggle-switch .slider::before {
+  width: 20px;
+  height: 20px;
+  left: 2px;
+  bottom: 2px;
+  transition: transform var(--sd-motion-medium) var(--sd-motion-curve) !important;
+}
+
+html.start-desk #control-panel .toggle-switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+/* Hover volontairement lumineux et discret : la carte réagit à la lumière sans s'assombrir. */
+html.start-desk #control-panel .panel-section:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, white 9%, var(--sd-settings-border));
+  background: color-mix(in srgb, white 3%, var(--sd-settings-row));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 21%, transparent),
+    0 7px 18px rgba(15,23,42,.038);
+}
+
+:root[data-theme="dark"] html.start-desk #control-panel .panel-section:hover,
+:root[data-theme="macos-dark"] html.start-desk #control-panel .panel-section:hover {
+  border-color: color-mix(in srgb, white 4%, var(--sd-settings-border));
+  background: color-mix(in srgb, white 2.2%, var(--sd-settings-row));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.11),
+    0 8px 20px rgba(0,0,0,.12);
+}
+
+html.start-desk #control-panel .muted {
+  color: var(--secondaryFg);
+  font-size: .68rem;
+  line-height: 1.2;
+}
+
+/* Phase 6.2 — micro-interactions des favoris. */
+html.start-desk #bookmark-container .bookmark-set {
+  transition:
+    transform 180ms var(--sd-motion-curve),
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease !important;
+  will-change: transform;
+}
+
+html.start-desk #bookmark-container .bookmark-set:hover {
+  transform: translate3d(0,-2px,0) scale(1.006) !important;
+  box-shadow:
+    0 20px 58px rgba(15,23,42,.13),
+    inset 0 1px 0 rgba(255,255,255,.27) !important;
+}
+
+html.start-desk #bookmark-container .bookmark {
+  transition:
+    transform 180ms var(--sd-motion-curve),
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease !important;
+}
+
+html.start-desk #bookmark-container .bookmark:hover {
+  transform: translate3d(0,-1px,0);
+  filter: brightness(1.025);
+}
+
+html.start-desk #bookmark-container .bookmark:active {
+  transform: translate3d(0,0,0) scale(.97);
+  transition-duration: 80ms !important;
+}
+
+html.start-desk #bookmark-container .bookmark:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  html.start-desk #control-panel.glass {
+    width: auto !important;
+    max-height: calc(100dvh - 20px);
+    transform-origin: top center;
+  }
+
+  html.start-desk #control-panel .panel-header {
+    min-height: 52px;
+    padding-inline: 12px;
+  }
+
+  html.start-desk #control-panel .panel-content {
+    height: calc(100% - 53px);
+    padding: 8px;
+  }
+
+  html.start-desk #control-panel .panel-section {
+    border-radius: 13px;
+    padding-inline: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk #control-panel.glass,
+  html.start-desk #overlay,
+  html.start-desk #control-panel .panel-section,
+  html.start-desk #control-panel button,
+  html.start-desk #control-panel .btn-icon,
+  html.start-desk #control-panel .slider,
+  html.start-desk #control-panel .slider::before,
+  html.start-desk #control-panel input,
+  html.start-desk #bookmark-container .bookmark-set,
+  html.start-desk #bookmark-container .bookmark {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-set:hover,
+  html.start-desk #bookmark-container .bookmark:hover,
+  html.start-desk #bookmark-container .bookmark:active {
+    transform: none !important;
+  }
+}
+
+/* === motion-widgets.css === */
+/* Start Desk 5 — Phase 6.3 : micro-interactions des widgets */
+
+:root {
+  --sd-widget-motion-fast: 140ms;
+  --sd-widget-motion-medium: 190ms;
+  --sd-widget-motion-slow: 260ms;
+  --sd-widget-motion-curve: cubic-bezier(.22, 1, .36, 1);
+}
+
+html.start-desk .widget-shell,
+html.start-desk #weather-card,
+html.start-desk #calendar-container,
+html.start-desk #news-container {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform var(--sd-widget-motion-medium) var(--sd-widget-motion-curve),
+    border-color var(--sd-widget-motion-medium) ease,
+    box-shadow var(--sd-widget-motion-medium) ease,
+    background-color var(--sd-widget-motion-medium) ease,
+    opacity var(--sd-widget-motion-fast) ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk .widget-shell:hover,
+  html.start-desk #weather-card:hover,
+  html.start-desk #calendar-container:hover,
+  html.start-desk #news-container:hover {
+    transform: translate3d(0, -2px, 0);
+    border-color: color-mix(in srgb, white 7%, var(--start-border)) !important;
+    box-shadow:
+      0 22px 64px rgba(15, 23, 42, .13),
+      inset 0 1px 0 rgba(255, 255, 255, .25) !important;
+  }
+
+  :root[data-theme="dark"] html.start-desk .widget-shell:hover,
+  :root[data-theme="dark"] html.start-desk #weather-card:hover,
+  :root[data-theme="dark"] html.start-desk #calendar-container:hover,
+  :root[data-theme="dark"] html.start-desk #news-container:hover,
+  :root[data-theme="macos-dark"] html.start-desk .widget-shell:hover,
+  :root[data-theme="macos-dark"] html.start-desk #weather-card:hover,
+  :root[data-theme="macos-dark"] html.start-desk #calendar-container:hover,
+  :root[data-theme="macos-dark"] html.start-desk #news-container:hover {
+    border-color: rgba(255, 255, 255, .14) !important;
+    box-shadow:
+      0 24px 68px rgba(0, 0, 0, .30),
+      inset 0 1px 0 rgba(255, 255, 255, .10) !important;
+  }
+}
+
+html.start-desk .widget-toolbar,
+html.start-desk .widget-title,
+html.start-desk .widget-window-controls,
+html.start-desk .widget-close-dot,
+html.start-desk .chat-tab,
+html.start-desk #weather-toggle,
+html.start-desk #calendar-toggle-details {
+  transition:
+    transform var(--sd-widget-motion-fast) var(--sd-widget-motion-curve),
+    opacity var(--sd-widget-motion-fast) ease,
+    background-color var(--sd-widget-motion-fast) ease,
+    border-color var(--sd-widget-motion-fast) ease,
+    color var(--sd-widget-motion-fast) ease,
+    box-shadow var(--sd-widget-motion-fast) ease !important;
+}
+
+html.start-desk .widget-close-dot:hover,
+html.start-desk .chat-tab:hover,
+html.start-desk #weather-toggle:hover,
+html.start-desk #calendar-toggle-details:hover {
+  transform: translate3d(0, -1px, 0);
+}
+
+html.start-desk .widget-close-dot:active,
+html.start-desk .chat-tab:active,
+html.start-desk #weather-toggle:active,
+html.start-desk #calendar-toggle-details:active {
+  transform: scale(.94);
+  transition-duration: 80ms !important;
+}
+
+html.start-desk .widget-close-dot:focus-visible,
+html.start-desk .chat-tab:focus-visible,
+html.start-desk #weather-toggle:focus-visible,
+html.start-desk #calendar-toggle-details:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+html.start-desk #weather-details:not([hidden]),
+html.start-desk .chat-panel:not([hidden]),
+html.start-desk .widget-body:not([hidden]) {
+  animation: sd-widget-content-in var(--sd-widget-motion-slow) var(--sd-widget-motion-curve) both;
+}
+
+html.start-desk .widget-shell.is-collapsed .widget-body,
+html.start-desk #weather-details[hidden] {
+  animation: none;
+}
+
+@keyframes sd-widget-content-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 5px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+html.start-desk .widget-resizer {
+  opacity: .34;
+  transition:
+    opacity var(--sd-widget-motion-fast) ease,
+    transform var(--sd-widget-motion-fast) var(--sd-widget-motion-curve) !important;
+}
+
+html.start-desk .widget-shell:hover .widget-resizer {
+  opacity: .64;
+}
+
+html.start-desk .widget-resizer:active {
+  opacity: .9;
+  transform: scale(1.08);
+}
+
+@media (max-width: 767px) {
+  html.start-desk .widget-shell:hover,
+  html.start-desk #weather-card:hover,
+  html.start-desk #calendar-container:hover,
+  html.start-desk #news-container:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk .widget-shell,
+  html.start-desk #weather-card,
+  html.start-desk #calendar-container,
+  html.start-desk #news-container,
+  html.start-desk .widget-toolbar,
+  html.start-desk .widget-title,
+  html.start-desk .widget-window-controls,
+  html.start-desk .widget-close-dot,
+  html.start-desk .chat-tab,
+  html.start-desk #weather-toggle,
+  html.start-desk #calendar-toggle-details,
+  html.start-desk #weather-details,
+  html.start-desk .chat-panel,
+  html.start-desk .widget-body,
+  html.start-desk .widget-resizer {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* === motion-global.css === */
+/* Start Desk 5 — Phase 6.4 / Phase 7 : polish global et optimisation */
+
+:root {
+  --sd-global-motion-fast: 140ms;
+  --sd-global-motion-medium: 190ms;
+  --sd-global-motion-slow: 260ms;
+  --sd-global-motion-curve: cubic-bezier(.22, 1, .36, 1);
+}
+
+html.start-desk #search-form.spotlight,
+html.start-desk .startpage-quick-controls,
+html.start-desk .quick-command-hint,
+html.start-desk .start-desk-status,
+html.start-desk .start-desk-dock,
+html.start-desk .start-desk-panel,
+html.start-desk .engine-menu,
+html.start-desk .command-palette {
+  transition:
+    transform var(--sd-global-motion-medium) var(--sd-global-motion-curve),
+    opacity var(--sd-global-motion-fast) ease,
+    border-color var(--sd-global-motion-medium) ease,
+    box-shadow var(--sd-global-motion-medium) ease,
+    background-color var(--sd-global-motion-medium) ease !important;
+}
+
+html.start-desk #search-form.spotlight:focus-within {
+  transform: translate3d(0, -1px, 0);
+}
+
+html.start-desk .startpage-profile-pill,
+html.start-desk .startpage-focus-pill,
+html.start-desk .startpage-auto-pill,
+html.start-desk .start-desk-dock button,
+html.start-desk .engine-button,
+html.start-desk .engine-option,
+html.start-desk .command-item,
+html.start-desk .close-panel,
+html.start-desk .reset-stats {
+  transition:
+    transform var(--sd-global-motion-fast) var(--sd-global-motion-curve),
+    opacity var(--sd-global-motion-fast) ease,
+    color var(--sd-global-motion-fast) ease,
+    background-color var(--sd-global-motion-fast) ease,
+    border-color var(--sd-global-motion-fast) ease,
+    box-shadow var(--sd-global-motion-fast) ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk .startpage-profile-pill:hover,
+  html.start-desk .startpage-focus-pill:hover,
+  html.start-desk .startpage-auto-pill:hover,
+  html.start-desk .start-desk-dock button:hover,
+  html.start-desk .engine-button:hover,
+  html.start-desk .engine-option:hover,
+  html.start-desk .command-item:hover,
+  html.start-desk .close-panel:hover,
+  html.start-desk .reset-stats:hover {
+    transform: translate3d(0, -1px, 0);
+  }
+}
+
+html.start-desk .startpage-profile-pill:active,
+html.start-desk .startpage-focus-pill:active,
+html.start-desk .startpage-auto-pill:active,
+html.start-desk .start-desk-dock button:active,
+html.start-desk .engine-button:active,
+html.start-desk .engine-option:active,
+html.start-desk .command-item:active,
+html.start-desk .close-panel:active,
+html.start-desk .reset-stats:active {
+  transform: scale(.96);
+  transition-duration: 80ms !important;
+}
+
+html.start-desk .startpage-profile-pill:focus-visible,
+html.start-desk .startpage-focus-pill:focus-visible,
+html.start-desk .startpage-auto-pill:focus-visible,
+html.start-desk .start-desk-dock button:focus-visible,
+html.start-desk .engine-button:focus-visible,
+html.start-desk .engine-option:focus-visible,
+html.start-desk .command-item:focus-visible,
+html.start-desk .close-panel:focus-visible,
+html.start-desk .reset-stats:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 72%, white);
+  outline-offset: 2px;
+}
+
+html.start-desk .engine-menu:not([hidden]),
+html.start-desk .command-palette:not([hidden]),
+html.start-desk .start-desk-panel.is-open {
+  animation: sd-global-pop-in var(--sd-global-motion-slow) var(--sd-global-motion-curve) both;
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+@keyframes sd-global-pop-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+html.start-desk .quick-command-hint {
+  opacity: .68;
+}
+
+html.start-desk .quick-command-hint:hover,
+html.start-desk #search-form.spotlight:focus-within + .quick-command-hint {
+  opacity: .92;
+}
+
+/* Phase 7 : pas de couche GPU permanente sur les éléments fixes. */
+html.start-desk .start-desk-status,
+html.start-desk .start-desk-dock {
+  will-change: auto;
+}
+
+@media (max-width: 767px) {
+  html.start-desk #search-form.spotlight:focus-within,
+  html.start-desk .startpage-profile-pill:hover,
+  html.start-desk .startpage-focus-pill:hover,
+  html.start-desk .startpage-auto-pill:hover,
+  html.start-desk .start-desk-dock button:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk #search-form.spotlight,
+  html.start-desk .startpage-quick-controls,
+  html.start-desk .quick-command-hint,
+  html.start-desk .start-desk-status,
+  html.start-desk .start-desk-dock,
+  html.start-desk .start-desk-panel,
+  html.start-desk .engine-menu,
+  html.start-desk .command-palette,
+  html.start-desk .startpage-profile-pill,
+  html.start-desk .startpage-focus-pill,
+  html.start-desk .startpage-auto-pill,
+  html.start-desk .start-desk-dock button,
+  html.start-desk .engine-button,
+  html.start-desk .engine-option,
+  html.start-desk .command-item,
+  html.start-desk .close-panel,
+  html.start-desk .reset-stats {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+}
+
+/* === context-calendar.css === */
+/* Start Desk 5.2 — calendrier contextuel */
+
+html.start-desk .calendar-event-item.is-next-event {
+  position: relative;
+  border-color: color-mix(in srgb, var(--start-accent) 24%, transparent) !important;
+  background: color-mix(in srgb, var(--start-accent) 7%, transparent) !important;
+  box-shadow:
+    inset 3px 0 0 color-mix(in srgb, var(--start-accent) 58%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 8px 24px rgba(15,23,42,.045);
+}
+
+html.start-desk .calendar-event-item.is-next-event .calendar-event-name {
+  font-weight: 650;
+}
+
+html.start-desk .calendar-event-relative {
+  display: inline-flex;
+  align-items: center;
+  margin-top: .28rem;
+  padding: .16rem .48rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+  color: color-mix(in srgb, var(--start-accent) 82%, currentColor);
+  background: color-mix(in srgb, var(--start-accent) 9%, transparent);
+}
+
+html.start-desk .calendar-event-relative.is-now {
+  color: inherit;
+  background: color-mix(in srgb, var(--start-accent) 14%, transparent);
+}
+
+:root[data-theme="dark"] html.start-desk .calendar-event-item.is-next-event,
+:root[data-theme="macos-dark"] html.start-desk .calendar-event-item.is-next-event {
+  background: color-mix(in srgb, var(--start-accent) 10%, rgba(255,255,255,.025)) !important;
+  box-shadow:
+    inset 3px 0 0 color-mix(in srgb, var(--start-accent) 68%, transparent),
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 10px 28px rgba(0,0,0,.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk .calendar-event-item.is-next-event,
+  html.start-desk .calendar-event-relative {
+    transition: none !important;
+  }
+}
+
+/* === context-weather.css === */
+/* Start Desk 5.2 — météo contextuelle, limitée au widget */
+
+html.start-desk #weather {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    background-color 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease !important;
+}
+
+html.start-desk #weather::before {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+html.start-desk #weather.is-weather-clear::before {
+  opacity: .48;
+  background: radial-gradient(circle at 76% 22%, rgba(255,216,112,.34), transparent 40%);
+}
+
+html.start-desk #weather.is-weather-cloudy::before {
+  opacity: .36;
+  background: radial-gradient(circle at 72% 20%, rgba(190,205,224,.24), transparent 44%);
+}
+
+html.start-desk #weather.is-weather-rain::before,
+html.start-desk #weather.is-weather-storm::before {
+  opacity: .38;
+  background: radial-gradient(circle at 72% 20%, rgba(112,154,194,.28), transparent 44%);
+}
+
+html.start-desk #weather.is-weather-snow::before {
+  opacity: .46;
+  background: radial-gradient(circle at 72% 18%, rgba(232,244,255,.42), transparent 42%);
+}
+
+html.start-desk #weather.is-weather-fog::before {
+  opacity: .34;
+  background: radial-gradient(circle at 70% 20%, rgba(220,224,228,.30), transparent 46%);
+}
+
+html.start-desk #weather.is-weather-night::before {
+  opacity: .38;
+  background: radial-gradient(circle at 76% 20%, rgba(107,123,181,.24), transparent 42%);
+}
+
+html.start-desk #weather.is-weather-storm {
+  border-color: color-mix(in srgb, #7892b5 22%, var(--start-border)) !important;
+}
+
+:root[data-theme="dark"] html.start-desk #weather.is-weather-clear::before,
+:root[data-theme="macos-dark"] html.start-desk #weather.is-weather-clear::before {
+  opacity: .26;
+}
+
+:root[data-theme="dark"] html.start-desk #weather.is-weather-night::before,
+:root[data-theme="macos-dark"] html.start-desk #weather.is-weather-night::before {
+  opacity: .24;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk #weather,
+  html.start-desk #weather::before {
+    transition: none !important;
+  }
+}
+
+/* === context-search.css === */
+/* Start Desk 5.2 — recherche enrichie */
+
+html.start-desk .command-palette {
+  overflow: hidden;
+  padding: .38rem;
+}
+
+html.start-desk .command-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  min-height: 44px;
+  border-radius: 11px;
+}
+
+html.start-desk .command-item-copy {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: .55rem;
+  text-align: left;
+}
+
+html.start-desk .command-item-copy > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.start-desk .command-item-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: .58;
+}
+
+html.start-desk .command-item-kind {
+  flex: 0 0 auto;
+  padding: .14rem .42rem;
+  border: 1px solid color-mix(in srgb, var(--fg) 8%, transparent);
+  border-radius: 999px;
+  font-size: .64rem;
+  font-weight: 650;
+  letter-spacing: .015em;
+  color: color-mix(in srgb, var(--fg) 52%, transparent);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+}
+
+html.start-desk .command-item.is-active .command-item-kind {
+  color: color-mix(in srgb, var(--start-accent) 72%, var(--fg));
+  border-color: color-mix(in srgb, var(--start-accent) 16%, transparent);
+  background: color-mix(in srgb, var(--start-accent) 7%, transparent);
+}
+
+/* La croix occupe désormais sa propre zone à droite de Spotlight.
+   On décale uniquement l'aide visuelle, sans toucher au positionnement du formulaire. */
+html.start-desk body.focus-mode #search-form.spotlight::after {
+  right: 62px !important;
+  max-width: calc(100% - 190px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  html.start-desk .command-item-copy {
+    display: grid;
+    gap: .08rem;
+  }
+
+  html.start-desk .command-item-kind {
+    display: none;
+  }
+}
+
+/* === context-time.css === */
+/* Start Desk 5.2 — ambiance temporelle
+   Variation volontairement discrète : elle nuance le verre et les ombres,
+   sans remplacer le thème choisi par l'utilisateur. */
+
+html.start-desk {
+  --sd-time-warmth: rgba(255,255,255,0);
+  --sd-time-highlight: rgba(255,255,255,.16);
+  --sd-time-shadow: rgba(15,23,42,.045);
+}
+
+html.start-desk[data-start-desk-period="morning"] {
+  --sd-time-warmth: rgba(255,210,156,.028);
+  --sd-time-highlight: rgba(255,247,232,.19);
+  --sd-time-shadow: rgba(92,65,38,.045);
+}
+
+html.start-desk[data-start-desk-period="day"] {
+  --sd-time-warmth: rgba(210,232,255,.018);
+  --sd-time-highlight: rgba(255,255,255,.19);
+  --sd-time-shadow: rgba(15,23,42,.04);
+}
+
+html.start-desk[data-start-desk-period="evening"] {
+  --sd-time-warmth: rgba(255,178,124,.026);
+  --sd-time-highlight: rgba(255,236,218,.15);
+  --sd-time-shadow: rgba(66,42,33,.055);
+}
+
+html.start-desk[data-start-desk-period="night"] {
+  --sd-time-warmth: rgba(118,144,196,.018);
+  --sd-time-highlight: rgba(218,230,255,.11);
+  --sd-time-shadow: rgba(5,10,24,.07);
+}
+
+/* Le voile est presque imperceptible et ne capte jamais les interactions. */
+html.start-desk body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--sd-time-warmth), transparent 42%);
+  opacity: 1;
+  transition: opacity 900ms ease;
+}
+
+/* Nuance commune aux surfaces de verre, sans toucher à leur couleur de base. */
+html.start-desk[data-start-desk-period] #search-form.spotlight,
+html.start-desk[data-start-desk-period] .widget-shell,
+html.start-desk[data-start-desk-period] .start-desk-panel,
+html.start-desk[data-start-desk-period] .command-palette,
+html.start-desk[data-start-desk-period] .engine-menu {
+  box-shadow:
+    inset 0 1px 0 var(--sd-time-highlight),
+    0 10px 30px var(--sd-time-shadow);
+}
+
+/* En mode sombre, la nuance reste encore plus retenue. */
+:root[data-theme="dark"] html.start-desk,
+:root[data-theme="macos-dark"] html.start-desk {
+  --sd-time-highlight: rgba(255,255,255,.065);
+}
+
+:root[data-theme="dark"] html.start-desk[data-start-desk-period="night"],
+:root[data-theme="macos-dark"] html.start-desk[data-start-desk-period="night"] {
+  --sd-time-warmth: rgba(86,112,168,.014);
+  --sd-time-highlight: rgba(220,232,255,.055);
+  --sd-time-shadow: rgba(0,0,0,.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk body::before {
+    transition: none !important;
+  }
+}
+
+/* === dock-clearance.css === */
+/* Start Desk — dégagement du dock
+   Le dock reste plus près du bord inférieur, à la manière de macOS,
+   tandis que la page réserve davantage d'espace aux dernières tuiles. */
+
+html.start-desk .start-desk-dock {
+  bottom: max(8px, env(safe-area-inset-bottom)) !important;
+}
+
+html.start-desk body {
+  padding-bottom: calc(104px + env(safe-area-inset-bottom)) !important;
+}
+
+html.start-desk body.focus-mode .container {
+  padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+}
+
+@media (max-width: 560px) {
+  html.start-desk .start-desk-dock {
+    bottom: max(7px, env(safe-area-inset-bottom)) !important;
+  }
+
+  html.start-desk body {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
+  }
+
+  html.start-desk body.focus-mode .container {
+    padding-bottom: calc(116px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* === mobile-profile.css === */
+/* Start Desk — profil responsive mobile
+   La version Mac reste inchangée. Sur petit écran, Start Desk se recentre
+   sur Spotlight, les favoris utiles en mobilité et un dock raccourci. */
+
+@media (max-width: 680px) {
+  html.start-desk body {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  }
+
+  html.start-desk body.focus-mode .container {
+    justify-content: flex-start !important;
+    padding-top: max(82px, calc(env(safe-area-inset-top) + 70px)) !important;
+    padding-bottom: calc(106px + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Spotlight reste l'élément principal : plus compact, strictement centré
+     et toujours contenu dans le viewport. */
+  html.start-desk .hero {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    width: 100% !important;
+    padding-inline: 0 !important;
+  }
+
+  html.start-desk #search-form.spotlight,
+  html.start-desk body.focus-mode #search-form.spotlight {
+    width: min(92vw, 430px) !important;
+    max-width: calc(100vw - 28px) !important;
+    min-height: 56px !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 999px !important;
+    padding-inline: .72rem !important;
+    overflow: visible !important;
+  }
+
+  html.start-desk #search-input {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: .98rem !important;
+    text-align: left !important;
+  }
+
+  html.start-desk .engine-button {
+    flex: 0 0 auto;
+    min-width: 38px;
+    padding-inline: .46rem !important;
+  }
+
+  html.start-desk .engine-button .engine-label,
+  html.start-desk #engine-name {
+    display: none !important;
+  }
+
+  html.start-desk #search-clear {
+    flex: 0 0 28px !important;
+  }
+
+  /* Sur mobile, Spotlight est le centre de commande : les aides et les
+     contrôles de profil restent accessibles via le dock ou les commandes. */
+  html.start-desk .quick-command-hint,
+  html.start-desk .startpage-quick-controls {
+    display: none !important;
+  }
+
+  /* Favoris mobiles : services pratiques et personnels uniquement.
+     Les catégories professionnelles lourdes restent disponibles sur Mac
+     et restent trouvables via Spotlight. */
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Ressources Humaines"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Administration"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Banques & Finance"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Répertoire Pro"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Web-admin"],
+  html.start-desk #bookmark-container .bookmark-set[data-tile-title="Admin Page"] {
+    display: none !important;
+  }
+
+  html.start-desk body.focus-mode #bookmark-container,
+  html.start-desk #bookmark-container {
+    width: calc(100vw - 24px) !important;
+    margin-top: .5rem !important;
+    margin-bottom: 1rem !important;
+    gap: .62rem !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-set {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 20px !important;
+    padding: .58rem !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-header {
+    margin-bottom: .18rem;
+    padding-bottom: .28rem;
+  }
+
+  html.start-desk #bookmark-container .bookmark-title {
+    font-size: .8rem !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark-inner-container {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  html.start-desk #bookmark-container .bookmark {
+    margin-block: .12rem !important;
+    padding: .52rem .62rem !important;
+    font-size: .9rem !important;
+  }
+
+  /* En mode complet sur mobile, garder seulement la météo.
+     Les gros widgets restent réservés aux écrans plus larges. */
+  html.start-desk #calendar-container,
+  html.start-desk #news-container,
+  html.start-desk #chat-container {
+    display: none !important;
+  }
+
+  html.start-desk #weather-container {
+    width: calc(100vw - 24px) !important;
+    max-width: none !important;
+    margin-inline: auto !important;
+    border-radius: 20px !important;
+  }
+
+  html.start-desk #weather-container .widget-toolbar {
+    min-height: 38px !important;
+  }
+
+  html.start-desk #weather-container .widget-body {
+    padding: 10px !important;
+  }
+
+  /* Dock mobile : quatre actions réellement utiles. */
+  html.start-desk .start-desk-dock [data-action="code"],
+  html.start-desk .start-desk-dock [data-action="apps"],
+  html.start-desk .start-desk-dock [data-action="agenda"],
+  html.start-desk .start-desk-dock [data-action="stats"] {
+    display: none !important;
+  }
+
+  html.start-desk .start-desk-dock {
+    left: 50% !important;
+    right: auto !important;
+    bottom: max(7px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    transform: translateX(-50%) !important;
+    justify-content: center !important;
+    overflow: visible !important;
+    padding: .3rem !important;
+    gap: .18rem !important;
+    border-radius: 22px !important;
+  }
+
+  html.start-desk .start-desk-dock button {
+    min-width: 0 !important;
+    min-height: 34px !important;
+    padding: .38rem .68rem !important;
+    font-size: .76rem !important;
+    white-space: nowrap;
+  }
+
+  /* Les panneaux rapides doivent rester au-dessus du dock raccourci. */
+  html.start-desk .start-desk-panel {
+    bottom: calc(62px + env(safe-area-inset-bottom)) !important;
+    width: calc(100vw - 20px) !important;
+    max-height: calc(100dvh - 94px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    border-radius: 22px !important;
+  }
+
+  html.start-desk .command-palette {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    top: calc(100% + .42rem) !important;
+    max-height: min(52dvh, 420px) !important;
+    overflow-y: auto !important;
+    border-radius: 17px !important;
+    z-index: 920 !important;
+  }
+}
+
+/* Petit format paysage / grands téléphones : deux cartes possibles sans
+   transformer la version iPhone en dashboard de bureau. */
+@media (min-width: 520px) and (max-width: 680px) {
+  html.start-desk #bookmark-container .bookmark-set {
+    flex: 1 1 calc(50% - .4rem) !important;
+    width: auto !important;
+  }
+}
