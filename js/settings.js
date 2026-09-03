@@ -11,6 +11,15 @@
   let panelCloseTimer = null;
   let panelPinnedByClick = false;
 
+  function ensureSettingsStylesheet() {
+    if (document.querySelector('link[data-startdesk-settings-polish]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'css/settings-polish.css';
+    link.dataset.startdeskSettingsPolish = '1';
+    document.head.appendChild(link);
+  }
+
   function emit(eventName, detail) {
     StartDesk?.emit?.(eventName, detail);
   }
@@ -276,8 +285,8 @@
         const hidden = !toggle.checked;
         persistWidgetVisibility(widgetId, hidden, hiddenState);
         applyHiddenState(widgetId, hidden);
-        if (widgetId === 'news' && toggle.checked && typeof global.loadNews === 'function' && !global.__newsLoaded) {
-          global.loadNews();
+        if (toggle.checked && typeof global.StartDeskLoadSecondary === 'function') {
+          global.StartDeskLoadSecondary();
         }
         emit('settings:widget-visibility-changed', { widgetId, visible: toggle.checked });
       });
@@ -307,6 +316,7 @@
   function init() {
     if (initialized) return;
     initialized = true;
+    ensureSettingsStylesheet();
     setupPanel();
     setupWeatherLocation();
     setupAppearance();

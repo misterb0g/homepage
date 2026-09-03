@@ -1,8 +1,54 @@
     // --- Init ---
+    const SECONDARY_SCRIPTS = [
+      'js/weather.js',
+      'js/news.js',
+      'js/chat.js',
+      'js/calendar.js',
+      'js/dashboard.js'
+    ];
+    let secondaryModulesPromise = null;
     let initialWeatherLoaded = false;
 
-    function loadSecondaryData() {
+    function loadScriptOnce(src) {
+      const existing = document.querySelector(`script[data-startdesk-src="${src}"]`);
+      if (existing) {
+        if (existing.dataset.loaded === '1') return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          existing.addEventListener('load', resolve, { once: true });
+          existing.addEventListener('error', reject, { once: true });
+        });
+      }
+
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = false;
+        script.dataset.startdeskSrc = src;
+        script.addEventListener('load', () => {
+          script.dataset.loaded = '1';
+          resolve();
+        }, { once: true });
+        script.addEventListener('error', () => reject(new Error(`Impossible de charger ${src}`)), { once: true });
+        document.body.appendChild(script);
+      });
+    }
+
+    function loadSecondaryModules() {
+      if (!secondaryModulesPromise) {
+        secondaryModulesPromise = Promise.all(SECONDARY_SCRIPTS.map(loadScriptOnce))
+          .catch((error) => {
+            secondaryModulesPromise = null;
+            console.error('Modules secondaires:', error);
+            throw error;
+          });
+      }
+      return secondaryModulesPromise;
+    }
+
+    async function loadSecondaryData() {
       if (document.body.classList.contains('focus-mode')) return;
+
+      await loadSecondaryModules();
 
       if (!initialWeatherLoaded && typeof getWeather === 'function') {
         initialWeatherLoaded = true;

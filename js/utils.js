@@ -100,6 +100,28 @@ function resetTileOrder() {
   try { localStorage.removeItem(TILE_ORDER_KEY); } catch {}
 }
 
+let sortableLoadPromise = null;
+
+function ensureSortableLoaded() {
+  if (window.Sortable) return Promise.resolve(window.Sortable);
+  if (sortableLoadPromise) return sortableLoadPromise;
+
+  sortableLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js';
+    script.dataset.startdeskSortable = '1';
+    script.addEventListener('load', () => resolve(window.Sortable), { once: true });
+    script.addEventListener('error', () => reject(new Error('SortableJS indisponible')), { once: true });
+    document.head.appendChild(script);
+  }).catch((error) => {
+    sortableLoadPromise = null;
+    console.error(error);
+    throw error;
+  });
+
+  return sortableLoadPromise;
+}
+
 function initTileSortable() {
   const container = $("#bookmark-container");
   if (!container) return;
@@ -109,12 +131,15 @@ function initTileSortable() {
     window.__tileSortable = null;
   }
 
-  if (typeof Sortable === "undefined") {
-    console.warn("SortableJS non chargé : drag & drop désactivé.");
+  const isEdit = document.body.classList.contains("edit-mode");
+  if (!isEdit) return;
+
+  if (!window.Sortable) {
+    ensureSortableLoaded().then(initTileSortable).catch(() => {});
     return;
   }
 
-  window.__tileSortable = new Sortable(container, {
+  window.__tileSortable = new window.Sortable(container, {
     animation: 150,
     easing: "cubic-bezier(.2,.9,.2,1)",
     handle: ".tile-handle",
@@ -131,14 +156,20 @@ function initTileSortable() {
       saveTileOrderFromDOM();
     }
   });
-
-  const isEdit = document.body.classList.contains("edit-mode");
-  window.__tileSortable.option("disabled", !isEdit);
 }
 
 function setTileSortableEnabled(enabled) {
-  if (!window.__tileSortable) return;
-  window.__tileSortable.option("disabled", !enabled);
+  if (!enabled) {
+    window.__tileSortable?.option("disabled", true);
+    return;
+  }
+
+  if (window.__tileSortable) {
+    window.__tileSortable.option("disabled", false);
+    return;
+  }
+
+  ensureSortableLoaded().then(initTileSortable).catch(() => {});
 }
 
 StartDesk.register('utils', {
@@ -151,5 +182,6 @@ StartDesk.register('utils', {
   saveTileOrderFromDOM,
   resetTileOrder,
   initTileSortable,
+  ensureSortableLoaded,
   setTileSortableEnabled
 });
