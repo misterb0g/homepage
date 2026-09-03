@@ -1,6 +1,6 @@
 // Cache applicatif minimal et prudent pour Start Desk.
 const CACHE_PREFIX = 'start-desk-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v6';
+const CACHE_NAME = CACHE_PREFIX + 'v7';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -10,9 +10,6 @@ const APP_SHELL = [
   '/apple-touch-icon.png',
   '/manifest.webmanifest',
   '/icons/start-desk.svg',
-  '/css/assistant-enhancements.css',
-  '/css/startpage-plus.css',
-  '/css/start-desk.css',
   '/js/startpage-config.js',
   '/js/startpage-plus.js',
   '/js/pwa.js',
