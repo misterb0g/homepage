@@ -6,6 +6,8 @@
 
   // Placeholder "Spotlight-like" (stable, quel que soit le moteur)
   const BASE_PLACEHOLDER = "Rechercher, lancer un outil, poser une question…";
+  const MOBILE_PLACEHOLDER = "Rechercher…";
+  const mobileSearchQuery = window.matchMedia("(max-width: 560px)");
 
   const PREFIX_ENGINES = {
     "w ": { url: "https://fr.wikipedia.org/w/index.php", queryParam: "search", placeholder: "Rechercher sur Wikipédia..." },
@@ -80,7 +82,7 @@
     searchInput.name = engine.queryParam;
     setEngineIcon(engine.iconId);
     engineBtn.title = engine.name;
-    searchInput.placeholder = BASE_PLACEHOLDER;
+    searchInput.placeholder = mobileSearchQuery.matches ? MOBILE_PLACEHOLDER : BASE_PLACEHOLDER;
 
     engineOptions.forEach((btn) => {
       const active = btn.dataset.engine === engineId;
@@ -88,6 +90,10 @@
       btn.setAttribute("aria-selected", active ? "true" : "false");
     });
   }
+
+  mobileSearchQuery.addEventListener?.("change", () => {
+    applyDefaultEngine(getDefaultEngineId());
+  });
 
   function updateClearButton() {
     if (!clearButton || !searchInput) return;

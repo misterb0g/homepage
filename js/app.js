@@ -1,11 +1,33 @@
     // --- Init ---
+    let initialWeatherLoaded = false;
+
+    function loadSecondaryData() {
+      if (document.body.classList.contains('focus-mode')) return;
+
+      if (!initialWeatherLoaded && typeof getWeather === 'function') {
+        initialWeatherLoaded = true;
+        getWeather();
+      }
+
+      const showNews = localStorage.getItem('showNews') !== 'false';
+      if (showNews && typeof loadNews === 'function' && !window.__newsLoaded) loadNews();
+
+      const showCalendar = localStorage.getItem('calendarHidden') !== '1';
+      if (showCalendar && typeof window.loadCalendarEvents === 'function') {
+        window.loadCalendarEvents();
+      }
+    }
+
+    window.StartDeskLoadSecondary = loadSecondaryData;
+    window.addEventListener('startdesk:focus-changed', (event) => {
+      if (!event.detail?.focus) loadSecondaryData();
+    });
+
     window.addEventListener("load", () => {
       updateGreeting(); $("#clock").textContent = getTime();
       setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
-      setupBookmarks(); 
-      getWeather();
-      const showNews = localStorage.getItem('showNews') !== 'false';
-      if (showNews) loadNews();
+      setupBookmarks();
+      loadSecondaryData();
     });
 
 
@@ -114,6 +136,13 @@
           localStorage.setItem(`show${widget[0].toUpperCase()}${widget.slice(1)}`, visible ? 'true' : 'false');
         }
         if (toggle) toggle.checked = visible;
+
+        if (visible && !document.body.classList.contains('focus-mode')) {
+          if (widget === 'news' && typeof loadNews === 'function' && !window.__newsLoaded) loadNews();
+          if (widget === 'calendar' && typeof window.loadCalendarEvents === 'function') {
+            window.loadCalendarEvents();
+          }
+        }
       }
 
       function setDensityNormal() {

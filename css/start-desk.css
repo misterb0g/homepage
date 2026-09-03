@@ -811,13 +811,17 @@ html.start-desk .start-desk-status {
 }
 
 @media (max-width: 560px) {
+  html.start-desk {
+    scroll-padding-bottom: calc(118px + env(safe-area-inset-bottom));
+  }
+
   html.start-desk body {
-    padding-bottom: calc(82px + env(safe-area-inset-bottom));
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
   }
 
   html.start-desk body.focus-mode .container {
     padding-top: 100px !important;
-    padding-bottom: calc(102px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
   }
 
   html.start-desk body.focus-mode #bookmark-container {
@@ -838,6 +842,7 @@ html.start-desk .start-desk-status {
   html.start-desk .start-desk-dock {
     left: 12px;
     right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
     width: auto;
     transform: none;
     justify-content: flex-start;
