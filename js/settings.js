@@ -37,6 +37,7 @@
     const overlay = $('#overlay');
     if (!panel || !overlay) return;
     panel.setAttribute('aria-hidden', 'false');
+    panel.inert = false;
     overlay.hidden = false;
     document.body.classList.add('panel-open');
     if (options.pinned) panelPinnedByClick = true;
@@ -48,6 +49,7 @@
     const overlay = $('#overlay');
     if (!panel || !overlay) return;
     panel.setAttribute('aria-hidden', 'true');
+    panel.inert = true;
     overlay.hidden = true;
     document.body.classList.remove('panel-open');
     panelPinnedByClick = false;
@@ -61,6 +63,7 @@
     const closeBtn = $('#panel-close-btn');
     const hoverQuery = global.matchMedia('(hover: hover) and (min-width: 768px)');
     if (!panel || !overlay || !toggleBtn || !closeBtn) return;
+    panel.inert = panel.getAttribute('aria-hidden') !== 'false';
 
     const scheduleHoverClose = () => {
       if (!hoverQuery.matches || panelPinnedByClick) return;
