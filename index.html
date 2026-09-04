@@ -108,15 +108,15 @@
   </div>
 
   <div class="top-controls">
-    <button id="settings-toggle-btn" class="btn-icon" title="Ouvrir les paramètres">
-      <svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.69-1.68-0.91L14.07,3.58 c-0.04-0.24-0.24-0.41-0.48-0.41H9.41c-0.24,0-0.43,0.17-0.48,0.41L8.62,5.7C8,5.92,7.44,6.23,6.94,6.61l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.04,9.19c-0.12,0.2-0.07,0.47,0.12,0.61l2.03,1.58C4.02,11.66,4,11.83,4,12 c0,0.17,0.02,0.34,0.07,0.5l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96 c0.5,0.38,1.06,0.69,1.68,0.91l0.31,2.12c0.04,0.24,0.24,0.41,0.48,0.41h3.18c0.24,0,0.43-0.17,0.48-0.41l0.31-2.12 c0.62-0.22,1.18-0.53,1.68-0.91l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12,0.2,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+    <button id="settings-toggle-btn" class="btn-icon" title="Ouvrir les paramètres" aria-label="Ouvrir les paramètres">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.06-0.69-1.68-0.91L14.07,3.58 c-0.04-0.24-0.24-0.41-0.48-0.41H9.41c-0.24,0-0.43,0.17-0.48,0.41L8.62,5.7C8,5.92,7.44,6.23,6.94,6.61l-2.39-0.96 c-0.22-0.08-0.47,0-0.59,0.22L2.04,9.19c-0.12,0.2-0.07,0.47,0.12,0.61l2.03,1.58C4.02,11.66,4,11.83,4,12 c0,0.17,0.02,0.34,0.07,0.5l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96 c0.5,0.38,1.06,0.69,1.68,0.91l0.31,2.12c0.04,0.24,0.24,0.41,0.48,0.41h3.18c0.24,0,0.43-0.17,0.48-0.41l0.31-2.12 c0.62-0.22,1.18-0.53,1.68-0.91l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12,0.2,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
     </button>
   </div>
 
-  <aside id="control-panel" class="glass" aria-hidden="true">
+  <aside id="control-panel" class="glass" aria-hidden="true" aria-labelledby="settings-title">
     <div class="panel-header">
-        <h3>Paramètres</h3>
-        <button id="panel-close-btn" class="btn-icon" title="Fermer"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        <h3 id="settings-title">Paramètres</h3>
+        <button id="panel-close-btn" class="btn-icon" title="Fermer" aria-label="Fermer les paramètres"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="panel-content">
       <div class="panel-section">
@@ -184,8 +184,6 @@
       </div>
 
       </div>
-
-    </div>
   </aside>
   <div id="overlay" hidden></div>
 
@@ -202,9 +200,9 @@
     <section id="calendar-widget" class="card glass widget-shell widget-calendar" data-widget-id="calendar" style="width: min(920px, 94%); margin: .35rem auto 1rem; padding: 1rem 1.1rem 1.05rem;">
       <div class="widget-toolbar" aria-label="Barre du module Calendrier">
         <div class="widget-title">Calendrier</div>
-        <div class="widget-window-controls" aria-hidden="true">
-          <span class="light-dot"></span>
-          <span class="light-dot"></span>
+        <div class="widget-window-controls">
+          <span class="light-dot" aria-hidden="true"></span>
+          <span class="light-dot" aria-hidden="true"></span>
           <button class="widget-close-dot" type="button" data-widget-close="calendar" aria-label="Masquer le module Calendrier" title="Masquer le module"></button>
         </div>
       </div>
@@ -283,7 +281,7 @@
 </div>
 
       <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l.3.3v.8l5 5 1.4-1.4-5-5h-.8l-.3-.3A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
-      <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" required>
+      <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" aria-label="Recherche et commandes" aria-keyshortcuts="Meta+K /" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
     <div class="quick-command-hint">Commandes : <kbd>focus</kbd>, <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>complet</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…</div>
@@ -304,9 +302,9 @@
     <section id="news-container" class="card glass widget-shell widget-news" style="width: min(920px, 94%); margin: 2rem auto 2.2rem; padding: 1.1rem 1.5rem 1.5rem; display: none;" data-widget-id="news">
       <div class="widget-toolbar" aria-label="Barre du module Actualités">
         <div class="widget-title">Actualités</div>
-        <div class="widget-window-controls" aria-hidden="true">
-          <span class="light-dot"></span>
-          <span class="light-dot"></span>
+        <div class="widget-window-controls">
+          <span class="light-dot" aria-hidden="true"></span>
+          <span class="light-dot" aria-hidden="true"></span>
           <button class="widget-close-dot" type="button" data-widget-close="news" aria-label="Masquer le module Actualités" title="Masquer le module"></button>
         </div>
       </div>
@@ -333,9 +331,9 @@
     <div id="chat-container" class="card glass widget-shell widget-chat" data-widget-id="chat">
       <div class="widget-toolbar" aria-label="Barre du module Chat">
         <div class="widget-title">Chat</div>
-        <div class="widget-window-controls" aria-hidden="true">
-          <span class="light-dot"></span>
-          <span class="light-dot"></span>
+        <div class="widget-window-controls">
+          <span class="light-dot" aria-hidden="true"></span>
+          <span class="light-dot" aria-hidden="true"></span>
           <button class="widget-close-dot" type="button" data-widget-close="chat" aria-label="Masquer le module Chat" title="Masquer le module"></button>
         </div>
       </div>

@@ -1,0 +1,231 @@
+/* Start Desk — macOS 27 foundation
+   Liquid Glass stays on navigation and controls; content uses quieter surfaces. */
+
+:root {
+  --sd27-content-surface: rgba(250, 250, 252, .84);
+  --sd27-content-border: rgba(34, 34, 38, .09);
+  --sd27-content-shadow: 0 10px 30px rgba(28, 28, 30, .07);
+  --sd27-control-surface: rgba(248, 248, 250, .62);
+  --sd27-control-border: rgba(255, 255, 255, .52);
+  --sd27-control-shadow: 0 12px 38px rgba(28, 28, 30, .11), inset 0 1px 0 rgba(255, 255, 255, .58);
+  --sd27-separator: rgba(60, 60, 67, .13);
+}
+
+:root[data-theme="dark"],
+:root[data-theme="macos-dark"] {
+  --sd27-content-surface: rgba(35, 35, 39, .82);
+  --sd27-content-border: rgba(255, 255, 255, .09);
+  --sd27-content-shadow: 0 12px 34px rgba(0, 0, 0, .25);
+  --sd27-control-surface: rgba(43, 43, 48, .60);
+  --sd27-control-border: rgba(255, 255, 255, .14);
+  --sd27-control-shadow: 0 16px 44px rgba(0, 0, 0, .30), inset 0 1px 0 rgba(255, 255, 255, .10);
+  --sd27-separator: rgba(255, 255, 255, .10);
+}
+
+/* The background supports the interface without becoming a second animation layer. */
+html.start-desk .blob1,
+html.start-desk .blob2 {
+  animation: none !important;
+  opacity: .14 !important;
+  filter: blur(110px) !important;
+  transform: none !important;
+}
+
+/* Content plane: stable standard material, no shimmer or floating-card motion. */
+html.start-desk .card::before {
+  content: none !important;
+  display: none !important;
+}
+
+html.start-desk #weather.card.glass,
+html.start-desk #weather-details.card.glass,
+html.start-desk .widget-shell.card.glass,
+html.start-desk #bookmark-container .bookmark-set.card.glass {
+  background: var(--sd27-content-surface) !important;
+  border-color: var(--sd27-content-border) !important;
+  box-shadow: var(--sd27-content-shadow) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(108%) !important;
+  backdrop-filter: blur(12px) saturate(108%) !important;
+}
+
+html.start-desk .card:hover,
+html.start-desk body.focus-mode #bookmark-container .bookmark-set.card:hover,
+html.start-desk body.focus-mode #bookmark-container .bookmark-set.card:active {
+  transform: none !important;
+  box-shadow: var(--sd27-content-shadow) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.start-desk #bookmark-container .bookmark-set.card:hover {
+    border-color: color-mix(in srgb, var(--start-accent) 22%, var(--sd27-content-border)) !important;
+  }
+}
+
+/* Functional plane: Liquid Glass is reserved for navigation and commands. */
+html.start-desk #search-form.spotlight,
+html.start-desk .start-desk-dock,
+html.start-desk .start-desk-panel,
+html.start-desk .command-palette,
+html.start-desk .engine-menu,
+html.start-desk #control-panel.glass {
+  background: var(--sd27-control-surface) !important;
+  border-color: var(--sd27-control-border) !important;
+  box-shadow: var(--sd27-control-shadow) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(155%) !important;
+  backdrop-filter: blur(28px) saturate(155%) !important;
+}
+
+html.start-desk #search-form.spotlight:hover,
+html.start-desk #search-form.spotlight:focus-within {
+  transform: none !important;
+}
+
+html.start-desk #search-form.spotlight:focus-within {
+  border-color: color-mix(in srgb, var(--start-accent) 54%, var(--sd27-control-border)) !important;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--start-accent) 18%, transparent),
+    var(--sd27-control-shadow) !important;
+}
+
+html.start-desk .quick-command-hint {
+  opacity: .48;
+}
+
+html.start-desk .quick-command-hint:hover,
+html.start-desk #search-form.spotlight:focus-within + .quick-command-hint {
+  opacity: .82;
+}
+
+html.start-desk .startpage-quick-controls {
+  gap: 4px !important;
+  padding: 3px !important;
+  border: 1px solid var(--sd27-separator) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--sd27-control-surface) 68%, transparent) !important;
+  box-shadow: none !important;
+}
+
+html.start-desk .startpage-quick-controls > button {
+  min-height: 28px;
+  border: 0 !important;
+  border-radius: 9px !important;
+  box-shadow: none !important;
+}
+
+/* Settings becomes an inspector-style grouped list instead of stacked cards. */
+html.start-desk #control-panel .panel-content {
+  padding-inline: 14px !important;
+}
+
+html.start-desk #control-panel .panel-section {
+  margin: 0 !important;
+  padding: 11px 4px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--sd27-separator) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+html.start-desk #control-panel .panel-section:last-child {
+  border-bottom: 0 !important;
+}
+
+html.start-desk #control-panel .panel-section:hover {
+  transform: none !important;
+  background: transparent !important;
+}
+
+/* Decorative traffic lights made controls look interactive. Keep one clear close action. */
+html.start-desk .widget-window-controls .light-dot {
+  display: none !important;
+}
+
+html.start-desk .widget-window-controls {
+  gap: 0 !important;
+  padding: 0 !important;
+}
+
+html.start-desk .widget-close-dot {
+  position: relative;
+  display: grid !important;
+  place-items: center;
+  width: 28px !important;
+  height: 28px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  color: var(--secondaryFg) !important;
+  background: color-mix(in srgb, var(--fg) 7%, transparent) !important;
+  box-shadow: none !important;
+  opacity: .84 !important;
+}
+
+html.start-desk .widget-close-dot::before {
+  content: "×";
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+html.start-desk .widget-close-dot:hover {
+  transform: none !important;
+  color: var(--fg) !important;
+  background: color-mix(in srgb, var(--fg) 12%, transparent) !important;
+  opacity: 1 !important;
+}
+
+html.start-desk .widget-close-dot:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--start-accent) 72%, white) !important;
+  outline-offset: 2px !important;
+}
+
+/* Respect system accessibility choices beyond reduced motion. */
+@media (prefers-reduced-transparency: reduce) {
+  html.start-desk #search-form.spotlight,
+  html.start-desk .start-desk-dock,
+  html.start-desk .start-desk-panel,
+  html.start-desk .command-palette,
+  html.start-desk .engine-menu,
+  html.start-desk #control-panel.glass,
+  html.start-desk #weather.card.glass,
+  html.start-desk #weather-details.card.glass,
+  html.start-desk .widget-shell.card.glass,
+  html.start-desk #bookmark-container .bookmark-set.card.glass {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: var(--containerBg) !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  html.start-desk #search-form.spotlight,
+  html.start-desk .start-desk-dock,
+  html.start-desk .start-desk-panel,
+  html.start-desk .command-palette,
+  html.start-desk .engine-menu,
+  html.start-desk #control-panel.glass,
+  html.start-desk .card.glass {
+    border-color: color-mix(in srgb, var(--fg) 34%, transparent) !important;
+  }
+
+  html.start-desk .quick-command-hint {
+    opacity: .90;
+  }
+}
+
+@media (forced-colors: active) {
+  html.start-desk #search-form.spotlight,
+  html.start-desk .start-desk-dock,
+  html.start-desk .start-desk-panel,
+  html.start-desk .command-palette,
+  html.start-desk .engine-menu,
+  html.start-desk #control-panel.glass,
+  html.start-desk .card.glass,
+  html.start-desk .startpage-quick-controls {
+    border: 1px solid CanvasText !important;
+    background: Canvas !important;
+    box-shadow: none !important;
+  }
+}
