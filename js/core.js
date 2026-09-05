@@ -1352,7 +1352,7 @@ if (window.StartDesk) {
   const $ = (sel, root = document) => root.querySelector(sel);
   const NOTES_KEY = 'startdesk_notes_v1';
   const USAGE_KEY = 'startdesk_usage_stats_v1';
-  const PROFILE_LABELS = { silex: 'Silex', focus: 'Focus', personal: 'Perso', code: 'Code', full: 'Complet', work: 'Silex' };
+  const PROFILE_LABELS = { silex: 'Travail', personal: 'Perso', full: 'Complet', work: 'Travail' };
 
   function openUrl(url) {
     if (!url) return;
@@ -1667,10 +1667,9 @@ if (window.StartDesk) {
     dock.innerHTML = `
       <button type="button" data-action="mobile" title="Revenir au mode mobile par défaut" aria-label="Revenir au mode mobile par défaut">Mobile</button>
       <button type="button" data-action="focus">Focus</button>
-      <button type="button" data-action="silex">Silex</button>
+      <button type="button" data-action="silex">Travail</button>
       <button type="button" data-action="personal">Perso</button>
-      <button type="button" data-action="code">Code</button>
-      <button type="button" data-action="apps">Apps</button>
+      <button type="button" data-action="apps">Complet</button>
       <button type="button" data-action="agenda">Agenda</button>
       <button type="button" data-action="notes">Notes</button>
       <button type="button" data-action="stats">Stats</button>
@@ -1691,11 +1690,10 @@ if (window.StartDesk) {
           setFocus(true);
         }
       }
-      if (action === 'focus') { applyProfile('focus'); setFocus(true); }
-      if (action === 'silex') { applyProfile('silex'); setFocus(true); }
-      if (action === 'personal') { applyProfile('personal'); setFocus(true); }
-      if (action === 'code') { applyProfile('code'); setFocus(true); }
-      if (action === 'apps') { applyProfile('full'); setFocus(false); }
+      if (action === 'focus') { setFocus(!document.body.classList.contains('focus-mode')); }
+      if (action === 'silex') applyProfile('silex');
+      if (action === 'personal') applyProfile('personal');
+      if (action === 'apps') applyProfile('full');
       if (action === 'agenda') showWidget('calendar');
       if (action === 'notes') toggleNotes();
       if (action === 'stats') toggleStats();
@@ -1744,10 +1742,9 @@ if (window.StartDesk) {
       };
 
       const internal = () => {
-        if (lower === 'focus') { applyProfile('focus'); setFocus(true); return true; }
+        if (lower === 'focus') { setFocus(!document.body.classList.contains('focus-mode')); return true; }
         if (lower === 'silex' || lower === 'travail' || lower === 'pro') { applyProfile('silex'); setFocus(true); return true; }
         if (lower === 'perso' || lower === 'personal') { applyProfile('personal'); setFocus(true); return true; }
-        if (lower === 'code' || lower === 'dev') { applyProfile('code'); setFocus(true); return true; }
         if (lower === 'apps' || lower === 'complet' || lower === 'full') { applyProfile('full'); setFocus(false); return true; }
         if (lower === 'notes') { toggleNotes(true); return true; }
         if (lower === 'stats' || lower === 'statistiques' || lower === 'usage') { toggleStats(true); return true; }
@@ -1825,10 +1822,9 @@ if (window.StartDesk) {
 
       const key = event.key.toLowerCase();
       if (key === '/') { event.preventDefault(); input?.focus(); return; }
-      if (key === 'f') { applyProfile('focus'); setFocus(true); return; }
+      if (key === 'f') { setFocus(!document.body.classList.contains('focus-mode')); return; }
       if (key === 's') { applyProfile('silex'); setFocus(true); return; }
       if (key === 'p') { applyProfile('personal'); setFocus(true); return; }
-      if (key === 'c') { applyProfile('code'); setFocus(true); return; }
       if (key === 'a') { applyProfile('full'); setFocus(false); return; }
       if (key === 'n') { toggleNotes(); return; }
       if (key === 'u') { toggleStats(); return; }

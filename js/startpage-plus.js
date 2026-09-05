@@ -312,7 +312,9 @@
 
   function applyProfile(profileId, notify) {
     const profiles = CONFIG.profiles || {};
-    const profile = profiles[profileId] || profiles.full;
+    profileId = ['focus', 'code', 'work'].includes(profileId) ? 'silex' : profileId;
+    if (!profiles[profileId]) profileId = 'silex';
+    const profile = profiles[profileId];
     if (!profile) return;
 
     document.body.dataset.startpageProfile = profileId;
@@ -344,8 +346,7 @@
       else if (shouldShow) setWidgetVisible(widget, true);
     });
 
-    if (['silex', 'focus', 'code'].includes(profileId)) setFocusMode(true, false);
-    else if (profileId === 'full') setFocusMode(false, false);
+    // Focus is an independent display preference.
 
     updateProfileUi(profileId);
     if (notify) toast(`Profil ${profile.label || profileId} activé`);
@@ -366,9 +367,7 @@
     section.innerHTML = `
       <label>Profil de page</label>
       <div class="segmented-control profile-selector" id="profile-selector">
-        <button type="button" class="profile-chip" data-profile="silex">Silex</button>
-        <button type="button" class="profile-chip" data-profile="focus">Focus</button>
-        <button type="button" class="profile-chip" data-profile="code">Code</button>
+        <button type="button" class="profile-chip" data-profile="silex">Travail</button>
         <button type="button" class="profile-chip" data-profile="personal">Perso</button>
         <button type="button" class="profile-chip" data-profile="full">Complet</button>
       </div>
@@ -611,7 +610,7 @@
     if (!form || $('.quick-command-hint')) return;
     const hint = document.createElement('div');
     hint.className = 'quick-command-hint';
-    hint.innerHTML = 'Commandes : <kbd>silex</kbd>, <kbd>focus</kbd>, <kbd>code</kbd>, <kbd>perso</kbd> — recherche : <kbd>g</kbd>, <kbd>ai</kbd>, <kbd>drive</kbd>, <kbd>cal</kbd>, <kbd>gh</kbd>…';
+    hint.innerHTML = 'Commandes : <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>complet</kbd> — recherche : <kbd>g</kbd>, <kbd>ai</kbd>, <kbd>drive</kbd>, <kbd>cal</kbd>, <kbd>gh</kbd>…';
     form.insertAdjacentElement('afterend', hint);
   }
 
@@ -627,6 +626,8 @@
   window.StartpagePlus = { applyProfile, setDensity, getBookmarkMatches, setFocusMode, toggleFocusMode };
 
   window.addEventListener('DOMContentLoaded', () => {
+    const savedProfile = localStorage.getItem(PROFILE_KEY);
+    if (['focus', 'code', 'work'].includes(savedProfile)) localStorage.setItem(PROFILE_KEY, 'silex');
     let focusOn = document.body.classList.contains('focus-mode');
     try {
       const savedFocus = localStorage.getItem(FOCUS_KEY);
