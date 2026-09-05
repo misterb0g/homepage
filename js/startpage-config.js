@@ -5,7 +5,7 @@ window.STARTPAGE_CONFIG = {
 
   profiles: {
     silex: {
-      label: 'Silex',
+      label: 'Boulot',
       description: 'Mode quotidien : outils de direction, administration, Google, IA et gestion web.',
       visibleCategories: [
         'Google',
@@ -18,18 +18,6 @@ window.STARTPAGE_CONFIG = {
       ],
       hiddenWidgets: ['news', 'chat'],
       showWidgets: ['calendar']
-    },
-    focus: {
-      label: 'Focus',
-      description: 'Vue courte : les outils réellement utilisés au démarrage.',
-      visibleCategories: ['Google', 'Administration', 'IA +', 'Admin Page'],
-      hiddenWidgets: ['news', 'chat', 'calendar']
-    },
-    code: {
-      label: 'Code',
-      description: 'GitHub, Vercel et assistants IA.',
-      visibleCategories: ['Admin Page', 'IA +', 'Google'],
-      hiddenWidgets: ['news', 'chat', 'calendar']
     },
     personal: {
       label: 'Perso',
@@ -44,33 +32,15 @@ window.STARTPAGE_CONFIG = {
       visibleCategories: null,
       hiddenWidgets: [],
       showWidgets: ['news', 'chat', 'calendar']
-    },
-    // Compatibilité avec l’ancienne configuration.
-    work: {
-      label: 'Travail',
-      description: 'Alias de Silex pour les anciennes commandes.',
-      visibleCategories: [
-        'Google',
-        'Administration',
-        'Ressources Humaines',
-        'Banques & Finance',
-        'Répertoire Pro',
-        'Web-admin',
-        'IA +',
-        'Admin Page'
-      ],
-      hiddenWidgets: ['news', 'chat']
     }
   },
 
   commandAliases: {
-    silex: { type: 'profile', value: 'silex', label: 'Activer le profil Silex' },
-    travail: { type: 'profile', value: 'silex', label: 'Activer le profil Silex' },
-    boulot: { type: 'profile', value: 'silex', label: 'Activer le profil Silex' },
-    pro: { type: 'profile', value: 'silex', label: 'Activer le profil Silex' },
-    focus: { type: 'profile', value: 'focus', label: 'Activer le profil Focus' },
-    code: { type: 'profile', value: 'code', label: 'Activer le profil Code' },
-    dev: { type: 'profile', value: 'code', label: 'Activer le profil Code' },
+    silex: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
+    travail: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
+    boulot: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
+    pro: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
+    focus: { type: 'toggleFocus', label: 'Activer / désactiver Focus' },
     perso: { type: 'profile', value: 'personal', label: 'Activer le profil Perso' },
     complet: { type: 'profile', value: 'full', label: 'Activer le profil Complet' },
     full: { type: 'profile', value: 'full', label: 'Activer le profil Complet' },

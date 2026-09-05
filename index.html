@@ -176,11 +176,11 @@
       </div>
 
       <div class="panel-section">
-          <label for="tiles-reset-toggle">Rétablir l’ordre des tuiles</label>
-          <label class="toggle-switch">
-              <input type="checkbox" id="tiles-reset-toggle">
-              <span class="slider"></span>
-          </label>
+          <div>
+            <button type="button" id="tiles-reset-toggle">Rétablir l’ordre des tuiles</button>
+            <button type="button" id="tiles-reset-undo" hidden>Annuler</button>
+            <small id="tiles-reset-status" role="status"></small>
+          </div>
       </div>
 
       </div>
@@ -284,9 +284,9 @@
       <input type="search" id="search-input" name="q" placeholder="Rechercher, lancer un outil, poser une question…" aria-label="Recherche et commandes" aria-keyshortcuts="Meta+K /" required>
       <button type="submit" class="visually-hidden">Rechercher</button>
     </form>
-    <div class="quick-command-hint">Commandes : <kbd>focus</kbd>, <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>complet</kbd> — ou un favori : <kbd>drive</kbd>, <kbd>mail</kbd>, <kbd>dolibarr</kbd>…</div>
+    <div class="quick-command-hint">Favoris, commandes ou recherche web · <kbd>⌘K</kbd></div>
     <div class="startpage-quick-controls" aria-label="Commandes rapides de la page de démarrage">
-      <button type="button" class="startpage-profile-pill" title="Basculer entre Complet, Travail et Perso">Profil : Complet</button>
+      <button type="button" class="startpage-profile-pill" title="Basculer entre Complet, Boulot et Perso">Profil : Complet</button>
       <button type="button" class="startpage-focus-pill" title="Afficher uniquement les éléments essentiels" aria-pressed="false">Focus</button>
       <button type="button" class="startpage-auto-pill" title="Activer ou désactiver l’adaptation automatique selon l’heure" aria-pressed="false">Auto : OFF</button>
     </div>

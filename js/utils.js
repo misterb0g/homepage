@@ -75,6 +75,7 @@ function updateGreeting() { const h = new Date().getHours(); $('#greeting').text
 
 // --- Ré-ordonnancement des tuiles (Drag & Drop style macOS) ---
 const TILE_ORDER_KEY = "startpage_tile_order_v1";
+const defaultTileTitles = typeof bookmarks === 'undefined' ? [] : bookmarks.map(item => item.title);
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (m) => ({
@@ -98,6 +99,9 @@ function saveTileOrderFromDOM() {
 
 function resetTileOrder() {
   try { localStorage.removeItem(TILE_ORDER_KEY); } catch {}
+  if (typeof bookmarks !== 'undefined') {
+    bookmarks.sort((a, b) => defaultTileTitles.indexOf(a.title) - defaultTileTitles.indexOf(b.title));
+  }
 }
 
 let sortableLoadPromise = null;
