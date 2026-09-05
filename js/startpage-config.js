@@ -5,7 +5,7 @@ window.STARTPAGE_CONFIG = {
 
   profiles: {
     silex: {
-      label: 'Travail',
+      label: 'Boulot',
       description: 'Mode quotidien : outils de direction, administration, Google, IA et gestion web.',
       visibleCategories: [
         'Google',
@@ -36,10 +36,10 @@ window.STARTPAGE_CONFIG = {
   },
 
   commandAliases: {
-    silex: { type: 'profile', value: 'silex', label: 'Activer le profil Travail' },
-    travail: { type: 'profile', value: 'silex', label: 'Activer le profil Travail' },
-    boulot: { type: 'profile', value: 'silex', label: 'Activer le profil Travail' },
-    pro: { type: 'profile', value: 'silex', label: 'Activer le profil Travail' },
+    silex: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
+    travail: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
+    boulot: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
+    pro: { type: 'profile', value: 'silex', label: 'Activer le profil Boulot' },
     focus: { type: 'toggleFocus', label: 'Activer / désactiver Focus' },
     perso: { type: 'profile', value: 'personal', label: 'Activer le profil Perso' },
     complet: { type: 'profile', value: 'full', label: 'Activer le profil Complet' },

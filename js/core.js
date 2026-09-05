@@ -1352,7 +1352,7 @@ if (window.StartDesk) {
   const $ = (sel, root = document) => root.querySelector(sel);
   const NOTES_KEY = 'startdesk_notes_v1';
   const USAGE_KEY = 'startdesk_usage_stats_v1';
-  const PROFILE_LABELS = { silex: 'Travail', personal: 'Perso', full: 'Complet', work: 'Travail' };
+  const PROFILE_LABELS = { silex: 'Boulot', personal: 'Perso', full: 'Complet', work: 'Boulot' };
 
   function openUrl(url) {
     if (!url) return;
@@ -1667,7 +1667,7 @@ if (window.StartDesk) {
     dock.innerHTML = `
       <button type="button" data-action="mobile" title="Revenir au mode mobile par défaut" aria-label="Revenir au mode mobile par défaut">Mobile</button>
       <button type="button" data-action="focus">Focus</button>
-      <button type="button" data-action="silex">Travail</button>
+      <button type="button" data-action="silex">Boulot</button>
       <button type="button" data-action="personal">Perso</button>
       <button type="button" data-action="apps">Complet</button>
       <button type="button" data-action="agenda">Agenda</button>

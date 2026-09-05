@@ -367,7 +367,7 @@
     section.innerHTML = `
       <label>Profil de page</label>
       <div class="segmented-control profile-selector" id="profile-selector">
-        <button type="button" class="profile-chip" data-profile="silex">Travail</button>
+        <button type="button" class="profile-chip" data-profile="silex">Boulot</button>
         <button type="button" class="profile-chip" data-profile="personal">Perso</button>
         <button type="button" class="profile-chip" data-profile="full">Complet</button>
       </div>
@@ -610,7 +610,7 @@
     if (!form || $('.quick-command-hint')) return;
     const hint = document.createElement('div');
     hint.className = 'quick-command-hint';
-    hint.innerHTML = 'Commandes : <kbd>travail</kbd>, <kbd>perso</kbd>, <kbd>complet</kbd> — recherche : <kbd>g</kbd>, <kbd>ai</kbd>, <kbd>drive</kbd>, <kbd>cal</kbd>, <kbd>gh</kbd>…';
+    hint.innerHTML = 'Commandes : <kbd>boulot</kbd>, <kbd>perso</kbd>, <kbd>complet</kbd> — recherche : <kbd>g</kbd>, <kbd>ai</kbd>, <kbd>drive</kbd>, <kbd>cal</kbd>, <kbd>gh</kbd>…';
     form.insertAdjacentElement('afterend', hint);
   }
 
