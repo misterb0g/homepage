@@ -76,6 +76,7 @@ function updateGreeting() { const h = new Date().getHours(); $('#greeting').text
 
 // --- Ré-ordonnancement des tuiles (Drag & Drop style macOS) ---
 const TILE_ORDER_KEY = "startpage_tile_order_v1";
+const defaultTileTitles = typeof bookmarks === 'undefined' ? [] : bookmarks.map(item => item.title);
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (m) => ({
@@ -99,6 +100,9 @@ function saveTileOrderFromDOM() {
 
 function resetTileOrder() {
   try { localStorage.removeItem(TILE_ORDER_KEY); } catch {}
+  if (typeof bookmarks !== 'undefined') {
+    bookmarks.sort((a, b) => defaultTileTitles.indexOf(a.title) - defaultTileTitles.indexOf(b.title));
+  }
 }
 
 let sortableLoadPromise = null;
@@ -686,6 +690,8 @@ if (window.StartDesk) {
     overlay.hidden = false;
     document.body.classList.add('panel-open');
     if (options.pinned) panelPinnedByClick = true;
+    $('#settings-toggle-btn')?.setAttribute('aria-expanded', 'true');
+    $('#panel-close-btn')?.focus();
     emit('settings:panel-opened', { pinned: !!options.pinned });
   }
 
@@ -693,6 +699,8 @@ if (window.StartDesk) {
     const panel = $('#control-panel');
     const overlay = $('#overlay');
     if (!panel || !overlay) return;
+    if (panel.contains(document.activeElement)) $('#settings-toggle-btn')?.focus();
+    $('#settings-toggle-btn')?.setAttribute('aria-expanded', 'false');
     panel.setAttribute('aria-hidden', 'true');
     panel.setAttribute('inert', '');
     overlay.hidden = true;
@@ -706,36 +714,16 @@ if (window.StartDesk) {
     const overlay = $('#overlay');
     const toggleBtn = $('#settings-toggle-btn');
     const closeBtn = $('#panel-close-btn');
-    const hoverQuery = global.matchMedia('(hover: hover) and (min-width: 768px)');
     if (!panel || !overlay || !toggleBtn || !closeBtn) return;
-    if (panel.getAttribute('aria-hidden') === 'false') panel.removeAttribute('inert');
-    else panel.setAttribute('inert', '');
-
-    const scheduleHoverClose = () => {
-      if (!hoverQuery.matches || panelPinnedByClick) return;
-      clearTimeout(panelCloseTimer);
-      panelCloseTimer = setTimeout(() => {
-        const cursorOnButton = toggleBtn.matches(':hover');
-        const cursorOnPanel = panel.matches(':hover');
-        if (!cursorOnButton && !cursorOnPanel) closePanel();
-      }, 180);
-    };
-
-    toggleBtn.addEventListener('mouseenter', () => {
-      if (!hoverQuery.matches) return;
-      clearTimeout(panelCloseTimer);
-      openPanel({ pinned: false });
-    });
-    toggleBtn.addEventListener('mouseleave', scheduleHoverClose);
-    panel.addEventListener('mouseenter', () => clearTimeout(panelCloseTimer));
-    panel.addEventListener('mouseleave', scheduleHoverClose);
+    panel.setAttribute('inert', '');
+    toggleBtn.setAttribute('aria-controls', 'control-panel');
+    toggleBtn.setAttribute('aria-expanded', 'false');
     toggleBtn.addEventListener('click', () => {
       if (document.body.classList.contains('panel-open')) closePanel();
       else openPanel({ pinned: true });
     });
     closeBtn.addEventListener('click', closePanel);
     overlay.addEventListener('click', closePanel);
-    hoverQuery.addEventListener?.('change', closePanel);
     global.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && document.body.classList.contains('panel-open')) closePanel();
     });
@@ -828,14 +816,23 @@ if (window.StartDesk) {
   function setupTileReset() {
     const toggle = $('#tiles-reset-toggle');
     if (!toggle) return;
-    toggle.checked = false;
-    toggle.addEventListener('change', () => {
-      if (!toggle.checked) return;
-      if (typeof global.resetTileOrder === 'function') global.resetTileOrder();
-      if (typeof global.setupBookmarks === 'function') global.setupBookmarks();
-      setTimeout(() => { toggle.checked = false; }, 150);
+    let previousOrder;
+    const undo = $('#tiles-reset-undo');
+    toggle.addEventListener('click', () => {
+      if (undo.hidden) previousOrder = localStorage.getItem('startpage_tile_order_v1');
+      global.resetTileOrder?.();
+      global.setupBookmarks?.();
+      undo.hidden = false;
+      $('#tiles-reset-status').textContent = 'Ordre initial rétabli.';
       emit('settings:tile-order-reset');
-      closePanel();
+    });
+    undo.addEventListener('click', () => {
+      if (previousOrder === null) global.resetTileOrder?.();
+      else localStorage.setItem('startpage_tile_order_v1', previousOrder);
+      global.setupBookmarks?.();
+      toggle.focus();
+      undo.hidden = true;
+      $('#tiles-reset-status').textContent = 'Votre ordre a été restauré.';
     });
   }
 

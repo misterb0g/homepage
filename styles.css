@@ -7072,3 +7072,105 @@ html.start-desk .widget-close-dot:focus-visible {
     box-shadow: none !important;
   }
 }
+
+/* Command center: independent profile and Focus controls, readable help. */
+html.start-desk .startpage-quick-controls {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  gap: 10px !important;
+}
+html.start-desk .startpage-quick-controls .startpage-auto-pill { display: none !important; }
+html.start-desk select.startpage-profile-pill {
+  font: inherit;
+  font-size: .85rem;
+  color: var(--fg);
+  background: var(--containerBg);
+  border: 1px solid var(--sd27-separator);
+  border-radius: 10px;
+  padding: 6px 10px;
+  min-height: 34px;
+  max-width: 100%;
+}
+html.start-desk .quick-command-hint,
+html.start-desk .quick-command-hint:hover,
+html.start-desk #search-form.spotlight:focus-within + .quick-command-hint {
+  color: var(--fg);
+  opacity: 1;
+}
+html.start-desk #tiles-reset-toggle,
+html.start-desk #tiles-reset-undo {
+  font: inherit;
+  color: var(--fg);
+  background: var(--containerBg);
+  border: 1px solid var(--sd27-separator);
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+html.start-desk #tiles-reset-status { display: block; margin-top: 6px; }
+html.start-desk select:focus-visible,
+html.start-desk #control-panel button:focus-visible {
+  outline: 2px solid var(--start-accent);
+  outline-offset: 3px;
+}
+
+/* Profile picker inspired by the macOS Appearance control. */
+html.start-desk .profile-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--fg) 9%, var(--bg));
+  flex: 0 1 auto;
+  min-width: 0;
+}
+html.start-desk .profile-picker select.startpage-profile-pill {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  width: 100%;
+  min-height: 28px;
+  padding: 4px 27px 4px 10px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: .80rem;
+  font-weight: 500;
+  line-height: 1.35;
+  cursor: pointer;
+}
+html.start-desk .profile-picker:hover {
+  background: color-mix(in srgb, var(--fg) 13%, var(--bg));
+}
+html.start-desk .profile-picker select.startpage-profile-pill:focus-visible {
+  outline: 2px solid var(--start-accent);
+  outline-offset: 3px;
+}
+html.start-desk .profile-picker-arrows {
+  position: absolute;
+  right: 10px;
+  width: 9px;
+  height: 13px;
+  color: var(--fg);
+  pointer-events: none;
+}
+html.start-desk .profile-picker-arrows::before,
+html.start-desk .profile-picker-arrows::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  width: 5px;
+  height: 5px;
+  border-top: 1.7px solid currentColor;
+  border-left: 1.7px solid currentColor;
+  border-radius: 1px;
+}
+html.start-desk .profile-picker-arrows::before { top: 1px; transform: rotate(45deg); }
+html.start-desk .profile-picker-arrows::after { bottom: 1px; transform: rotate(225deg); }
+@media (forced-colors: active) {
+  html.start-desk .profile-picker { background: Canvas; border: 1px solid ButtonText; }
+}

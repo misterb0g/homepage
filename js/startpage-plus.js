@@ -355,7 +355,7 @@
     $$('.profile-chip').forEach(btn => btn.classList.toggle('active', btn.dataset.profile === profileId));
     const pill = $('.startpage-profile-pill');
     const profile = (CONFIG.profiles || {})[profileId];
-    if (pill && profile) pill.textContent = `Profil : ${profile.label}`;
+    if (pill && profile) pill.value = profileId;
   }
 
   function installProfileControls() {
@@ -396,23 +396,26 @@
   function installProfilePill() {
     const controls = ensureQuickControls();
     if (!controls) return;
-    let pill = $('.startpage-profile-pill');
-    if (!pill) {
-      pill = document.createElement('button');
-      pill.type = 'button';
-      pill.className = 'startpage-profile-pill';
-      pill.title = 'Basculer entre Complet, Travail et Perso';
-      controls.appendChild(pill);
-    }
-    if (!pill.dataset.bound) {
-      pill.addEventListener('click', () => {
-        const order = ['silex', 'focus', 'code', 'personal', 'full'];
-        const current = document.body.dataset.startpageProfile || 'full';
-        const next = order[(order.indexOf(current) + 1) % order.length] || 'silex';
-        applyProfile(next, true);
-      });
-      pill.dataset.bound = '1';
-    }
+    const old = $('.startpage-profile-pill');
+    const pill = document.createElement('select');
+    pill.className = 'startpage-profile-pill';
+    pill.setAttribute('aria-label', 'Profil de page');
+    Object.entries(CONFIG.profiles || {}).forEach(([id, profile]) => {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = profile.label || id;
+      pill.appendChild(option);
+    });
+    pill.value = localStorage.getItem(PROFILE_KEY) || 'silex';
+    pill.addEventListener('change', () => applyProfile(pill.value, true));
+    const wrapper = document.createElement('span');
+    wrapper.className = 'profile-picker';
+    const arrows = document.createElement('span');
+    arrows.className = 'profile-picker-arrows';
+    arrows.setAttribute('aria-hidden', 'true');
+    wrapper.append(pill, arrows);
+    if (old) old.replaceWith(wrapper);
+    else controls.appendChild(wrapper);
   }
 
   function installFocusPill() {
@@ -442,6 +445,16 @@
     const palette = document.createElement('div');
     palette.className = 'command-palette glass';
     palette.hidden = true;
+    palette.id = 'command-suggestions';
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-controls', palette.id);
+    input.setAttribute('aria-expanded', 'false');
+    function closeSuggestions() {
+      palette.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+    }
     palette.setAttribute('role', 'listbox');
     palette.setAttribute('aria-label', 'Suggestions de recherche');
     form.appendChild(palette);
@@ -459,11 +472,13 @@
         .slice(0, 8);
 
       if (!query || !entries.length) {
-        palette.hidden = true;
+        closeSuggestions();
         palette.innerHTML = '';
         return;
       }
       palette.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      input.setAttribute('aria-activedescendant', 'command-option-0');
       palette.innerHTML = entries.map((entry, index) => {
         const meta = entry.type === 'command'
           ? 'Commande'
@@ -473,8 +488,8 @@
               ? entry.meta
               : entry.group;
         const kind = entry.type === 'bookmark' ? 'Favori' : entry.type === 'command' ? 'Commande' : 'Recherche';
-        return `<button type="button" class="command-item${index === 0 ? ' is-active' : ''}" data-index="${index}" role="option" aria-selected="${index === 0 ? 'true' : 'false'}">
-          <span class="command-item-copy"><span>${escapeHtml(entry.label)}</span><small>${escapeHtml(meta)}</small></span>
+        return `<button type="button" class="command-item${index === 0 ? ' is-active' : ''}" id="command-option-${index}" tabindex="-1" data-index="${index}" role="option" aria-selected="${index === 0 ? 'true' : 'false'}">
+          <span class="command-item-copy"><span>${entry.type === 'bookmark' ? 'Ouvrir ' : entry.type === 'target' ? 'Rechercher avec ' : ''}${escapeHtml(entry.label)}</span><small>${escapeHtml(meta)}</small></span>
           <span class="command-item-kind">${kind}</span>
         </button>`;
       }).join('');
@@ -514,54 +529,46 @@
         const active = i === index;
         btn.classList.toggle('is-active', active);
         btn.setAttribute('aria-selected', active ? 'true' : 'false');
-        if (active) btn.scrollIntoView({ block: 'nearest' });
+        if (active) {
+          input.setAttribute('aria-activedescendant', btn.id);
+          btn.scrollIntoView({ block: 'nearest' });
+        }
       });
     }
 
     input.addEventListener('input', render);
     input.addEventListener('focus', render);
     document.addEventListener('click', (event) => {
-      if (!form.contains(event.target)) palette.hidden = true;
+      if (!form.contains(event.target)) closeSuggestions();
     });
 
     input.addEventListener('keydown', (event) => {
+      if (event.isComposing) return;
       if (event.key === 'Escape' && !palette.hidden) {
-        palette.hidden = true;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        closeSuggestions();
         return;
       }
+      if (event.key === 'Tab') { closeSuggestions(); return; }
       if (palette.hidden) return;
       const items = $$('.command-item', palette);
       if (!items.length) return;
-      if (event.key === 'ArrowDown') {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
         event.preventDefault();
-        setActive((activeIndex() + 1 + items.length) % items.length);
-      } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        setActive((activeIndex() - 1 + items.length) % items.length);
+        setActive((activeIndex() + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length);
       } else if (event.key === 'Enter') {
-        const idx = activeIndex();
-        if (idx > 0) {
-          event.preventDefault();
-          executeEntry(palette._entries?.[idx]);
-          palette.hidden = true;
-        }
-      } else if (event.key === 'Tab') {
-        const idx = Math.max(0, activeIndex());
-        const entry = palette._entries?.[idx];
+        const entry = palette._entries?.[activeIndex()];
         if (entry) {
           event.preventDefault();
-          input.value = entry.type === 'command'
-            ? entry.key
-            : entry.type === 'prefix'
-              ? entry.raw
-              : entry.type === 'target'
-                ? `${entry.key} `
-                : entry.label;
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-          render();
+          event.stopImmediatePropagation();
+          closeSuggestions();
+          executeEntry(entry);
         }
       }
-    });
+    }, true);
+    input.addEventListener('blur', closeSuggestions);
+    palette.addEventListener('mousedown', event => event.preventDefault());
 
     palette.addEventListener('mousemove', (event) => {
       const btn = event.target.closest('.command-item');
@@ -572,6 +579,7 @@
     palette.addEventListener('click', (event) => {
       const btn = event.target.closest('.command-item');
       if (!btn) return;
+      closeSuggestions();
       executeEntry(palette._entries?.[Number(btn.dataset.index)]);
     });
 
@@ -582,7 +590,7 @@
       const [bookmark] = getBookmarkMatches(query).filter(item => item.score >= 70);
       if (command && executeCommand(command.command)) {
         event.preventDefault();
-        palette.hidden = true;
+        closeSuggestions();
         return;
       }
       if (bookmark) {
