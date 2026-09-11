@@ -224,8 +224,8 @@ function setupBookmarks() {
   const container = $('#bookmark-container');
   if (!container) return;
 
-  container.innerHTML = bookmarks.map((bookmark, index) => `
-    <section class="bookmark-set card glass" data-tile-title="${escapeHtml(bookmark.title)}" style="animation-delay: ${200 + (index * 100)}ms">
+  container.innerHTML = bookmarks.map(bookmark => `
+    <section class="bookmark-set card glass" data-tile-title="${escapeHtml(bookmark.title)}">
       <div class="bookmark-header">
         <div class="bookmark-title">${escapeHtml(bookmark.title)}</div>
         <button class="tile-handle" type="button" aria-label="Déplacer la tuile" title="Déplacer">

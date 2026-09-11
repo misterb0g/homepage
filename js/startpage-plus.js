@@ -321,22 +321,11 @@
     try { localStorage.setItem(PROFILE_KEY, profileId); } catch (_) {}
 
     const visible = Array.isArray(profile.visibleCategories) ? new Set(profile.visibleCategories) : null;
-    const newlyVisibleTiles = [];
+    // Apply every profile synchronously: no delayed reveal or pending timers.
     $$('#bookmark-container .bookmark-set').forEach(tile => {
       const title = tile.getAttribute('data-tile-title') || '';
-      const wasHidden = tile.classList.contains('profile-hidden');
       const shouldHide = !!visible && !visible.has(title);
       tile.classList.toggle('profile-hidden', shouldHide);
-      if (wasHidden && !shouldHide) newlyVisibleTiles.push(tile);
-    });
-
-    requestAnimationFrame(() => {
-      newlyVisibleTiles.forEach(tile => {
-        tile.classList.remove('profile-revealing');
-        void tile.offsetWidth;
-        tile.classList.add('profile-revealing');
-        window.setTimeout(() => tile.classList.remove('profile-revealing'), 170);
-      });
     });
 
     ['news', 'chat', 'calendar'].forEach(widget => {
