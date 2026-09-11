@@ -4,12 +4,12 @@ export const config = { runtime: "nodejs" };
 
 const ALLOWED_ORIGIN = "https://start.bogarts.be";
 
-// Modèles candidats (ordre = préférence). Ajuste si ton ListModels montre d’autres noms.
+// Modèles texte stables (ordre = préférence), vérifiés le 11 septembre 2026.
+// https://ai.google.dev/gemini-api/docs/deprecations
 const MODEL_CANDIDATES = [
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-1.5-pro",
-  "gemini-1.5-flash",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-3.1-flash-lite",
 ];
 
 const MAX_RETRIES_429 = 2; // 2 retries = 3 tentatives au total
