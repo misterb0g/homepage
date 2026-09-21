@@ -7179,3 +7179,43 @@ html.start-desk .profile-picker-arrows::after { bottom: 1px; transform: rotate(2
 @media (forced-colors: active) {
   html.start-desk .profile-picker { background: Canvas; border: 1px solid ButtonText; }
 }
+
+/* ===== Centered bookmark rows ===== */
+/* Centrer aussi les rangées incomplètes hors Focus, sans changer
+   les largeurs ni les seuils de colonnes du dashboard. */
+html.start-desk body:not(.focus-mode) #bookmark-container {
+  --bookmark-columns: 4;
+  --bookmark-row-gap: clamp(.9rem, 1.35vw, 1.15rem);
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: var(--bookmark-row-gap) !important;
+}
+
+html.start-desk body:not(.focus-mode) #bookmark-container .bookmark-set {
+  flex: 0 0 calc((100% - (var(--bookmark-columns) - 1) * var(--bookmark-row-gap)) / var(--bookmark-columns)) !important;
+}
+
+@media (max-width: 1180px) {
+  html.start-desk body:not(.focus-mode) #bookmark-container {
+    --bookmark-columns: 3;
+  }
+}
+
+@media (max-width: 860px) {
+  html.start-desk body:not(.focus-mode) #bookmark-container {
+    --bookmark-columns: 2;
+  }
+}
+
+@media (max-width: 680px) {
+  html.start-desk body:not(.focus-mode) #bookmark-container {
+    --bookmark-row-gap: .62rem;
+  }
+}
+
+@media (max-width: 560px) {
+  html.start-desk body:not(.focus-mode) #bookmark-container {
+    --bookmark-columns: 1;
+  }
+}
