@@ -1682,7 +1682,8 @@ if (window.StartDesk) {
     let frame = 0;
     function renderDock() {
       frame = 0;
-      if (pointerX === null || !magnification.matches || dock.scrollWidth > dock.clientWidth) {
+      if (pointerX === null || !magnification.matches) {
+        dock.style.removeProperty('--dock-spread');
         buttons.forEach(button => {
           button.style.removeProperty('--dock-scale');
           button.style.removeProperty('--dock-shift');
@@ -1697,7 +1698,9 @@ if (window.StartDesk) {
         return 1 + .42 * (1 + Math.cos(Math.PI * distance)) / 2;
       });
       const extra = widths.map((width, i) => width * (scales[i] - 1));
-      let shift = -extra.reduce((sum, width) => sum + width, 0) / 2;
+      const spread = extra.reduce((sum, width) => sum + width, 0) / 2;
+      dock.style.setProperty('--dock-spread', `${spread.toFixed(2)}px`);
+      let shift = -spread;
       buttons.forEach((button, i) => {
         button.style.setProperty('--dock-scale', scales[i].toFixed(3));
         button.style.setProperty('--dock-shift', `${(shift + extra[i] / 2).toFixed(2)}px`);
@@ -1709,10 +1712,17 @@ if (window.StartDesk) {
       pointerX = x;
       if (!frame) frame = requestAnimationFrame(renderDock);
     }
-    dock.addEventListener('pointermove', event => {
-      if (event.pointerType === 'mouse') updateDock(event.clientX);
+    // A stable activation area includes the raised buttons and expanded shelf.
+    // Do not inspect scrollWidth: Chrome includes transformed children in it.
+    document.addEventListener('pointermove', event => {
+      if (event.pointerType !== 'mouse' || !magnification.matches) return;
+      const rect = dock.getBoundingClientRect();
+      const spread = parseFloat(dock.style.getPropertyValue('--dock-spread')) || 0;
+      const inside = event.clientX >= rect.left - spread && event.clientX <= rect.right + spread &&
+        event.clientY >= rect.top - 40 && event.clientY <= rect.bottom;
+      if (inside) updateDock(event.clientX);
+      else if (pointerX !== null) updateDock();
     });
-    dock.addEventListener('pointerleave', () => updateDock());
     dock.addEventListener('pointercancel', () => updateDock());
     dock.addEventListener('focusin', () => updateDock());
     window.addEventListener('blur', () => updateDock());
