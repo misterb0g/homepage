@@ -7219,3 +7219,80 @@ html.start-desk body:not(.focus-mode) #bookmark-container .bookmark-set {
     --bookmark-columns: 1;
   }
 }
+
+/* === dock-magnification.css === */
+
+/* Start Desk — pointer magnification on a stable glass shelf. */
+@media (min-width: 760px) and (hover: hover) and (pointer: fine) {
+  html.start-desk .start-desk-dock {
+    overflow: visible;
+    max-width: calc(100vw - 180px);
+    isolation: isolate;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  html.start-desk .start-desk-dock::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -1px calc(-1px - var(--dock-spread, 0px));
+    border: 1px solid var(--sd27-control-border);
+    border-radius: inherit;
+    background: var(--sd27-control-surface);
+    box-shadow: var(--sd27-control-shadow);
+    -webkit-backdrop-filter: blur(28px) saturate(155%);
+    backdrop-filter: blur(28px) saturate(155%);
+    transition: left 140ms ease-out, right 140ms ease-out;
+  }
+  html.start-desk .start-desk-dock button {
+    flex-shrink: 0;
+    transform-origin: center bottom;
+    transform: translate(var(--dock-shift, 0px), var(--dock-lift, 0px)) scale(var(--dock-scale, 1)) !important;
+    transition: transform 140ms ease-out, background 140ms ease-out;
+  }
+  html.start-desk .start-desk-dock button:focus-visible {
+    outline: 2px solid var(--start-accent);
+    outline-offset: 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk .start-desk-dock::before { transition: none !important; }
+  html.start-desk .start-desk-dock button {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+/* Browsers without backdrop filtering still need a legible control surface. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html.start-desk .start-desk-dock {
+    background: var(--containerBg) !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html.start-desk .start-desk-dock::before {
+    background: var(--containerBg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  html.start-desk .start-desk-dock::before {
+    border-color: color-mix(in srgb, var(--fg) 34%, transparent);
+  }
+}
+@media (forced-colors: active) {
+  html.start-desk .start-desk-dock::before {
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html.start-desk .start-desk-dock::before { background: var(--containerBg); }
+}
