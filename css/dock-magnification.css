@@ -1,0 +1,30 @@
+
+/* Start Desk — pointer magnification on a stable glass shelf. */
+@media (min-width: 760px) and (hover: hover) and (pointer: fine) {
+  html.start-desk .start-desk-dock {
+    overflow: visible;
+    max-width: calc(100vw - 180px);
+  }
+  html.start-desk .start-desk-dock button {
+    flex-shrink: 0;
+    transform-origin: center bottom;
+    transform: translate(var(--dock-shift, 0px), var(--dock-lift, 0px)) scale(var(--dock-scale, 1)) !important;
+    transition: transform 140ms ease-out, background 140ms ease-out;
+  }
+  html.start-desk .start-desk-dock button:focus-visible {
+    outline: 2px solid var(--start-accent);
+    outline-offset: 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk .start-desk-dock button {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+/* Browsers without backdrop filtering still need a legible control surface. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html.start-desk .start-desk-dock {
+    background: var(--containerBg) !important;
+  }
+}

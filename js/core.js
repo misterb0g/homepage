@@ -1675,6 +1675,50 @@ if (window.StartDesk) {
       <button type="button" data-action="stats">Stats</button>
     `;
     document.body.appendChild(dock);
+    // Layout centres stay stable while transforms create the magnification wave.
+    const buttons = Array.from(dock.querySelectorAll('button'));
+    const magnification = matchMedia('(min-width: 760px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+    let pointerX = null;
+    let frame = 0;
+    function renderDock() {
+      frame = 0;
+      if (pointerX === null || !magnification.matches || dock.scrollWidth > dock.clientWidth) {
+        buttons.forEach(button => {
+          button.style.removeProperty('--dock-scale');
+          button.style.removeProperty('--dock-shift');
+          button.style.removeProperty('--dock-lift');
+        });
+        return;
+      }
+      const x = pointerX - dock.getBoundingClientRect().left;
+      const widths = buttons.map(button => button.offsetWidth);
+      const scales = buttons.map((button, i) => {
+        const distance = Math.min(1, Math.abs(x - button.offsetLeft - widths[i] / 2) / 150);
+        return 1 + .42 * (1 + Math.cos(Math.PI * distance)) / 2;
+      });
+      const extra = widths.map((width, i) => width * (scales[i] - 1));
+      let shift = -extra.reduce((sum, width) => sum + width, 0) / 2;
+      buttons.forEach((button, i) => {
+        button.style.setProperty('--dock-scale', scales[i].toFixed(3));
+        button.style.setProperty('--dock-shift', `${(shift + extra[i] / 2).toFixed(2)}px`);
+        button.style.setProperty('--dock-lift', `${(-18 * (scales[i] - 1) / .42).toFixed(2)}px`);
+        shift += extra[i];
+      });
+    }
+    function updateDock(x = null) {
+      pointerX = x;
+      if (!frame) frame = requestAnimationFrame(renderDock);
+    }
+    dock.addEventListener('pointermove', event => {
+      if (event.pointerType === 'mouse') updateDock(event.clientX);
+    });
+    dock.addEventListener('pointerleave', () => updateDock());
+    dock.addEventListener('pointercancel', () => updateDock());
+    dock.addEventListener('focusin', () => updateDock());
+    window.addEventListener('blur', () => updateDock());
+    window.addEventListener('resize', () => updateDock());
+    magnification.addEventListener('change', () => updateDock());
+
     dock.addEventListener('click', (event) => {
       const btn = event.target.closest('button[data-action]');
       if (!btn) return;
