@@ -1695,7 +1695,7 @@ if (window.StartDesk) {
       const widths = buttons.map(button => button.offsetWidth);
       const scales = buttons.map((button, i) => {
         const distance = Math.min(1, Math.abs(x - button.offsetLeft - widths[i] / 2) / 150);
-        return 1 + .42 * (1 + Math.cos(Math.PI * distance)) / 2;
+        return 1 + .32 * (1 + Math.cos(Math.PI * distance)) / 2;
       });
       const extra = widths.map((width, i) => width * (scales[i] - 1));
       const spread = extra.reduce((sum, width) => sum + width, 0) / 2;
@@ -1704,7 +1704,7 @@ if (window.StartDesk) {
       buttons.forEach((button, i) => {
         button.style.setProperty('--dock-scale', scales[i].toFixed(3));
         button.style.setProperty('--dock-shift', `${(shift + extra[i] / 2).toFixed(2)}px`);
-        button.style.setProperty('--dock-lift', `${(-18 * (scales[i] - 1) / .42).toFixed(2)}px`);
+        button.style.setProperty('--dock-lift', `${(-14 * (scales[i] - 1) / .32).toFixed(2)}px`);
         shift += extra[i];
       });
     }
