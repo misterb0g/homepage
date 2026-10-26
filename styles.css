@@ -7296,3 +7296,35 @@ html.start-desk body:not(.focus-mode) #bookmark-container .bookmark-set {
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   html.start-desk .start-desk-dock::before { background: var(--containerBg); }
 }
+
+/* Keep tile headings comfortably inset without shifting their divider or controls. */
+html.start-desk #bookmark-container .bookmark-header .bookmark-title {
+  padding-inline-start: 6px;
+}
+
+/* Match bookmark headings: left aligned, vertically centered, and uppercase. */
+html.start-desk :is(#calendar-widget, #chat-container) .widget-toolbar {
+  align-items: center;
+}
+
+html.start-desk body :is(#calendar-widget, #chat-container) .widget-title {
+  margin: 0;
+  padding-inline-start: 6px;
+  text-align: start;
+  text-transform: uppercase;
+  font-size: .95rem;
+  font-weight: 600;
+  letter-spacing: .8px;
+  line-height: 1.2;
+  opacity: .85;
+}
+
+html.start-desk[data-density="dashboard"] body :is(#calendar-widget, #chat-container) .widget-title {
+  font-size: .88rem;
+}
+
+@media (max-width: 760px) {
+  html.start-desk body :is(#calendar-widget, #chat-container) .widget-title {
+    font-size: .8rem;
+  }
+}
