@@ -14,7 +14,10 @@
 
   let loadedEvents = [];
   let eventsRequested = false;
+  let calendarRetryTimer = null;
+  let calendarRetryCount = 0;
   let selectedDateKey = null;
+  const CALENDAR_RETRY_DELAYS_MS = [2500, 8000];
 
   const monthFmt = new Intl.DateTimeFormat('fr-BE', { month: 'long', year: 'numeric' });
   const dateFmt = new Intl.DateTimeFormat('fr-BE', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -334,6 +337,20 @@
     }
   }
 
+  function scheduleCalendarRetry() {
+    if (calendarRetryTimer || calendarRetryCount >= CALENDAR_RETRY_DELAYS_MS.length) return;
+    const delay = CALENDAR_RETRY_DELAYS_MS[calendarRetryCount];
+    calendarRetryCount += 1;
+    calendarRetryTimer = window.setTimeout(() => {
+      calendarRetryTimer = null;
+      if (navigator.onLine !== false &&
+          !document.body.classList.contains('focus-mode') &&
+          !document.body.classList.contains('calendar-hidden')) {
+        loadEvents();
+      }
+    }, delay);
+  }
+
   async function loadEvents() {
     if (eventsRequested) return;
     eventsRequested = true;
@@ -345,16 +362,21 @@
       const data = await res.json();
 
       loadedEvents = Array.isArray(data.events) ? data.events.slice(0, 20) : [];
+      calendarRetryCount = 0;
       renderCalendar();
       renderEvents();
     } catch (error) {
       eventsRequested = false;
       console.error('Calendar API:', error);
       eventsList.innerHTML = '<div class="calendar-event-empty">Calendrier indisponible.</div>';
+      scheduleCalendarRetry();
     }
   }
 
   window.loadCalendarEvents = loadEvents;
+  window.addEventListener('online', () => {
+    if (!eventsRequested) loadEvents();
+  });
 
   prev.addEventListener('click', (event) => {
     event.stopPropagation();

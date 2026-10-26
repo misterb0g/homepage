@@ -521,11 +521,11 @@ html.start-desk body:not(.focus-mode) #news-container li + li {
 }
 
 /* Match bookmark headings: left aligned, vertically centered, and uppercase. */
-html.start-desk :is(#calendar-widget, #chat-container) .widget-toolbar {
+html.start-desk :is(#calendar-widget, #news-container, #chat-container) .widget-toolbar {
   align-items: center;
 }
 
-html.start-desk body :is(#calendar-widget, #chat-container) .widget-title {
+html.start-desk body :is(#calendar-widget, #news-container, #chat-container) .widget-title {
   margin: 0;
   padding-inline-start: 6px;
   text-align: start;
@@ -537,12 +537,12 @@ html.start-desk body :is(#calendar-widget, #chat-container) .widget-title {
   opacity: .85;
 }
 
-html.start-desk[data-density="dashboard"] body :is(#calendar-widget, #chat-container) .widget-title {
+html.start-desk[data-density="dashboard"] body :is(#calendar-widget, #news-container, #chat-container) .widget-title {
   font-size: .88rem;
 }
 
 @media (max-width: 760px) {
-  html.start-desk body :is(#calendar-widget, #chat-container) .widget-title {
+  html.start-desk body :is(#calendar-widget, #news-container, #chat-container) .widget-title {
     font-size: .8rem;
   }
 }

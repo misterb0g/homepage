@@ -13,16 +13,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const responses = await Promise.all(
+    const results = await Promise.allSettled(
       sources.map((url) =>
         fetch(url, { headers: { "user-agent": "homepage-calendar-widget" } })
+          .then((response) => {
+            if (!response.ok) throw new Error(`ICS fetch failed with status ${response.status}`);
+            return response.text();
+          })
       )
     );
 
-    const bad = responses.find((r) => !r.ok);
-    if (bad) throw new Error(`ICS fetch failed with status ${bad.status}`);
-
-    const texts = await Promise.all(responses.map((r) => r.text()));
+    const texts = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+    if (!texts.length) {
+      const firstFailure = results.find((result) => result.status === "rejected");
+      throw firstFailure?.reason || new Error("Calendar sources unavailable");
+    }
     const now = new Date();
     const inThirtyDays = new Date(now);
     inThirtyDays.setDate(inThirtyDays.getDate() + 30);
