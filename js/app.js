@@ -6,6 +6,7 @@
       'js/calendar.js',
       'js/dashboard.js'
     ];
+    const MODULE_RETRY_DELAYS_MS = [700, 1800];
     let secondaryModulesPromise = null;
     let initialWeatherLoaded = false;
 
@@ -13,10 +14,13 @@
       const existing = document.querySelector(`script[data-startdesk-src="${src}"]`);
       if (existing) {
         if (existing.dataset.loaded === '1') return Promise.resolve();
-        return new Promise((resolve, reject) => {
-          existing.addEventListener('load', resolve, { once: true });
-          existing.addEventListener('error', reject, { once: true });
-        });
+        if (existing.dataset.failed === '1') existing.remove();
+        else {
+          return new Promise((resolve, reject) => {
+            existing.addEventListener('load', resolve, { once: true });
+            existing.addEventListener('error', () => reject(new Error(`Impossible de charger ${src}`)), { once: true });
+          });
+        }
       }
 
       return new Promise((resolve, reject) => {
@@ -28,14 +32,43 @@
           script.dataset.loaded = '1';
           resolve();
         }, { once: true });
-        script.addEventListener('error', () => reject(new Error(`Impossible de charger ${src}`)), { once: true });
+        script.addEventListener('error', () => {
+          script.dataset.failed = '1';
+          script.remove();
+          reject(new Error(`Impossible de charger ${src}`));
+        }, { once: true });
         document.body.appendChild(script);
       });
     }
 
+    async function loadScriptWithRetry(src) {
+      let lastError;
+      for (let attempt = 0; attempt <= MODULE_RETRY_DELAYS_MS.length; attempt += 1) {
+        try {
+          await loadScriptOnce(src);
+          return src;
+        } catch (error) {
+          lastError = error;
+          if (attempt < MODULE_RETRY_DELAYS_MS.length) {
+            await new Promise(resolve => window.setTimeout(resolve, MODULE_RETRY_DELAYS_MS[attempt]));
+          }
+        }
+      }
+      throw lastError;
+    }
+
     function loadSecondaryModules() {
       if (!secondaryModulesPromise) {
-        secondaryModulesPromise = Promise.all(SECONDARY_SCRIPTS.map(loadScriptOnce))
+        secondaryModulesPromise = Promise.allSettled(SECONDARY_SCRIPTS.map(loadScriptWithRetry))
+          .then((results) => {
+            const failures = results.filter(result => result.status === 'rejected');
+            if (failures.length) {
+              failures.forEach(result => console.error('Module secondaire:', result.reason));
+              // Autorise une nouvelle tentative lors du prochain affichage d'un module.
+              secondaryModulesPromise = null;
+            }
+            return results;
+          })
           .catch((error) => {
             secondaryModulesPromise = null;
             console.error('Modules secondaires:', error);
@@ -66,14 +99,14 @@
 
     window.StartDeskLoadSecondary = loadSecondaryData;
     window.addEventListener('startdesk:focus-changed', (event) => {
-      if (!event.detail?.focus) loadSecondaryData();
+      if (!event.detail?.focus) loadSecondaryData().catch(error => console.error('Données secondaires:', error));
     });
 
     window.addEventListener("load", () => {
       updateGreeting(); $("#clock").textContent = getTime();
       setInterval(() => { $("#clock").textContent = getTime(); if (new Date().getSeconds() === 0) updateGreeting(); }, 1000);
       setupBookmarks();
-      loadSecondaryData();
+      loadSecondaryData().catch(error => console.error('Données secondaires:', error));
     });
 
 

@@ -39,3 +39,8 @@ html.start-desk body:not(.focus-mode) #bookmark-container .bookmark-set {
     --bookmark-columns: 1;
   }
 }
+
+/* Keep tile headings comfortably inset without shifting their divider or controls. */
+html.start-desk #bookmark-container .bookmark-header .bookmark-title {
+  padding-inline-start: 6px;
+}
