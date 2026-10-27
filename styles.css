@@ -7328,3 +7328,60 @@ html.start-desk[data-density="dashboard"] body :is(#calendar-widget, #news-conta
     font-size: .8rem;
   }
 }
+
+
+/* Siri-inspired search: preserve layout and reveal colour only on interaction. */
+html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight {
+  border-radius: 999px !important;
+  padding-inline-start: 14px !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--fg) 5%, transparent), transparent 75%),
+    var(--sd27-control-surface) !important;
+  transition: border-color .25s ease, box-shadow .3s ease !important;
+}
+
+html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(110deg, #52bfff 0%, #8675ff 35%, #d77bec 65%, #f5a2bc 85%, #76ccff 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight:focus-within {
+  border-color: color-mix(in srgb, #a795ec 60%, var(--sd27-control-border)) !important;
+  box-shadow:
+    -8px 0 22px -8px rgba(72, 168, 255, .32),
+    0 4px 22px -8px rgba(151, 105, 244, .28),
+    8px 0 22px -8px rgba(235, 127, 184, .30),
+    var(--sd27-control-shadow) !important;
+}
+
+html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight:focus-within::before {
+  opacity: .9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight,
+  html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight::before {
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight:focus-within {
+    outline: 2px solid Highlight !important;
+    outline-offset: 3px;
+  }
+  html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight::before {
+    display: none;
+  }
+}
