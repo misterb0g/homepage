@@ -7385,3 +7385,56 @@ html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight:f
     display: none;
   }
 }
+
+
+/* Mobile : salutation et heure, recherche, puis favoris uniquement.
+   Règles visuelles : les préférences des widgets sur ordinateur sont conservées. */
+@media (max-width: 768px) {
+  html.start-desk body {
+    padding-bottom: env(safe-area-inset-bottom) !important;
+  }
+
+  html.start-desk body .container {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    min-height: 100dvh;
+    padding-top: max(24px, calc(env(safe-area-inset-top) + 16px)) !important;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+    gap: 1rem !important;
+  }
+
+  html.start-desk body #greeting-container {
+    display: flex !important;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .35rem .75rem;
+    order: -2;
+    margin: 0 !important;
+  }
+
+  html.start-desk body #greeting,
+  html.start-desk body #clock {
+    font-size: clamp(1rem, 4vw, 1.3rem);
+    margin: 0;
+  }
+
+  html.start-desk body #search-form {
+    order: -1;
+    margin-block: 0 !important;
+  }
+
+  html.start-desk body #bookmark-container {
+    margin-top: 0 !important;
+  }
+
+  html.start-desk body :is(
+    #weather, #weather-details, #weather-container,
+    #calendar-widget, #calendar-container, #news-container, #chat-container,
+    .widget-shell, .start-desk-dock, .start-desk-status, .start-desk-panel,
+    .top-controls, .startpage-quick-controls, .quick-command-hint
+  ) {
+    display: none !important;
+  }
+}
