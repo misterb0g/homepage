@@ -64,6 +64,22 @@ function weatherCodeToFr(code) {
     return map[code] ?? "Météo";
 }
 
+// Monochrome silhouettes inherit the theme colour; descriptions remain readable.
+function weatherForecastIcon(code) {
+    const cloud = '<path d="M8 25a6 6 0 0 1-.8-11.95A8 8 0 0 1 22.5 11a7 7 0 1 1 1.5 14Z"/>';
+    const sun = '<circle cx="12" cy="12" r="5"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    let shape;
+    if (code === 0) shape = '<g transform="translate(4 4)">' + sun + '</g>';
+    else if (code === 1 || code === 2) shape = sun + cloud;
+    else if (code === 3) shape = cloud;
+    else if ([45, 48].includes(code)) shape = '<path d="M7 13a5 5 0 0 1 1-9 7 7 0 0 1 13 1 5 5 0 0 1 4 8Z"/><path d="M5 18h22M8 23h16M5 28h22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    else if ([95, 96, 99].includes(code)) shape = cloud + '<path d="m17 20-6 8h5l-1 4 8-10h-6Z"/>';
+    else if ([71, 73, 75, 77, 85, 86].includes(code)) shape = cloud + '<g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M10 27v5m-2.2-3.8 4.4 2.6m-4.4 0 4.4-2.6M23 27v5m-2.2-3.8 4.4 2.6m-4.4 0 4.4-2.6"/></g>';
+    else if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) shape = cloud + '<path d="m10 28-1 3m8-3-1 3m8-3-1 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    else shape = '<text x="16" y="24" text-anchor="middle" font-size="23" fill="currentColor">?</text>';
+    return '<svg class="wd-icon" viewBox="0 0 32 34" fill="currentColor" aria-hidden="true" focusable="false">' + shape + '</svg>';
+}
+
 // --- Météo détaillée (5 jours) ---
 (function () {
   const weatherCard = $("#weather"), details = $("#weather-details"); let loaded = false; 
@@ -94,7 +110,7 @@ function weatherCodeToFr(code) {
   function renderWeather5d(data) { 
     const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); 
     const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); 
-    details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div><div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`; 
+    details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div>${weatherForecastIcon(day.code)}<div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`;
   }
 
   async function toggleDetails() { 
