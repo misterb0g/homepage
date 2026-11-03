@@ -7438,3 +7438,31 @@ html.start-desk body:is(.focus-mode, :not(.focus-mode)) #search-form.spotlight:f
     display: none !important;
   }
 }
+
+/* Give the calendar label and close control more breathing room. */
+@media (min-width: 769px) {
+  html.start-desk body:not(.focus-mode) #calendar-widget.is-collapsed {
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+}
+
+/* Compact monochrome weather symbols, inspired by native weather widgets. */
+html.start-desk #weather-details .weather-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
+}
+html.start-desk #weather-details .wd-icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 32px;
+  height: 34px;
+  margin: 5px auto 4px;
+  color: var(--fg);
+}
+html.start-desk #weather-details .wd-temps {
+  margin-top: auto;
+}
