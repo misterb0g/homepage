@@ -104,7 +104,7 @@ function weatherForecastIcon(code) {
         daily[key].length >= daily.time.length
       ) &&
       daily.time.every((date, i) =>
-        /^\\d{4}-\\d{2}-\\d{2}$/.test(date) &&
+        /^\d{4}-\d{2}-\d{2}$/.test(date) &&
         Number.isFinite(daily.temperature_2m_max[i]) &&
         Number.isFinite(daily.temperature_2m_min[i])
       );
