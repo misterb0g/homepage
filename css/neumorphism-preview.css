@@ -142,40 +142,84 @@ html.start-desk body :is(button,input,textarea,select,a):focus-visible {
   outline-offset: 3px !important;
 }
 
-/* Spotlight: one inset surface; no exterior glow or doubled focus ring. */
+/* Spotlight — restrained, physically recessed: no glass, neon or double outline. */
 html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight,
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:hover {
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:hover,
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:focus-within {
   background: var(--neo-surface) !important;
   background-image: none !important;
   border: 1px solid var(--neo-edge) !important;
   border-radius: var(--neo-control-radius) !important;
   box-shadow: var(--neo-inset) !important;
-  outline: 0 !important;
+  outline: none !important;
   transform: none !important;
   filter: none !important;
   overflow: visible;
   isolation: isolate;
 }
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:focus-within {
-  border-color: var(--neo-focus) !important;
-  box-shadow: var(--neo-inset) !important;
-  outline: 2px solid var(--neo-focus) !important;
-  outline-offset: 2px !important;
-}
-html.start-desk body form#search-form.spotlight::before {
-  content: none !important; display: none !important;
+html.start-desk body form#search-form.spotlight::before,
+html.start-desk body form#search-form.spotlight::after,
+html.start-desk body form#search-form.spotlight:focus-within::before {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  box-shadow: none !important;
 }
 html.start-desk body form#search-form.spotlight input#search-input,
+html.start-desk body form#search-form.spotlight input#search-input:focus,
 html.start-desk body form#search-form.spotlight input#search-input:focus-visible {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
-  outline: 0 !important;
+  outline: none !important;
   color: var(--neo-text) !important;
   min-width: 0;
   appearance: none;
 }
+/* Keep a clear keyboard-only indicator without making every click glow. */
+html.start-desk body form#search-form.spotlight:has(#search-input:focus-visible) {
+  outline: 2px solid var(--neo-focus) !important;
+  outline-offset: 3px !important;
+}
 html.start-desk body #search-input::placeholder { color: var(--neo-subtle) !important; }
+
+/* Suggestions are solid inset rows on a raised surface, never glass panes. */
+html.start-desk body form#search-form.spotlight #command-suggestions.command-palette,
+html.start-desk body #command-suggestions.command-palette {
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--neo-soft) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  padding: 7px !important;
+}
+html.start-desk body #command-suggestions .command-item {
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--neo-text) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 13px !important;
+  padding: .55rem .75rem !important;
+  transform: none !important;
+}
+html.start-desk body #command-suggestions .command-item:is(:hover,:focus-visible,.is-active,[aria-selected="true"]) {
+  background: var(--neo-surface-alt) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  transform: none !important;
+}
+html.start-desk body #command-suggestions .command-item small {
+  color: var(--neo-subtle) !important;
+}
+html.start-desk body #command-suggestions .command-item-kind {
+  color: var(--neo-subtle) !important;
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: none !important;
+}
 
 /* Search engine button, panel and rows use exactly the same surfaces. */
 html.start-desk body form#search-form.spotlight #engine-button {
