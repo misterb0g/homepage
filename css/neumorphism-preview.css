@@ -1,629 +1,474 @@
 /*
- * Start Desk — Neumorphism visual experiment
- * Isolated, CSS-only. No JS, DOM, bookmark or preference changes.
- * Reference: warm off-white, cool greys, graphite, raised/pressed shadows.
+ * START DESK — NEUMORPHISM / CONSOLIDATED DESIGN SYSTEM
+ * Preview-only skin. Original application and its stored preferences remain intact.
+ * Visual materials: porcelain-blue light; slate-blue dark.
+ * Raised: small exterior relief. Pressed: interior relief. No luminous halos.
  */
-:root.start-desk,
-:root.start-desk[data-theme],
-:root.start-desk[data-theme-pref] {
+:root.start-desk {
   color-scheme: light !important;
-  --bg: #e9e9eb;
-  --fg: #273440;
-  --primaryFg: #273440;
-  --secondaryFg: #798491;
-  --containerBg: #e9e9eb;
-  --glass-bg: #e9e9eb;
-  --glass-border: rgba(255,255,255,.75);
-  --glass-shadow: 8px 8px 19px #c5c8cd, -8px -8px 19px #fff;
-  --start-accent: #78899b;
-  --start-accent-soft: rgba(120,137,155,.14);
-  --start-glass: #e9e9eb;
-  --start-glass-strong: #e9e9eb;
-  --start-border: rgba(255,255,255,.85);
-  --start-shadow: 8px 8px 18px #c5c8cd, -8px -8px 18px #fff;
-  --sd27-control-surface: #e9e9eb;
-  --sd27-control-border: #fafafa;
-  --sd27-control-shadow: inset 4px 4px 9px #c8cbd0, inset -4px -4px 9px #fff;
-  --mac-brand: #78899b;
-  --blob-color1: #e9e9eb;
-  --blob-color2: #e9e9eb;
-  --neo-surface: #e9e9eb;
-  --neo-raised: 8px 8px 18px #c5c8cd, -8px -8px 18px #fff;
-  --neo-small: 4px 4px 9px #c7cacf, -4px -4px 9px #fff;
-  --neo-pressed: inset 5px 5px 10px #c7cacf, inset -5px -5px 10px #fff;
+  --neo-bg: #edf0f5;
+  --neo-surface: #edf0f5;
+  --neo-surface-alt: #e7ebf1;
+  --neo-text: #293a4a;
+  --neo-subtle: #728194;
+  --neo-accent: #5e91ca;
+  --neo-edge: rgba(150, 167, 188, .23);
+  --neo-raised: 4px 4px 10px rgba(162, 174, 192, .35), -4px -4px 10px rgba(255,255,255,.78);
+  --neo-soft: 2px 2px 5px rgba(156,170,188,.32), -2px -2px 5px rgba(255,255,255,.68);
+  --neo-inset: inset 4px 4px 8px #cad2dd, inset -4px -4px 8px #fff;
+  --neo-inset-soft: inset 2px 2px 5px #ccd4df, inset -2px -2px 5px #fff;
+  --neo-focus: rgba(93, 137, 183, .53);
+  --neo-card-radius: 23px;
+  --bg: var(--neo-bg);
+  --fg: var(--neo-text);
+  --primaryFg: var(--neo-text);
+  --secondaryFg: var(--neo-subtle);
+  --containerBg: var(--neo-surface);
+  --glass-bg: var(--neo-surface);
+  --glass-border: var(--neo-edge);
+  --glass-shadow: var(--neo-raised);
+  --start-glass: var(--neo-surface);
+  --start-glass-strong: var(--neo-surface);
+  --start-border: var(--neo-edge);
+  --start-shadow: var(--neo-raised);
+  --start-accent: var(--neo-accent);
+  --start-accent-soft: rgba(94,145,202,.12);
+  --mac-brand: var(--neo-accent);
+  --sd27-content-surface: var(--neo-surface);
+  --sd27-content-border: var(--neo-edge);
+  --sd27-content-shadow: var(--neo-raised);
+  --sd27-control-surface: var(--neo-surface);
+  --sd27-control-border: var(--neo-edge);
+  --sd27-control-shadow: var(--neo-inset);
+  --blob-color1: var(--neo-bg);
+  --blob-color2: var(--neo-bg);
 }
+:root.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) {
+  color-scheme: dark !important;
+  --neo-bg: #202a36;
+  --neo-surface: #263241;
+  --neo-surface-alt: #304153;
+  --neo-text: #e9eff7;
+  --neo-subtle: #a5b3c4;
+  --neo-accent: #82b7ed;
+  --neo-edge: rgba(160,185,211,.15);
+  --neo-raised: 3px 3px 7px rgba(12,22,33,.38), -2px -2px 5px rgba(81,101,124,.14);
+  --neo-soft: 2px 2px 4px rgba(13,24,35,.33), -1px -1px 3px rgba(85,104,126,.13);
+  --neo-inset: inset 4px 4px 8px #182431, inset -4px -4px 8px #36485b;
+  --neo-inset-soft: inset 2px 2px 5px #182532, inset -2px -2px 5px #35475a;
+  --neo-focus: rgba(135,174,210,.50);
+  --start-accent-soft: rgba(130,183,237,.13);
+}
+/* Background is a stable plane, not moving Liquid Glass. */
 html.start-desk body,
 html.start-desk body.focus-mode,
 html.start-desk[data-start-desk-period] body.focus-mode {
-  color: #273440 !important;
-  background: #e9e9eb !important;
+  background: var(--neo-bg) !important;
   background-image: none !important;
+  color: var(--neo-text) !important;
+}
+html.start-desk body::before {
+  background: none !important;
+  opacity: 0 !important;
 }
 html.start-desk .liquid-background,
 html.start-desk .blob1,
 html.start-desk .blob2 { display: none !important; }
-html.start-desk body .glass,
-html.start-desk body .card,
-html.start-desk body :is(.bookmark-set,.weather-container,.weather-details,.widget-shell,#control-panel,.start-desk-panel,.start-desk-dock,.start-desk-status,.command-palette) {
+
+/* Shared raised surfaces. Exact selectors cover higher-specificity macOS skins. */
+html.start-desk body :is(
+  #bookmark-container .bookmark-set.card.glass,
+  #weather-details.card.glass,
+  #calendar-widget.widget-shell.card.glass,
+  #news-container.widget-shell.card.glass,
+  #chat-container.widget-shell.card.glass,
+  #control-panel.glass,
+  .start-desk-panel,
+  .start-desk-status,
+  .command-palette,
+  .engine-menu
+) {
   background: var(--neo-surface) !important;
   background-image: none !important;
-  border: 1px solid rgba(255,255,255,.85) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: var(--neo-card-radius) !important;
   box-shadow: var(--neo-raised) !important;
-  -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  color: var(--neo-text) !important;
 }
-html.start-desk body :is(.card,.bookmark-set,.weather-container,.weather-details,.widget-shell,.start-desk-panel,.command-palette) {
-  border-radius: 25px !important;
+html.start-desk body :is(.card.glass,.bookmark-set.card.glass)::before {
+  content: none !important;
+  display: none !important;
 }
-html.start-desk body .card::before { display: none !important; }
-html.start-desk body :is(.card,.bookmark-set):hover {
-  transform: translateY(-2px) !important;
-  border-color: #fff !important;
-  box-shadow: 11px 11px 22px #c3c6cb, -11px -11px 22px #fff !important;
-}
-html.start-desk body :is(.card,.bookmark-set):active {
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk body #greeting { color: #273440 !important; font-weight: 750; letter-spacing: -.045em; }
-html.start-desk body :is(#clock,.muted,.hint,.widget-subtitle) { color: #798491 !important; }
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight {
-  background: #e9e9eb !important;
-  background-image: none !important;
-  border: 1px solid rgba(255,255,255,.88) !important;
-  border-radius: 999px !important;
-  box-shadow: var(--neo-pressed) !important;
-  min-height: 64px;
-}
-html.start-desk body #search-form.spotlight::before,
-html.start-desk body #search-form.spotlight::after { background: none !important; }
-html.start-desk body #search-form.spotlight::before { opacity: 0 !important; }
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight:focus-within {
-  border-color: #8b9bad !important;
-  box-shadow: var(--neo-pressed), 0 0 0 3px rgba(120,137,155,.23) !important;
-}
-html.start-desk body :is(input,textarea,select) { color: #273440; }
-html.start-desk body #search-input { background: transparent !important; color: #273440 !important; }
-html.start-desk body #search-input::placeholder { color: #8c959e !important; }
-html.start-desk body :is(.bookmark,.bookmark-item,.command-item) {
-  border-radius: 14px !important;
-  color: #34404b !important;
-}
-html.start-desk body :is(.bookmark,.bookmark-item,.command-item):hover,
-html.start-desk body .command-item.is-active {
-  background: #e1e2e5 !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk body :is(.btn-icon,.start-desk-dock button,.startpage-quick-controls button,.start-desk-panel button,.segmented-control button,.widget-window-controls button,.reset-stats,.search-engine-btn) {
-  color: #4c5a68 !important;
-  background: var(--neo-surface) !important;
-  border: 1px solid rgba(255,255,255,.8) !important;
-  box-shadow: var(--neo-small) !important;
-  border-radius: 999px !important;
-}
-html.start-desk body :is(.btn-icon,.start-desk-dock button,.startpage-quick-controls button,.start-desk-panel button,.segmented-control button,.widget-window-controls button,.reset-stats,.search-engine-btn):is(:active,.active,.is-active,[aria-pressed="true"]) {
-  background: var(--neo-surface) !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk body :is(.btn-icon,button,input,a):focus-visible {
-  outline: 2px solid #78899b !important;
-  outline-offset: 3px !important;
-}
-html.start-desk body :is(.toggle-switch .slider,.segmented-control,.input-group input,.panel-section input,.chat-form input) {
-  background: var(--neo-surface) !important;
-  border: 1px solid rgba(255,255,255,.8) !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk body .toggle-switch .slider::before {
-  background: #f4f4f5 !important;
-  box-shadow: var(--neo-small) !important;
-}
-html.start-desk body :is(.start-desk-dock,.start-desk-status,.startpage-quick-controls) {
-  background: var(--neo-surface) !important;
-  border-color: #fff !important;
+html.start-desk body :is(
+  #bookmark-container .bookmark-set.card.glass,
+  #weather-details.card.glass,
+  #calendar-widget.widget-shell.card.glass,
+  #news-container.widget-shell.card.glass,
+  #chat-container.widget-shell.card.glass
+):hover {
+  transform: none !important;
   box-shadow: var(--neo-raised) !important;
+  border-color: var(--neo-edge) !important;
 }
-html.start-desk body .start-desk-dock button.is-active::after,
-html.start-desk body .start-desk-status::before {
-  background: #7b8b9b !important;
-  box-shadow: none !important;
+html.start-desk body :is(
+  #greeting,.widget-title,.bookmark-title,.panel-header h3,
+  .start-desk-panel h3,.bookmark a,.bookmark,.command-item
+) { color: var(--neo-text) !important; text-shadow: none !important; }
+html.start-desk body :is(#clock,.hint,.muted,.widget-subtitle) {
+  color: var(--neo-subtle) !important;
 }
-html.start-desk body :is(.widget-title,.bookmark-title,.panel-header h3,.start-desk-panel h3) {
-  color: #273440 !important;
-}
-html.start-desk body :is(.weather-day,.stats-summary div,.stats-list li) {
+html.start-desk body #greeting { font-weight: 750; letter-spacing: -.045em; }
+
+/* Inputs: tactile recesses, not glowing borders. */
+html.start-desk body :is(
+  #control-panel .input-group input,
+  #control-panel .panel-section input[type="text"],
+  .chat-form input,
+  .start-desk-panel textarea
+) {
   background: var(--neo-surface) !important;
-  border: 1px solid #fff !important;
-  border-radius: 16px !important;
-  box-shadow: var(--neo-small) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  color: var(--neo-text) !important;
 }
-html.start-desk body :is(.widget-toolbar,.panel-header) {
-  background: transparent !important;
-  border-bottom-color: #d2d5d9 !important;
-}
-@media (max-width: 768px) {
-  html.start-desk body #search-form.spotlight { min-height: 56px !important; }
-  html.start-desk body #bookmark-container .bookmark-set { box-shadow: var(--neo-small) !important; }
-}
-@media (prefers-reduced-motion: reduce) {
-  html.start-desk body * { scroll-behavior: auto !important; }
-}
-/* Contrast support: system accessibility setting takes priority over the subtle look. */
-@media (prefers-contrast: more) {
-  html.start-desk body :is(button,input,a) { outline-offset: 3px; }
-  html.start-desk body :is(.bookmark,.bookmark-item,.command-item) { color: #18232f !important; }
+html.start-desk body :is(button,input,textarea,select,a):focus-visible {
+  outline: 2px solid var(--neo-focus) !important;
+  outline-offset: 3px !important;
 }
 
-/* =====================================================================
-   Neumorphism v2 — screenshot-driven corrections (22 Nov 2026)
-   Aesthetic-only overrides: no behavior or persisted settings changed.
-   ===================================================================== */
-:root.start-desk {
-  --neo-surface: #edf0f5;
-  --neo-raised: 6px 6px 14px #cbd0d9, -6px -6px 14px #fff;
-  --neo-small: 3px 3px 7px #cbd0d9, -3px -3px 7px #fff;
-  --neo-pressed: inset 4px 4px 8px #cbd0d9, inset -4px -4px 8px #fff;
-  --bg: #edf0f5;
-  --containerBg: #edf0f5;
-  --glass-bg: #edf0f5;
-  --start-glass: #edf0f5;
-  --start-glass-strong: #edf0f5;
-  --start-accent: #5e91ca;
-  --mac-brand: #5e91ca;
-  --start-accent-soft: rgba(94,145,202,.16);
-  --fg: #293a4a;
-  --primaryFg: #293a4a;
-  --secondaryFg: #6c7b8c;
-  --sd27-control-surface: #edf0f5;
-}
-html.start-desk body,
-html.start-desk body.focus-mode,
-html.start-desk[data-start-desk-period] body.focus-mode {
-  background: var(--bg) !important;
-  color: var(--fg) !important;
-}
-/* Native focus on the internal input was producing a large rectangular
-   outline over the rounded search container. Focus belongs to the form. */
-html.start-desk body #search-form.spotlight {
-  isolation: isolate;
+/* Spotlight: constant layout; focus deepens the interior shadow. */
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight,
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:hover {
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  transform: none !important;
+  filter: none !important;
   overflow: visible;
+  isolation: isolate;
 }
-html.start-desk body #search-input,
-html.start-desk body #search-input:focus,
-html.start-desk body #search-input:focus-visible {
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:focus-within {
+  border-color: var(--neo-focus) !important;
+  box-shadow: var(--neo-inset) !important;
+  outline: 1px solid var(--neo-focus) !important;
+  outline-offset: 2px !important;
+  transform: none !important;
+}
+html.start-desk body form#search-form.spotlight::before {
+  content: none !important;
+  display: none !important;
+}
+html.start-desk body form#search-form.spotlight input#search-input,
+html.start-desk body form#search-form.spotlight input#search-input:focus,
+html.start-desk body form#search-form.spotlight input#search-input:focus-visible {
+  color: var(--neo-text) !important;
   background: transparent !important;
+  border: 0 !important;
   box-shadow: none !important;
   outline: 0 !important;
-  border: 0 !important;
-  -webkit-appearance: none;
-  appearance: none;
   min-width: 0;
+  appearance: none;
+  -webkit-appearance: none;
 }
-html.start-desk body #search-form.spotlight:focus-within {
-  outline: 2px solid #86a9ce !important;
-  outline-offset: 3px !important;
+html.start-desk body #search-input::placeholder { color: var(--neo-subtle) !important; }
+
+/* Search engine button, panel and rows use exactly the same surfaces. */
+html.start-desk body form#search-form.spotlight #engine-button {
+  color: var(--neo-text) !important;
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-soft) !important;
+  border-radius: 999px !important;
 }
-html.start-desk body #search-form.spotlight .search-icon {
-  color: var(--secondaryFg) !important;
+html.start-desk body form#search-form.spotlight #engine-button:is(:active,[aria-expanded="true"]) {
+  box-shadow: var(--neo-inset-soft) !important;
 }
-/* Weather: same inset porcelain treatment as Spotlight; correct contrast. */
-html.start-desk body #weather.card.weather-container {
+html.start-desk body form#search-form.spotlight div#engine-menu.engine-menu {
   background: var(--neo-surface) !important;
   background-image: none !important;
-  border: 1px solid rgba(255,255,255,.88) !important;
-  border-radius: 999px !important;
-  box-shadow: var(--neo-pressed) !important;
-  color: var(--fg) !important;
-  min-height: 36px;
-  padding: .60rem 1.3rem;
-  width: min(380px, calc(100vw - 44px));
-}
-html.start-desk body #weather.card.weather-container *,
-html.start-desk body #weather.card.weather-container :is(span,strong,small) {
-  color: var(--fg) !important;
-}
-html.start-desk body #weather.card.weather-container:hover {
-  transform: none !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk body #weather.card.weather-container:focus-visible {
-  outline: 2px solid #7c9fc4 !important;
-  outline-offset: 3px;
-}
-/* Dock: a single carved tray, separate tactile buttons. Disable the
-   old Liquid Glass pseudo-surface and blurred halo completely. */
-html.start-desk body .start-desk-dock {
-  background: var(--neo-surface) !important;
-  background-image: none !important;
-  border: 1px solid rgba(255,255,255,.9) !important;
-  border-radius: 999px !important;
-  padding: .42rem !important;
-  gap: .36rem !important;
-  box-shadow: var(--neo-pressed) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-raised) !important;
+  border-radius: 20px !important;
+  padding: 10px !important;
+  color: var(--neo-text) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  filter: none !important;
 }
-html.start-desk body .start-desk-dock::before,
-html.start-desk body .start-desk-dock::after {
-  display: none !important;
-  content: none !important;
+html.start-desk body #engine-menu .engine-menu-section,
+html.start-desk body #engine-menu .engine-hint {
+  color: var(--neo-subtle) !important;
 }
-html.start-desk body .start-desk-dock button {
-  background: var(--neo-surface) !important;
-  color: var(--fg) !important;
-  box-shadow: var(--neo-small) !important;
-  border: 1px solid rgba(255,255,255,.85) !important;
-  border-radius: 999px !important;
-  text-shadow: none !important;
-  filter: none !important;
+html.start-desk body #engine-menu .engine-option {
+  background: transparent !important;
+  color: var(--neo-text) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  border-radius: 13px !important;
+  margin: 2px 0 !important;
+  transform: none !important;
+}
+html.start-desk body #engine-menu .engine-option:is(:hover,:focus-visible,.active,[aria-selected="true"]) {
+  background: var(--neo-surface-alt) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  border-color: transparent !important;
+  transform: none !important;
+}
+html.start-desk body #engine-menu .engine-option :is(svg,span) {
+  color: inherit !important;
+}
+
+/* Current weather: centered capsule, preserving the click-to-expand logic. */
+html.start-desk body section#weather.card.weather-container {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  width: min(380px, calc(100vw - 44px));
   min-height: 38px;
+  padding: .6rem 1.1rem;
+  border-radius: 999px !important;
+  border: 1px solid var(--neo-edge) !important;
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  color: var(--neo-text) !important;
+  text-align: center !important;
+  transform: none !important;
 }
-html.start-desk body .start-desk-dock button:is(:active,.is-active,[aria-pressed="true"]) {
-  box-shadow: var(--neo-pressed) !important;
-  color: #416e9e !important;
+html.start-desk body section#weather.card.weather-container:hover {
+  box-shadow: var(--neo-inset-soft) !important;
 }
-html.start-desk body .start-desk-dock button::before {
+html.start-desk body section#weather.card.weather-container > .row {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 .45rem;
+  width: 100%;
+  margin: 0 !important;
+  line-height: 1.4;
+  text-align: center !important;
+}
+html.start-desk body section#weather.card.weather-container > .row > .inline {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  line-height: inherit;
+}
+html.start-desk body #weather :is(span,strong,small,div) {
+  color: var(--neo-text) !important;
+}
+/* Five-day weather avoids the former charcoal blocks in dark mode. */
+html.start-desk body #weather-details .weather-day {
+  background: var(--neo-surface-alt) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  color: var(--neo-text) !important;
+  transform: none !important;
+}
+html.start-desk body #weather-details .weather-day:hover {
+  background: var(--neo-surface-alt) !important;
+  border-color: var(--neo-focus) !important;
+}
+html.start-desk body #weather-details .weather-day :is(
+  .wd-date,.wd-temps,.max,.wd-icon,span,strong,small,svg
+) { color: var(--neo-text) !important; }
+html.start-desk body #weather-details .weather-day :is(.wd-desc,.min) {
+  color: var(--neo-subtle) !important;
+}
+
+/* Bookmarks: one level raised cards and subtle recessed links. */
+html.start-desk body #bookmark-container .bookmark-set.card.glass {
+  background: var(--neo-surface) !important;
+  box-shadow: var(--neo-raised) !important;
+  border-radius: 24px !important;
+}
+html.start-desk body #bookmark-container .bookmark-set :is(.bookmark-title,.bookmark,.bookmark a,span,small) {
+  color: var(--neo-text) !important;
+}
+html.start-desk body #bookmark-container .bookmark-set .bookmark {
+  border-radius: 14px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: background-color .16s, box-shadow .16s !important;
+}
+html.start-desk body #bookmark-container .bookmark-set .bookmark:is(:hover,:focus-within) {
+  background: var(--neo-surface-alt) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  transform: none !important;
+}
+
+/* News RSS: a single article shadow; never an offset shadow on its anchor. */
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a,
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a:hover {
+  display: block !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+}
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a > article.bookmark {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  margin: 0 !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--neo-edge) !important;
+  background: var(--neo-surface-alt) !important;
+  color: var(--neo-text) !important;
+  box-shadow: var(--neo-soft) !important;
+  transform: none !important;
+}
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a:is(:hover,:focus-visible) > article.bookmark {
+  background: var(--neo-surface-alt) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+}
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a > article.bookmark :is(div,span) {
+  color: var(--neo-text);
+}
+
+/* Calendar cells and appointments: restrained contrast, same radius family. */
+html.start-desk body #calendar-widget :is(.calendar-day,.calendar-event-item) {
+  border-radius: 14px !important;
+}
+html.start-desk body #calendar-widget .calendar-event-item {
   box-shadow: none !important;
 }
-/* Settings: pressed segmented rail; only selected option is raised. */
-html.start-desk body #control-panel.glass {
-  background: var(--neo-surface) !important;
-  background-image: none !important;
-  box-shadow: var(--neo-raised) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
+
+/* Settings: pressed rail, active segment lifted, blue-grey switches. */
 html.start-desk body #control-panel .segmented-control {
   background: var(--neo-surface) !important;
-  border: 1px solid rgba(255,255,255,.82) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-inset-soft) !important;
   border-radius: 999px !important;
-  box-shadow: var(--neo-pressed) !important;
   padding: 4px !important;
   gap: 4px !important;
 }
 html.start-desk body #control-panel .segmented-control button {
   background: transparent !important;
-  box-shadow: none !important;
+  color: var(--neo-subtle) !important;
   border: 1px solid transparent !important;
   border-radius: 999px !important;
-  color: var(--secondaryFg) !important;
+  box-shadow: none !important;
 }
 html.start-desk body #control-panel .segmented-control button:is(.active,[aria-pressed="true"]) {
-  color: var(--fg) !important;
   background: var(--neo-surface) !important;
-  border-color: rgba(255,255,255,.78) !important;
-  box-shadow: var(--neo-small) !important;
+  color: var(--neo-text) !important;
+  border-color: var(--neo-edge) !important;
+  box-shadow: var(--neo-soft) !important;
 }
-html.start-desk body #control-panel .segmented-control button:hover:not(.active) {
-  background: rgba(94,145,202,.08) !important;
-}
-/* Light tiles remain porcelain, including after theme switching. */
-html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set {
-  background: var(--neo-surface) !important;
-  color: var(--fg) !important;
-}
-html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set :is(.bookmark-title,.bookmark,.bookmark a) {
-  color: var(--fg) !important;
-}
-/* Full dark material system (not merely dark cards). */
-:root.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) {
-  color-scheme: dark !important;
-  --bg: #202a36;
-  --fg: #e9eff7;
-  --primaryFg: #e9eff7;
-  --secondaryFg: #a5b3c4;
-  --containerBg: #202a36;
-  --glass-bg: #202a36;
-  --glass-border: rgba(255,255,255,.12);
-  --neo-surface: #263241;
-  --neo-raised: 7px 7px 15px #141c26, -7px -7px 15px #364454;
-  --neo-small: 3px 3px 7px #141c26, -3px -3px 7px #364454;
-  --neo-pressed: inset 4px 4px 8px #141c26, inset -4px -4px 8px #374656;
-  --start-glass: #263241;
-  --start-glass-strong: #263241;
-  --start-border: rgba(255,255,255,.14);
-  --start-shadow: var(--neo-raised);
-  --sd27-control-surface: #263241;
-  --sd27-control-border: rgba(255,255,255,.14);
-  --sd27-control-shadow: var(--neo-pressed);
-  --mac-brand: #82b7ed;
-  --start-accent: #82b7ed;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body.focus-mode,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"])[data-start-desk-period] body.focus-mode {
-  background: #202a36 !important;
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(.glass,.card,.bookmark-set,.weather-container,.widget-shell,#control-panel,.start-desk-panel,.start-desk-dock,.start-desk-status,.command-palette,.engine-menu) {
-  background: #263241 !important;
-  background-image: none !important;
-  border-color: rgba(255,255,255,.11) !important;
-  box-shadow: var(--neo-raised) !important;
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(#greeting,#clock,.widget-title,.bookmark-title,.panel-header h3,.start-desk-panel h3,.bookmark,.bookmark a,.bookmark-set a,.engine-option,.command-item,.weather-container span,.weather-container strong,.weather-container small) {
-  color: #e9eff7 !important;
-  text-shadow: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(.muted,.hint,.widget-subtitle) {
-  color: #a5b3c4 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather.card.weather-container,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-form.spotlight {
-  background: #263241 !important;
-  color: #e9eff7 !important;
-  border-color: rgba(255,255,255,.13) !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set {
-  box-shadow: var(--neo-raised) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-input,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-input::placeholder {
-  color: #e2eaf3 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-input::placeholder {
-  color: #a5b3c4 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(.btn-icon,.start-desk-dock button,.segmented-control button,.startpage-quick-controls button,.toggle-switch .slider) {
-  background: #263241 !important;
-  border-color: rgba(255,255,255,.12) !important;
-  color: #e9eff7 !important;
-  box-shadow: var(--neo-small) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .segmented-control,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock {
-  background: #263241 !important;
-  border-color: rgba(255,255,255,.12) !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .segmented-control button:not(.active) {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  color: #a5b3c4 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .segmented-control button.active {
-  background: #263241 !important;
-  color: #e9eff7 !important;
-  box-shadow: var(--neo-small) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(.bookmark,.bookmark-item,.command-item):hover {
-  background: #334354 !important;
-  color: #fff !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-
-/* =====================================================================
-   V3: refinement from user screenshots: tiles, tactile hover, switches,
-   RSS hover alignment and calmer dark dock. No logic changes.
-   ===================================================================== */
-
-/* Keep tile backgrounds in the blue slate family across all display modes.
-   Explicit specificity overrides the old macOS content materials. */
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set.card.glass,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body.focus-mode #bookmark-container .bookmark-set.card.glass {
-  background: #2d3c4d !important;
-  background-image: none !important;
-  border-color: rgba(172,193,216,.14) !important;
-  box-shadow: 5px 5px 11px #17222f, -5px -5px 11px #37495c !important;
-  color: #edf3fa !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set :is(.bookmark-title,.bookmark,a,span,small) {
-  color: #e9eff7 !important;
-}
-/* Mirror dark inset bookmark hover in light mode; no jump/offset. */
-html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set.card.glass {
-  background: #edf0f5 !important;
-  background-image: none !important;
-}
-html.start-desk body #bookmark-container .bookmark-set .bookmark {
-  background: transparent !important;
-  transition: background-color .16s ease, box-shadow .16s ease !important;
-}
-html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:hover,
-html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:focus-within {
-  background: #e7ebf1 !important;
-  box-shadow: inset 3px 3px 6px #c8ced7, inset -3px -3px 6px #fff !important;
-  transform: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:hover,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:focus-within {
-  background: #273646 !important;
-  box-shadow: inset 3px 3px 7px #192433, inset -3px -3px 7px #3a4d60 !important;
-  transform: none !important;
-}
-/* The settings toggles are blue when active and grey-blue when inactive. */
 html.start-desk body #control-panel .toggle-switch .slider {
-  background: #d4dce7 !important;
-  background-image: none !important;
-  border: 1px solid #f7faff !important;
-  box-shadow: inset 3px 3px 6px #b6c2d1, inset -3px -3px 6px #f7faff !important;
+  background: color-mix(in srgb, var(--neo-accent) 15%, var(--neo-surface)) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  border-radius: 999px !important;
 }
 html.start-desk body #control-panel .toggle-switch input:checked + .slider {
-  background: #6f9dcc !important;
-  border-color: #8fb4db !important;
-  box-shadow: inset 3px 3px 7px #4774a5, inset -3px -3px 7px #9ac2ea !important;
+  background: color-mix(in srgb, var(--neo-accent) 76%, var(--neo-surface)) !important;
+  border-color: var(--neo-focus) !important;
 }
 html.start-desk body #control-panel .toggle-switch .slider::before {
-  background: #f9fbfe !important;
-  box-shadow: 2px 2px 5px rgba(56,76,101,.26), -1px -1px 4px rgba(255,255,255,.8) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .toggle-switch .slider {
-  background: #36495d !important;
-  border-color: #4a5d72 !important;
-  box-shadow: inset 3px 3px 6px #192636, inset -3px -3px 6px #4d6278 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .toggle-switch input:checked + .slider {
-  background: #497faf !important;
-  border-color: #709dc8 !important;
-  box-shadow: inset 3px 3px 7px #2d5377, inset -3px -3px 7px #70a4d2 !important;
-}
-/* The news feed anchor contains an article.bookmark. Applying independent
-   hover backgrounds and outer/inner shadows caused offset double cards.
-   Keep exactly one inset shadow on the article. */
-html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a {
-  display: block !important;
-  border-radius: 16px !important;
-  padding: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  transform: none !important;
-  overflow: visible;
-}
-html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a:is(:hover,:focus-visible) {
-  background: transparent !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a > article.bookmark {
-  box-sizing: border-box !important;
-  width: 100% !important;
-  border-radius: 16px !important;
-  margin: 0 !important;
-  transform: none !important;
-  background: #edf0f5 !important;
-  box-shadow: var(--neo-small) !important;
-  border: 1px solid rgba(255,255,255,.75) !important;
-  transition: box-shadow .16s ease, background-color .16s ease !important;
-}
-html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a:is(:hover,:focus-visible) > article.bookmark {
-  background: #e8edf4 !important;
-  box-shadow: inset 3px 3px 7px #c9d0d9, inset -3px -3px 7px #fff !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #news-container :is(#macg-list,#lesoir-list) > a > article.bookmark {
-  background: #2d3c4d !important;
-  color: #e9eff7 !important;
-  border-color: rgba(255,255,255,.12) !important;
-  box-shadow: var(--neo-small) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #news-container :is(#macg-list,#lesoir-list) > a:is(:hover,:focus-visible) > article.bookmark {
-  background: #293a4d !important;
-  box-shadow: inset 3px 3px 7px #182432, inset -3px -3px 7px #3e5267 !important;
-}
-/* A discreet, unlit dark dock — no bright halo or glass glow. */
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock {
-  background: #263241 !important;
-  background-image: none !important;
-  border: 1px solid rgba(162,184,208,.15) !important;
-  box-shadow: inset 3px 3px 7px #192431, inset -3px -3px 7px #344355 !important;
-  filter: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock::before,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock::after {
-  display: none !important;
-  box-shadow: none !important;
-  filter: none !important;
-  content: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button {
-  background: #2b3a4b !important;
-  color: #e9eff7 !important;
-  border-color: rgba(179,198,218,.10) !important;
-  box-shadow: 2px 2px 5px #172230, -2px -2px 5px #37485b !important;
-  filter: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button:is(.is-active,:active,[aria-pressed="true"]) {
-  background: #29394a !important;
-  box-shadow: inset 3px 3px 6px #182431, inset -3px -3px 6px #3b4d61 !important;
+  background: #f8fafc !important;
+  box-shadow: 1px 2px 4px rgba(18,32,50,.23) !important;
 }
 
-/* V4 — no bloom, tactile focus, custom accessible profile picker */
-html.start-desk body #search-form.spotlight,
-html.start-desk body #search-form.spotlight:hover {
-  transform: none !important;
-  border: 1px solid rgba(129,154,183,.34) !important;
-  outline: 0 !important;
-  box-shadow: var(--neo-pressed) !important;
+/* Simple controls and Dock: no separate glow behind the shelf. */
+html.start-desk body :is(
+  .btn-icon,.startpage-quick-controls button,.start-desk-panel button,
+  .start-desk-stats-panel .reset-stats
+) {
+  color: var(--neo-text) !important;
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-soft) !important;
+  border-radius: 999px !important;
 }
-html.start-desk body #search-form.spotlight:focus-within,
-html.start-desk body #search-form.spotlight:focus-within:hover {
-  transform: none !important;
-  outline: 1px solid rgba(102,149,200,.52) !important;
-  outline-offset: 2px !important;
-  border-color: rgba(105,145,188,.44) !important;
-  box-shadow: var(--neo-pressed) !important;
-  filter: none !important;
+html.start-desk body :is(
+  .btn-icon,.startpage-quick-controls button,.start-desk-panel button
+):is(:active,.active,.is-active,[aria-pressed="true"]) {
+  box-shadow: var(--neo-inset-soft) !important;
 }
-html.start-desk body #search-form.spotlight:focus-within::before,
-html.start-desk body #search-form.spotlight:focus-within::after {
-  opacity: 0 !important;
+html.start-desk body .startpage-quick-controls {
+  background: transparent !important;
+  border: 0 !important;
   box-shadow: none !important;
-  filter: none !important;
-}
-html.start-desk body #search-form.spotlight:focus-within #engine-button {
-  box-shadow: var(--neo-small) !important;
-  border-color: rgba(126,153,184,.30) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-form.spotlight,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-form.spotlight:hover {
-  border-color: rgba(156,183,208,.20) !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-form.spotlight:focus-within {
-  outline: 1px solid rgba(130,172,210,.46) !important;
-  border-color: rgba(130,172,210,.36) !important;
-  box-shadow: var(--neo-pressed) !important;
-}
-/* Keep dark top status and nearby panels physically carved, not lit. */
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-status,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .startpage-quick-controls,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-panel {
-  background: #263241 !important;
-  box-shadow: 3px 3px 8px #1a2633, -3px -3px 8px #2c3b4d !important;
-  border-color: rgba(163,187,211,.12) !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  filter: none !important;
 }
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-status::before {
-  background: #7e9db9 !important;
+html.start-desk body div.start-desk-dock,
+html.start-desk body div.start-desk-dock:is(:hover,:focus-within) {
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  padding: .42rem !important;
+  gap: .35rem !important;
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.start-desk body div.start-desk-dock::before,
+html.start-desk body div.start-desk-dock::after {
+  content: none !important;
+  display: none !important;
   box-shadow: none !important;
 }
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .startpage-quick-controls :is(button,select),
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-trigger {
-  box-shadow: 2px 2px 4px #1c2734, -2px -2px 4px #334354 !important;
+html.start-desk body div.start-desk-dock button,
+html.start-desk body div.start-desk-dock button:hover {
+  background: var(--neo-surface) !important;
+  color: var(--neo-text) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--neo-soft) !important;
   filter: none !important;
+  transform: none !important;
+  text-shadow: none !important;
 }
-/* Standard select remains functional in DOM as the source of truth,
-   but the new visual trigger opens our fully styled menu instead. */
+html.start-desk body div.start-desk-dock button:is(:active,.is-active,[aria-pressed="true"]) {
+  box-shadow: var(--neo-inset-soft) !important;
+  color: var(--neo-accent) !important;
+}
+html.start-desk body .start-desk-status::before,
+html.start-desk body .start-desk-dock button.is-active::after {
+  background: var(--neo-accent) !important;
+  box-shadow: none !important;
+}
+
+/* Profile picker: existing native select remains the behavior source. */
 html.start-desk body .profile-picker.neo-ready {
-  position: relative !important;
   display: inline-flex !important;
+  position: relative !important;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 999px !important;
 }
 html.start-desk body .profile-picker.neo-ready > select.startpage-profile-pill,
 html.start-desk body .profile-picker.neo-ready > .profile-picker-arrows {
   position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
+  width: 1px !important; height: 1px !important;
   opacity: 0 !important;
   pointer-events: none !important;
   clip-path: inset(50%) !important;
-  overflow: hidden !important;
 }
 html.start-desk body .profile-picker-trigger {
-  appearance: none;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  align-items: center; justify-content: center;
   gap: .55rem;
-  min-width: 116px;
-  padding: .50rem .75rem;
-  border: 1px solid rgba(255,255,255,.8);
+  min-width: 112px;
   border-radius: 999px;
-  font: inherit;
-  font-weight: 600;
-  color: var(--fg);
-  background: var(--neo-surface);
-  box-shadow: var(--neo-small);
-  cursor: pointer;
+  padding: .49rem .75rem;
+  background: var(--neo-surface) !important;
+  color: var(--neo-text) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-soft) !important;
+  font: inherit; font-weight: 600; cursor: pointer;
+  appearance: none;
 }
 html.start-desk body .profile-picker-trigger::after {
   content: "";
@@ -632,355 +477,72 @@ html.start-desk body .profile-picker-trigger::after {
   border-bottom: 1.5px solid currentColor;
   transform: translateY(-2px) rotate(45deg);
 }
-html.start-desk body .profile-picker-trigger[aria-expanded="true"] {
-  box-shadow: var(--neo-pressed) !important;
-}
+html.start-desk body .profile-picker-trigger[aria-expanded="true"] { box-shadow: var(--neo-inset-soft) !important; }
 html.start-desk body .profile-picker-menu {
   position: absolute;
   z-index: 1500;
   left: 0;
   bottom: calc(100% + 10px);
-  min-width: 160px;
-  padding: 7px;
-  border-radius: 20px;
-  background: var(--neo-surface);
-  border: 1px solid rgba(255,255,255,.82);
-  box-shadow: 5px 5px 12px #c5cad3, -5px -5px 12px #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 9px !important;
+  min-width: 165px;
+  padding: 10px !important;
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 19px !important;
+  box-shadow: var(--neo-raised) !important;
 }
 html.start-desk body .profile-picker-menu[hidden] { display: none !important; }
 html.start-desk body .profile-picker-menu button {
   display: block;
+  flex: 0 0 auto;
   width: 100%;
-  border-radius: 12px;
-  border: 0 !important;
-  text-align: left;
-  background: transparent !important;
-  color: var(--fg) !important;
+  min-height: 39px;
+  padding: .58rem .8rem !important;
+  border-radius: 13px !important;
+  margin: 0 !important;
   font: inherit;
-  padding: .65rem .85rem;
-  box-shadow: none !important;
+  text-align: left;
   cursor: pointer;
+  background: transparent !important;
+  color: var(--neo-text) !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 html.start-desk body .profile-picker-menu button:is(:hover,:focus-visible,[aria-selected="true"]) {
-  background: var(--neo-surface) !important;
-  box-shadow: var(--neo-pressed) !important;
+  background: var(--neo-surface-alt) !important;
+  box-shadow: var(--neo-inset-soft) !important;
 }
 html.start-desk body .profile-picker-menu button[aria-selected="true"] {
-  color: #4d7dad !important;
+  color: var(--neo-accent) !important;
   font-weight: 700;
 }
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-trigger,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu {
-  background: #293849 !important;
-  color: #e9eff7 !important;
-  border-color: rgba(162,185,212,.15) !important;
-  box-shadow: 3px 3px 7px #17232f, -3px -3px 7px #334355 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu button {
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu button:is(:hover,:focus-visible,[aria-selected="true"]) {
-  background: #293849 !important;
-  box-shadow: inset 3px 3px 6px #192534, inset -3px -3px 6px #394c60 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu button[aria-selected="true"] {
-  color: #9bc4ec !important;
-}
 
-/* V5 — dark surface cohesion, no luminous bloom, airy profile menu */
-/* Override inherited Liquid Glass shadows at the level of the actual widgets.
-   Small directional shadows replace the old large blurred spread. */
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(
-  #calendar-widget.widget-shell.card.glass,
-  #news-container.widget-shell.card.glass,
-  #chat-container.widget-shell.card.glass,
-  #weather-details.card.glass,
-  #weather.card.glass,
-  #control-panel.glass,
-  .start-desk-panel,
-  .start-desk-status,
-  .startpage-quick-controls,
-  #bookmark-container .bookmark-set.card.glass
-) {
-  background: #263241 !important;
-  background-image: none !important;
-  border-color: rgba(166,188,211,.13) !important;
-  box-shadow: 3px 3px 8px rgba(10,18,27,.32), -2px -2px 6px rgba(67,84,105,.14) !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  filter: none !important;
+/* Accessible states / smaller displays. */
+@media (max-width: 768px) {
+  html.start-desk body #search-form.spotlight { min-height: 56px !important; }
+  html.start-desk body .profile-picker-menu { max-width: calc(100vw - 24px); }
+  html.start-desk body #weather.card.weather-container > .row { gap: 0 .3rem; }
 }
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(
-  #calendar-widget.widget-shell.card.glass,
-  #news-container.widget-shell.card.glass,
-  #chat-container.widget-shell.card.glass,
-  #weather-details.card.glass,
-  #bookmark-container .bookmark-set.card.glass
-):hover {
-  box-shadow: 3px 3px 8px rgba(10,18,27,.32), -2px -2px 6px rgba(67,84,105,.14) !important;
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk body .bookmark,
+  html.start-desk body .engine-option,
+  html.start-desk body #search-form.spotlight { transition: none !important; }
 }
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body::before {
-  background: none !important;
-  opacity: 0 !important;
+@media (prefers-contrast: more) {
+  :root.start-desk {
+    --neo-edge: color-mix(in srgb, var(--neo-text) 35%, transparent);
+  }
+  html.start-desk body :is(.bookmark a,.engine-option,.profile-picker-menu button) {
+    text-decoration-thickness: 2px;
+  }
 }
-/* Five-day forecast was rendering with old hard-coded charcoal cards. */
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details.card.glass {
-  background: #263241 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details :is(.weather5d,.weather-day) {
-  background: transparent !important;
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day {
-  background: #304052 !important;
-  background-image: none !important;
-  border: 1px solid rgba(176,198,219,.13) !important;
-  box-shadow: inset 2px 2px 4px rgba(13,23,33,.27), inset -2px -2px 4px rgba(73,95,119,.16) !important;
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day:hover {
-  background: #344659 !important;
-  border-color: rgba(176,198,219,.23) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day :is(.wd-date,.wd-temps,.max,.min,.wd-desc,.wd-icon,span,strong,small,svg) {
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day :is(.wd-desc,.min) {
-  color: #b5c3d3 !important;
-}
-/* Profile menu options: enough separation to read as individual buttons. */
-html.start-desk body .profile-picker-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 7px !important;
-  padding: 10px !important;
-}
-html.start-desk body .profile-picker-menu[hidden] { display: none !important; }
-html.start-desk body .profile-picker-menu button {
-  flex: 0 0 auto;
-  min-height: 39px;
-  margin: 0 !important;
-  padding: .57rem .85rem !important;
-  border-radius: 13px !important;
-}
-html.start-desk body .profile-picker-menu button + button {
-  margin-top: 2px !important;
-}
-
-/* V6 — engine selector follows neumorphic materials; dock has no bloom. */
-html.start-desk body #engine-menu.engine-menu {
-  background: #edf0f5 !important;
-  background-image: none !important;
-  border: 1px solid rgba(255,255,255,.85) !important;
-  border-radius: 23px !important;
-  box-shadow: 5px 5px 12px rgba(143,153,168,.28), -4px -4px 12px rgba(255,255,255,.9) !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-  color: #293a4a !important;
-  padding: 10px !important;
-}
-html.start-desk body #engine-menu.engine-menu .engine-menu-section {
-  color: #8290a1 !important;
-}
-html.start-desk body #engine-menu.engine-menu .engine-option {
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-radius: 15px !important;
-  box-shadow: none !important;
-  color: #293a4a !important;
-  transform: none !important;
-}
-html.start-desk body #engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
-  background: #e5eaf1 !important;
-  border-color: rgba(255,255,255,.4) !important;
-  box-shadow: inset 3px 3px 6px #cbd2dc, inset -3px -3px 6px #fff !important;
-  transform: none !important;
-}
-html.start-desk body #engine-menu.engine-menu :is(.engine-option-icon,.engine-hint) {
-  color: #738398 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu {
-  background: #293849 !important;
-  border: 1px solid rgba(166,192,219,.14) !important;
-  box-shadow: 4px 4px 10px rgba(9,17,26,.3), -2px -2px 6px rgba(71,91,115,.13) !important;
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu .engine-menu-section,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu :is(.engine-option-icon,.engine-hint) {
-  color: #a5b3c4 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu .engine-option {
-  background: transparent !important;
-  color: #e9eff7 !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
-  background: #304154 !important;
-  border-color: rgba(166,192,219,.08) !important;
-  box-shadow: inset 3px 3px 6px #1a2837, inset -3px -3px 6px #3b5065 !important;
-}
-/* Override desktop dock's old expanding pseudo shelf and all exterior glows. */
-html.start-desk body .start-desk-dock,
-html.start-desk body .start-desk-dock:is(:hover,:focus-within) {
-  isolation: isolate !important;
-  background: #edf0f5 !important;
-  border: 1px solid rgba(161,176,194,.26) !important;
-  box-shadow: inset 2px 2px 5px #d1d7e0, inset -2px -2px 5px #fff !important;
-  filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-html.start-desk body .start-desk-dock::before,
-html.start-desk body .start-desk-dock::after {
-  content: none !important;
-  display: none !important;
-  box-shadow: none !important;
-}
-html.start-desk body .start-desk-dock button,
-html.start-desk body .start-desk-dock button:hover {
-  box-shadow: 2px 2px 4px #cbd2dc, -2px -2px 4px #fff !important;
-  filter: none !important;
-  transform: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock:is(:hover,:focus-within) {
-  background: #263241 !important;
-  border-color: rgba(161,185,210,.12) !important;
-  box-shadow: inset 2px 2px 5px #1a2734, inset -2px -2px 5px #344557 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button:hover {
-  background: #2b3a4b !important;
-  box-shadow: 2px 2px 4px #192533, -2px -2px 4px #334456 !important;
-}
-html.start-desk body .start-desk-dock button:is(:active,.is-active,[aria-pressed="true"]) {
-  box-shadow: var(--neo-pressed) !important;
-}
-
-/* V7 — center current weather and make Spotlight feel pressed on focus.
-   Only CSS: preserves search behavior, menu layering and weather toggles. */
-html.start-desk body #weather.card.weather-container {
-  display: flex !important;
-  flex-direction: column;
-  align-items: center !important;
-  justify-content: center !important;
-  box-sizing: border-box !important;
-  text-align: center !important;
-}
-html.start-desk body #weather.card.weather-container > .row {
-  display: flex !important;
-  flex-wrap: wrap;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100%;
-  gap: 0 .45rem;
-  margin: 0 !important;
-  line-height: 1.4;
-  text-align: center !important;
-}
-html.start-desk body #weather.card.weather-container > .row > .inline {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center;
-  margin: 0 !important;
-  line-height: inherit;
-}
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight:focus-within {
-  background: var(--neo-surface) !important;
-  background-image: none !important;
-  box-shadow: inset 6px 6px 12px #c3cad5, inset -6px -6px 12px #fff !important;
-  border-color: rgba(125,153,184,.31) !important;
-  outline: 1px solid rgba(119,149,182,.30) !important;
-  outline-offset: 2px !important;
-  transform: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight:focus-within {
-  background: #263241 !important;
-  background-image: none !important;
-  box-shadow: inset 6px 6px 12px #172330, inset -6px -6px 12px #35485b !important;
-  border-color: rgba(141,172,204,.24) !important;
-  outline: 1px solid rgba(137,167,197,.23) !important;
-}
-@media (max-width: 560px) {
-  html.start-desk body #weather.card.weather-container > .row { gap: 0 .30rem; }
-}
-
-/* V8 — precise engine selector materials and flat dark dock */
-/* Scoped to the actual search menu ID to outrank the legacy engine styles. */
-html.start-desk body form#search-form.spotlight div#engine-menu.engine-menu {
-  background: #edf0f5 !important;
-  background-image: none !important;
-  border: 1px solid rgba(153,170,189,.28) !important;
-  border-radius: 20px !important;
-  box-shadow: 4px 4px 9px rgba(153,165,181,.24), -3px -3px 7px rgba(255,255,255,.8) !important;
-  color: #293a4a !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  filter: none !important;
-}
-html.start-desk body form#search-form.spotlight div#engine-menu.engine-menu .engine-option {
-  background: transparent !important;
-  background-image: none !important;
-  color: #293a4a !important;
-  border: 1px solid transparent !important;
-  border-radius: 13px !important;
-  box-shadow: none !important;
-  margin: 2px 0 !important;
-  transform: none !important;
-  filter: none !important;
-}
-html.start-desk body form#search-form.spotlight div#engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
-  background: #e3e9f0 !important;
-  box-shadow: inset 3px 3px 6px #c6ced8, inset -3px -3px 6px #fff !important;
-  border-color: transparent !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu {
-  background: #293849 !important;
-  border-color: rgba(161,185,210,.14) !important;
-  box-shadow: 4px 4px 9px rgba(13,22,32,.26), -2px -2px 5px rgba(70,93,117,.12) !important;
-  color: #e9eff7 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu .engine-option {
-  color: #e9eff7 !important;
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
-  background: #304255 !important;
-  border-color: transparent !important;
-  box-shadow: inset 3px 3px 6px #1a2a3b, inset -3px -3px 6px #3d5167 !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu .engine-option :is(svg,span) {
-  color: inherit !important;
-}
-/* Dock surface should be near-flat, not an illuminated floating shelf. */
-html.start-desk body div.start-desk-dock {
-  background: #eaf0f5 !important;
-  box-shadow: inset 1px 1px 3px rgba(162,174,188,.25), inset -1px -1px 3px rgba(255,255,255,.5) !important;
-  border: 1px solid rgba(132,151,174,.18) !important;
-  filter: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-html.start-desk body div.start-desk-dock::before,
-html.start-desk body div.start-desk-dock::after {
-  display: none !important;
-  content: none !important;
-  box-shadow: none !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body div.start-desk-dock {
-  background: #263241 !important;
-  box-shadow: inset 1px 1px 3px rgba(11,19,28,.32), inset -1px -1px 3px rgba(76,94,115,.12) !important;
-  border: 1px solid rgba(155,176,199,.10) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body div.start-desk-dock button,
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body div.start-desk-dock button:hover {
-  box-shadow: 1px 2px 3px rgba(14,23,34,.35), -1px -1px 2px rgba(78,99,120,.13) !important;
-  filter: none !important;
-}
-html.start-desk body div.start-desk-dock button,
-html.start-desk body div.start-desk-dock button:hover {
-  transform: none !important;
+@media (forced-colors: active) {
+  html.start-desk body :is(.card,.bookmark-set,.engine-menu,.start-desk-dock) {
+    background: Canvas !important;
+    color: CanvasText !important;
+    border: 1px solid CanvasText !important;
+    box-shadow: none !important;
+  }
 }
