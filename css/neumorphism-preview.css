@@ -395,3 +395,139 @@ html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(.book
   color: #fff !important;
   box-shadow: var(--neo-pressed) !important;
 }
+
+/* =====================================================================
+   V3: refinement from user screenshots: tiles, tactile hover, switches,
+   RSS hover alignment and calmer dark dock. No logic changes.
+   ===================================================================== */
+
+/* Keep tile backgrounds in the blue slate family across all display modes.
+   Explicit specificity overrides the old macOS content materials. */
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set.card.glass,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body.focus-mode #bookmark-container .bookmark-set.card.glass {
+  background: #2d3c4d !important;
+  background-image: none !important;
+  border-color: rgba(172,193,216,.14) !important;
+  box-shadow: 5px 5px 11px #17222f, -5px -5px 11px #37495c !important;
+  color: #edf3fa !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set :is(.bookmark-title,.bookmark,a,span,small) {
+  color: #e9eff7 !important;
+}
+/* Mirror dark inset bookmark hover in light mode; no jump/offset. */
+html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set.card.glass {
+  background: #edf0f5 !important;
+  background-image: none !important;
+}
+html.start-desk body #bookmark-container .bookmark-set .bookmark {
+  background: transparent !important;
+  transition: background-color .16s ease, box-shadow .16s ease !important;
+}
+html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:hover,
+html.start-desk:not([data-theme="dark"]):not([data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:focus-within {
+  background: #e7ebf1 !important;
+  box-shadow: inset 3px 3px 6px #c8ced7, inset -3px -3px 6px #fff !important;
+  transform: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:hover,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #bookmark-container .bookmark-set .bookmark:focus-within {
+  background: #273646 !important;
+  box-shadow: inset 3px 3px 7px #192433, inset -3px -3px 7px #3a4d60 !important;
+  transform: none !important;
+}
+/* The settings toggles are blue when active and grey-blue when inactive. */
+html.start-desk body #control-panel .toggle-switch .slider {
+  background: #d4dce7 !important;
+  background-image: none !important;
+  border: 1px solid #f7faff !important;
+  box-shadow: inset 3px 3px 6px #b6c2d1, inset -3px -3px 6px #f7faff !important;
+}
+html.start-desk body #control-panel .toggle-switch input:checked + .slider {
+  background: #6f9dcc !important;
+  border-color: #8fb4db !important;
+  box-shadow: inset 3px 3px 7px #4774a5, inset -3px -3px 7px #9ac2ea !important;
+}
+html.start-desk body #control-panel .toggle-switch .slider::before {
+  background: #f9fbfe !important;
+  box-shadow: 2px 2px 5px rgba(56,76,101,.26), -1px -1px 4px rgba(255,255,255,.8) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .toggle-switch .slider {
+  background: #36495d !important;
+  border-color: #4a5d72 !important;
+  box-shadow: inset 3px 3px 6px #192636, inset -3px -3px 6px #4d6278 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .toggle-switch input:checked + .slider {
+  background: #497faf !important;
+  border-color: #709dc8 !important;
+  box-shadow: inset 3px 3px 7px #2d5377, inset -3px -3px 7px #70a4d2 !important;
+}
+/* The news feed anchor contains an article.bookmark. Applying independent
+   hover backgrounds and outer/inner shadows caused offset double cards.
+   Keep exactly one inset shadow on the article. */
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a {
+  display: block !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  overflow: visible;
+}
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a:is(:hover,:focus-visible) {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a > article.bookmark {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  border-radius: 16px !important;
+  margin: 0 !important;
+  transform: none !important;
+  background: #edf0f5 !important;
+  box-shadow: var(--neo-small) !important;
+  border: 1px solid rgba(255,255,255,.75) !important;
+  transition: box-shadow .16s ease, background-color .16s ease !important;
+}
+html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a:is(:hover,:focus-visible) > article.bookmark {
+  background: #e8edf4 !important;
+  box-shadow: inset 3px 3px 7px #c9d0d9, inset -3px -3px 7px #fff !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #news-container :is(#macg-list,#lesoir-list) > a > article.bookmark {
+  background: #2d3c4d !important;
+  color: #e9eff7 !important;
+  border-color: rgba(255,255,255,.12) !important;
+  box-shadow: var(--neo-small) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #news-container :is(#macg-list,#lesoir-list) > a:is(:hover,:focus-visible) > article.bookmark {
+  background: #293a4d !important;
+  box-shadow: inset 3px 3px 7px #182432, inset -3px -3px 7px #3e5267 !important;
+}
+/* A discreet, unlit dark dock — no bright halo or glass glow. */
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock {
+  background: #263241 !important;
+  background-image: none !important;
+  border: 1px solid rgba(162,184,208,.15) !important;
+  box-shadow: inset 3px 3px 7px #192431, inset -3px -3px 7px #344355 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock::before,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock::after {
+  display: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  content: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button {
+  background: #2b3a4b !important;
+  color: #e9eff7 !important;
+  border-color: rgba(179,198,218,.10) !important;
+  box-shadow: 2px 2px 5px #172230, -2px -2px 5px #37485b !important;
+  filter: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button:is(.is-active,:active,[aria-pressed="true"]) {
+  background: #29394a !important;
+  box-shadow: inset 3px 3px 6px #182431, inset -3px -3px 6px #3b4d61 !important;
+}
