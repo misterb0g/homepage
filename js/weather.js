@@ -93,33 +93,113 @@ function weatherForecastIcon(code) {
     weatherCard.setAttribute('aria-expanded', String(!hidden));
   }
 
-  async function getWeather5dCached() {
-    try { const raw = localStorage.getItem(WEATHER_CACHE_KEY); if (raw) { const { ts, data, location } = JSON.parse(raw); const currentLocation = localStorage.getItem('weatherLocation') || 'Brussels'; if (data && (Date.now() - ts < WEATHER_TTL_MS) && location === currentLocation) return data; } } catch {}
-    
-    const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
-    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`);
-    const geoData = await geoRes.json();
-    const { latitude, longitude } = geoData.results[0];
-    
-    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=5`);
-    const data = await weatherRes.json();
-    try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ ts: Date.now(), data, location: locationName })); } catch {}
+  function validForecast(data) {
+    const daily = data?.daily;
+    return Array.isArray(daily?.time) &&
+      Array.isArray(daily?.weather_code) &&
+      Array.isArray(daily?.temperature_2m_max) &&
+      Array.isArray(daily?.temperature_2m_min) &&
+      daily.time.length >= 5 &&
+      ['weather_code', 'temperature_2m_max', 'temperature_2m_min'].every(key =>
+        daily[key].length >= daily.time.length
+      ) &&
+      daily.time.every((date, i) =>
+        /^\\d{4}-\\d{2}-\\d{2}$/.test(date) &&
+        Number.isFinite(daily.temperature_2m_max[i]) &&
+        Number.isFinite(daily.temperature_2m_min[i])
+      );
+  }
+
+  async function fetchJson(url, label) {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`${label} : HTTP ${response.status}`);
+    const data = await response.json();
+    if (data?.error) throw new Error(`${label} : ${data.reason || 'réponse invalide'}`);
     return data;
   }
 
-  function renderWeather5d(data) { 
-    const days = data.daily.time.map((d, i) => ({ date: d, code: data.daily.weather_code[i], tmax: Math.round(data.daily.temperature_2m_max[i]), tmin: Math.round(data.daily.temperature_2m_min[i]) })); 
-    const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short' }); 
-    details.innerHTML = `<div class='weather5d'>${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date))}</div>${weatherForecastIcon(day.code)}<div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join("")}</div>`;
+  async function getWeather5dCached() {
+    const locationName = localStorage.getItem('weatherLocation') || 'Brussels';
+    let previous;
+    try {
+      const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+      if (raw) {
+        const cache = JSON.parse(raw);
+        if (cache?.location === locationName && validForecast(cache.data)) {
+          previous = cache.data;
+          if (Date.now() - cache.ts < WEATHER_TTL_MS) return cache.data;
+        } else {
+          localStorage.removeItem(WEATHER_CACHE_KEY);
+        }
+      }
+    } catch (error) {
+      console.warn('Cache prévisions inutilisable :', error);
+    }
+
+    try {
+      const geoData = await fetchJson(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`,
+        'Géocodage'
+      );
+      const place = geoData?.results?.[0];
+      if (!Number.isFinite(place?.latitude) || !Number.isFinite(place?.longitude)) {
+        throw new Error(`Ville "${locationName}" introuvable`);
+      }
+      const params = new URLSearchParams({
+        latitude: String(place.latitude),
+        longitude: String(place.longitude),
+        daily: 'weather_code,temperature_2m_max,temperature_2m_min',
+        timezone: 'auto',
+        forecast_days: '5'
+      });
+      const data = await fetchJson(
+        `https://api.open-meteo.com/v1/forecast?${params}`,
+        'Prévisions Open-Meteo'
+      );
+      if (!validForecast(data)) throw new Error('Prévisions incomplètes');
+      try {
+        localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+          ts: Date.now(), location: locationName, data
+        }));
+      } catch (error) {
+        console.warn('Cache prévisions non enregistré :', error);
+      }
+      return data;
+    } catch (error) {
+      if (previous) {
+        console.warn('Prévisions indisponibles, affichage du dernier relevé :', error);
+        return previous;
+      }
+      throw error;
+    }
   }
 
-  async function toggleDetails() { 
-    const isHidden = details.hasAttribute("hidden"); 
-    if (isHidden && !loaded) { 
-        try { details.innerHTML = "Chargement…"; const data = await getWeather5dCached(); renderWeather5d(data); loaded = true; } 
-        catch (e) { details.innerHTML = `<div class='wd-error'>Prévisions indisponibles</div>`; } 
+  function renderWeather5d(data) {
+    if (!validForecast(data)) throw new Error('Données de prévision incomplètes');
+    const days = data.daily.time.slice(0, 5).map((date, i) => ({
+      date,
+      code: data.daily.weather_code[i],
+      tmax: Math.round(data.daily.temperature_2m_max[i]),
+      tmin: Math.round(data.daily.temperature_2m_min[i])
+    }));
+    const df = new Intl.DateTimeFormat('fr-BE', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' });
+    details.innerHTML = `<div class="weather5d">${days.map(day => `<div class="weather-day"><div class="wd-date">${df.format(new Date(day.date + 'T12:00:00Z'))}</div>${weatherForecastIcon(day.code)}<div class="wd-desc">${weatherCodeToFr(day.code)}</div><div class="wd-temps"><span class="max">${day.tmax}°</span> / <span class="min">${day.tmin}°</span></div></div>`).join('')}</div>`;
+  }
+
+  async function toggleDetails() {
+    const isHidden = details.hasAttribute('hidden');
+    if (isHidden && !loaded) {
+      details.textContent = 'Chargement…';
+      try {
+        const data = await getWeather5dCached();
+        renderWeather5d(data);
+        loaded = true;
+      } catch (error) {
+        console.error('Prévisions sur cinq jours :', error);
+        details.textContent = 'Prévisions indisponibles — refermez et réessayez';
+      }
     }
-    details.toggleAttribute("hidden");
+    details.toggleAttribute('hidden');
     syncDetailsVisibility();
   }
 
