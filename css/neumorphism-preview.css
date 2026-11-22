@@ -686,3 +686,83 @@ html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-
 html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu button[aria-selected="true"] {
   color: #9bc4ec !important;
 }
+
+/* V5 — dark surface cohesion, no luminous bloom, airy profile menu */
+/* Override inherited Liquid Glass shadows at the level of the actual widgets.
+   Small directional shadows replace the old large blurred spread. */
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(
+  #calendar-widget.widget-shell.card.glass,
+  #news-container.widget-shell.card.glass,
+  #chat-container.widget-shell.card.glass,
+  #weather-details.card.glass,
+  #weather.card.glass,
+  #control-panel.glass,
+  .start-desk-panel,
+  .start-desk-status,
+  .startpage-quick-controls,
+  #bookmark-container .bookmark-set.card.glass
+) {
+  background: #263241 !important;
+  background-image: none !important;
+  border-color: rgba(166,188,211,.13) !important;
+  box-shadow: 3px 3px 8px rgba(10,18,27,.32), -2px -2px 6px rgba(67,84,105,.14) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body :is(
+  #calendar-widget.widget-shell.card.glass,
+  #news-container.widget-shell.card.glass,
+  #chat-container.widget-shell.card.glass,
+  #weather-details.card.glass,
+  #bookmark-container .bookmark-set.card.glass
+):hover {
+  box-shadow: 3px 3px 8px rgba(10,18,27,.32), -2px -2px 6px rgba(67,84,105,.14) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body::before {
+  background: none !important;
+  opacity: 0 !important;
+}
+/* Five-day forecast was rendering with old hard-coded charcoal cards. */
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details.card.glass {
+  background: #263241 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details :is(.weather5d,.weather-day) {
+  background: transparent !important;
+  color: #e9eff7 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day {
+  background: #304052 !important;
+  background-image: none !important;
+  border: 1px solid rgba(176,198,219,.13) !important;
+  box-shadow: inset 2px 2px 4px rgba(13,23,33,.27), inset -2px -2px 4px rgba(73,95,119,.16) !important;
+  color: #e9eff7 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day:hover {
+  background: #344659 !important;
+  border-color: rgba(176,198,219,.23) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day :is(.wd-date,.wd-temps,.max,.min,.wd-desc,.wd-icon,span,strong,small,svg) {
+  color: #e9eff7 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #weather-details .weather-day :is(.wd-desc,.min) {
+  color: #b5c3d3 !important;
+}
+/* Profile menu options: enough separation to read as individual buttons. */
+html.start-desk body .profile-picker-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 7px !important;
+  padding: 10px !important;
+}
+html.start-desk body .profile-picker-menu[hidden] { display: none !important; }
+html.start-desk body .profile-picker-menu button {
+  flex: 0 0 auto;
+  min-height: 39px;
+  margin: 0 !important;
+  padding: .57rem .85rem !important;
+  border-radius: 13px !important;
+}
+html.start-desk body .profile-picker-menu button + button {
+  margin-top: 2px !important;
+}
