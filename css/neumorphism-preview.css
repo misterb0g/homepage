@@ -378,12 +378,82 @@ html.start-desk body #news-container :is(#macg-list,#lesoir-list) > a > article.
   color: var(--neo-text);
 }
 
-/* Calendar cells and appointments: restrained contrast, same radius family. */
-html.start-desk body #calendar-widget :is(.calendar-day,.calendar-event-item) {
+/* Calendar — the same raised/inset vocabulary as Spotlight and favorites.
+   Preserve the grid, date selection, appointment controls and density settings. */
+html.start-desk body #calendar-widget.widget-calendar {
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-raised) !important;
+  color: var(--neo-text) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.start-desk body #calendar-widget .calendar-day {
+  background: var(--neo-surface-alt) !important;
+  border: 1px solid transparent !important;
   border-radius: 14px !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  color: var(--neo-text) !important;
+  transform: none !important;
+  transition: box-shadow .16s ease, border-color .16s ease !important;
+}
+html.start-desk body #calendar-widget .calendar-day:not(.is-outside):is(:hover,:focus-visible) {
+  background: var(--neo-surface-alt) !important;
+  box-shadow: var(--neo-soft) !important;
+  transform: none !important;
+}
+html.start-desk body #calendar-widget .calendar-day:is(.is-today,.is-selected,[aria-pressed="true"]) {
+  background: color-mix(in srgb, var(--neo-accent) 20%, var(--neo-surface)) !important;
+  border-color: color-mix(in srgb, var(--neo-accent) 42%, var(--neo-edge)) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  color: var(--neo-text) !important;
+  font-weight: 700;
+}
+html.start-desk body #calendar-widget .calendar-day.is-outside {
+  opacity: .52 !important;
+}
+html.start-desk body #calendar-widget .calendar-day-dot {
+  background: var(--neo-accent) !important;
+  box-shadow: none !important;
+}
+html.start-desk body #calendar-widget .calendar-nav-btn,
+html.start-desk body #calendar-widget .calendar-reset-btn {
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  box-shadow: var(--neo-soft) !important;
+  color: var(--neo-text) !important;
+  backdrop-filter: none !important;
+}
+html.start-desk body #calendar-widget .calendar-nav-btn:active,
+html.start-desk body #calendar-widget .calendar-reset-btn:active {
+  box-shadow: var(--neo-inset-soft) !important;
 }
 html.start-desk body #calendar-widget .calendar-event-item {
-  box-shadow: none !important;
+  background: var(--neo-surface-alt) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  color: var(--neo-text) !important;
+  transform: none !important;
+}
+html.start-desk body #calendar-widget .calendar-event-item.is-next-event {
+  background: color-mix(in srgb, var(--neo-accent) 10%, var(--neo-surface-alt)) !important;
+  border-color: color-mix(in srgb, var(--neo-accent) 32%, var(--neo-edge)) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+}
+html.start-desk body #calendar-widget :is(
+  .calendar-month-label,.calendar-event-name,.calendar-events-title,
+  .calendar-event-group-label,.calendar-event-header
+) { color: var(--neo-text) !important; }
+html.start-desk body #calendar-widget :is(
+  .calendar-event-meta,.calendar-weekdays,.calendar-weekdays span,.calendar-event-relative
+) { color: var(--neo-subtle) !important; }
+html.start-desk body #calendar-widget :is(.calendar-event-relative,.calendar-day-dot) {
+  text-shadow: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk body #calendar-widget .calendar-day { transition: none !important; }
 }
 
 /* Inspector segments and soft reference-style switch tracks. */
