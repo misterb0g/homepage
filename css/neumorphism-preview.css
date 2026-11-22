@@ -1,0 +1,154 @@
+/*
+ * Start Desk — Neumorphism visual experiment
+ * Isolated, CSS-only. No JS, DOM, bookmark or preference changes.
+ * Reference: warm off-white, cool greys, graphite, raised/pressed shadows.
+ */
+:root.start-desk,
+:root.start-desk[data-theme],
+:root.start-desk[data-theme-pref] {
+  color-scheme: light !important;
+  --bg: #e9e9eb;
+  --fg: #273440;
+  --primaryFg: #273440;
+  --secondaryFg: #798491;
+  --containerBg: #e9e9eb;
+  --glass-bg: #e9e9eb;
+  --glass-border: rgba(255,255,255,.75);
+  --glass-shadow: 8px 8px 19px #c5c8cd, -8px -8px 19px #fff;
+  --start-accent: #78899b;
+  --start-accent-soft: rgba(120,137,155,.14);
+  --start-glass: #e9e9eb;
+  --start-glass-strong: #e9e9eb;
+  --start-border: rgba(255,255,255,.85);
+  --start-shadow: 8px 8px 18px #c5c8cd, -8px -8px 18px #fff;
+  --sd27-control-surface: #e9e9eb;
+  --sd27-control-border: #fafafa;
+  --sd27-control-shadow: inset 4px 4px 9px #c8cbd0, inset -4px -4px 9px #fff;
+  --mac-brand: #78899b;
+  --blob-color1: #e9e9eb;
+  --blob-color2: #e9e9eb;
+  --neo-surface: #e9e9eb;
+  --neo-raised: 8px 8px 18px #c5c8cd, -8px -8px 18px #fff;
+  --neo-small: 4px 4px 9px #c7cacf, -4px -4px 9px #fff;
+  --neo-pressed: inset 5px 5px 10px #c7cacf, inset -5px -5px 10px #fff;
+}
+html.start-desk body,
+html.start-desk body.focus-mode,
+html.start-desk[data-start-desk-period] body.focus-mode {
+  color: #273440 !important;
+  background: #e9e9eb !important;
+  background-image: none !important;
+}
+html.start-desk .liquid-background,
+html.start-desk .blob1,
+html.start-desk .blob2 { display: none !important; }
+html.start-desk body .glass,
+html.start-desk body .card,
+html.start-desk body :is(.bookmark-set,.weather-container,.weather-details,.widget-shell,#control-panel,.start-desk-panel,.start-desk-dock,.start-desk-status,.command-palette) {
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.85) !important;
+  box-shadow: var(--neo-raised) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.start-desk body :is(.card,.bookmark-set,.weather-container,.weather-details,.widget-shell,.start-desk-panel,.command-palette) {
+  border-radius: 25px !important;
+}
+html.start-desk body .card::before { display: none !important; }
+html.start-desk body :is(.card,.bookmark-set):hover {
+  transform: translateY(-2px) !important;
+  border-color: #fff !important;
+  box-shadow: 11px 11px 22px #c3c6cb, -11px -11px 22px #fff !important;
+}
+html.start-desk body :is(.card,.bookmark-set):active {
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk body #greeting { color: #273440 !important; font-weight: 750; letter-spacing: -.045em; }
+html.start-desk body :is(#clock,.muted,.hint,.widget-subtitle) { color: #798491 !important; }
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight {
+  background: #e9e9eb !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.88) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--neo-pressed) !important;
+  min-height: 64px;
+}
+html.start-desk body #search-form.spotlight::before,
+html.start-desk body #search-form.spotlight::after { background: none !important; }
+html.start-desk body #search-form.spotlight::before { opacity: 0 !important; }
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight:focus-within {
+  border-color: #8b9bad !important;
+  box-shadow: var(--neo-pressed), 0 0 0 3px rgba(120,137,155,.23) !important;
+}
+html.start-desk body :is(input,textarea,select) { color: #273440; }
+html.start-desk body #search-input { background: transparent !important; color: #273440 !important; }
+html.start-desk body #search-input::placeholder { color: #8c959e !important; }
+html.start-desk body :is(.bookmark,.bookmark-item,.command-item) {
+  border-radius: 14px !important;
+  color: #34404b !important;
+}
+html.start-desk body :is(.bookmark,.bookmark-item,.command-item):hover,
+html.start-desk body .command-item.is-active {
+  background: #e1e2e5 !important;
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk body :is(.btn-icon,.start-desk-dock button,.startpage-quick-controls button,.start-desk-panel button,.segmented-control button,.widget-window-controls button,.reset-stats,.search-engine-btn) {
+  color: #4c5a68 !important;
+  background: var(--neo-surface) !important;
+  border: 1px solid rgba(255,255,255,.8) !important;
+  box-shadow: var(--neo-small) !important;
+  border-radius: 999px !important;
+}
+html.start-desk body :is(.btn-icon,.start-desk-dock button,.startpage-quick-controls button,.start-desk-panel button,.segmented-control button,.widget-window-controls button,.reset-stats,.search-engine-btn):is(:active,.active,.is-active,[aria-pressed="true"]) {
+  background: var(--neo-surface) !important;
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk body :is(.btn-icon,button,input,a):focus-visible {
+  outline: 2px solid #78899b !important;
+  outline-offset: 3px !important;
+}
+html.start-desk body :is(.toggle-switch .slider,.segmented-control,.input-group input,.panel-section input,.chat-form input) {
+  background: var(--neo-surface) !important;
+  border: 1px solid rgba(255,255,255,.8) !important;
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk body .toggle-switch .slider::before {
+  background: #f4f4f5 !important;
+  box-shadow: var(--neo-small) !important;
+}
+html.start-desk body :is(.start-desk-dock,.start-desk-status,.startpage-quick-controls) {
+  background: var(--neo-surface) !important;
+  border-color: #fff !important;
+  box-shadow: var(--neo-raised) !important;
+}
+html.start-desk body .start-desk-dock button.is-active::after,
+html.start-desk body .start-desk-status::before {
+  background: #7b8b9b !important;
+  box-shadow: none !important;
+}
+html.start-desk body :is(.widget-title,.bookmark-title,.panel-header h3,.start-desk-panel h3) {
+  color: #273440 !important;
+}
+html.start-desk body :is(.weather-day,.stats-summary div,.stats-list li) {
+  background: var(--neo-surface) !important;
+  border: 1px solid #fff !important;
+  border-radius: 16px !important;
+  box-shadow: var(--neo-small) !important;
+}
+html.start-desk body :is(.widget-toolbar,.panel-header) {
+  background: transparent !important;
+  border-bottom-color: #d2d5d9 !important;
+}
+@media (max-width: 768px) {
+  html.start-desk body #search-form.spotlight { min-height: 56px !important; }
+  html.start-desk body #bookmark-container .bookmark-set { box-shadow: var(--neo-small) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.start-desk body * { scroll-behavior: auto !important; }
+}
+/* Contrast support: system accessibility setting takes priority over the subtle look. */
+@media (prefers-contrast: more) {
+  html.start-desk body :is(button,input,a) { outline-offset: 3px; }
+  html.start-desk body :is(.bookmark,.bookmark-item,.command-item) { color: #18232f !important; }
+}
