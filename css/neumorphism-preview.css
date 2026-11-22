@@ -766,3 +766,94 @@ html.start-desk body .profile-picker-menu button {
 html.start-desk body .profile-picker-menu button + button {
   margin-top: 2px !important;
 }
+
+/* V6 — engine selector follows neumorphic materials; dock has no bloom. */
+html.start-desk body #engine-menu.engine-menu {
+  background: #edf0f5 !important;
+  background-image: none !important;
+  border: 1px solid rgba(255,255,255,.85) !important;
+  border-radius: 23px !important;
+  box-shadow: 5px 5px 12px rgba(143,153,168,.28), -4px -4px 12px rgba(255,255,255,.9) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  color: #293a4a !important;
+  padding: 10px !important;
+}
+html.start-desk body #engine-menu.engine-menu .engine-menu-section {
+  color: #8290a1 !important;
+}
+html.start-desk body #engine-menu.engine-menu .engine-option {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 15px !important;
+  box-shadow: none !important;
+  color: #293a4a !important;
+  transform: none !important;
+}
+html.start-desk body #engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
+  background: #e5eaf1 !important;
+  border-color: rgba(255,255,255,.4) !important;
+  box-shadow: inset 3px 3px 6px #cbd2dc, inset -3px -3px 6px #fff !important;
+  transform: none !important;
+}
+html.start-desk body #engine-menu.engine-menu :is(.engine-option-icon,.engine-hint) {
+  color: #738398 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu {
+  background: #293849 !important;
+  border: 1px solid rgba(166,192,219,.14) !important;
+  box-shadow: 4px 4px 10px rgba(9,17,26,.3), -2px -2px 6px rgba(71,91,115,.13) !important;
+  color: #e9eff7 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu .engine-menu-section,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu :is(.engine-option-icon,.engine-hint) {
+  color: #a5b3c4 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu .engine-option {
+  background: transparent !important;
+  color: #e9eff7 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
+  background: #304154 !important;
+  border-color: rgba(166,192,219,.08) !important;
+  box-shadow: inset 3px 3px 6px #1a2837, inset -3px -3px 6px #3b5065 !important;
+}
+/* Override desktop dock's old expanding pseudo shelf and all exterior glows. */
+html.start-desk body .start-desk-dock,
+html.start-desk body .start-desk-dock:is(:hover,:focus-within) {
+  isolation: isolate !important;
+  background: #edf0f5 !important;
+  border: 1px solid rgba(161,176,194,.26) !important;
+  box-shadow: inset 2px 2px 5px #d1d7e0, inset -2px -2px 5px #fff !important;
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.start-desk body .start-desk-dock::before,
+html.start-desk body .start-desk-dock::after {
+  content: none !important;
+  display: none !important;
+  box-shadow: none !important;
+}
+html.start-desk body .start-desk-dock button,
+html.start-desk body .start-desk-dock button:hover {
+  box-shadow: 2px 2px 4px #cbd2dc, -2px -2px 4px #fff !important;
+  filter: none !important;
+  transform: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock:is(:hover,:focus-within) {
+  background: #263241 !important;
+  border-color: rgba(161,185,210,.12) !important;
+  box-shadow: inset 2px 2px 5px #1a2734, inset -2px -2px 5px #344557 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-dock button:hover {
+  background: #2b3a4b !important;
+  box-shadow: 2px 2px 4px #192533, -2px -2px 4px #334456 !important;
+}
+html.start-desk body .start-desk-dock button:is(:active,.is-active,[aria-pressed="true"]) {
+  box-shadow: var(--neo-pressed) !important;
+}
