@@ -531,3 +531,158 @@ html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-de
   background: #29394a !important;
   box-shadow: inset 3px 3px 6px #182431, inset -3px -3px 6px #3b4d61 !important;
 }
+
+/* V4 — no bloom, tactile focus, custom accessible profile picker */
+html.start-desk body #search-form.spotlight,
+html.start-desk body #search-form.spotlight:hover {
+  transform: none !important;
+  border: 1px solid rgba(129,154,183,.34) !important;
+  outline: 0 !important;
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk body #search-form.spotlight:focus-within,
+html.start-desk body #search-form.spotlight:focus-within:hover {
+  transform: none !important;
+  outline: 1px solid rgba(102,149,200,.52) !important;
+  outline-offset: 2px !important;
+  border-color: rgba(105,145,188,.44) !important;
+  box-shadow: var(--neo-pressed) !important;
+  filter: none !important;
+}
+html.start-desk body #search-form.spotlight:focus-within::before,
+html.start-desk body #search-form.spotlight:focus-within::after {
+  opacity: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+html.start-desk body #search-form.spotlight:focus-within #engine-button {
+  box-shadow: var(--neo-small) !important;
+  border-color: rgba(126,153,184,.30) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-form.spotlight,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-form.spotlight:hover {
+  border-color: rgba(156,183,208,.20) !important;
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #search-form.spotlight:focus-within {
+  outline: 1px solid rgba(130,172,210,.46) !important;
+  border-color: rgba(130,172,210,.36) !important;
+  box-shadow: var(--neo-pressed) !important;
+}
+/* Keep dark top status and nearby panels physically carved, not lit. */
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-status,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .startpage-quick-controls,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-panel {
+  background: #263241 !important;
+  box-shadow: 3px 3px 8px #1a2633, -3px -3px 8px #2c3b4d !important;
+  border-color: rgba(163,187,211,.12) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-desk-status::before {
+  background: #7e9db9 !important;
+  box-shadow: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .startpage-quick-controls :is(button,select),
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-trigger {
+  box-shadow: 2px 2px 4px #1c2734, -2px -2px 4px #334354 !important;
+  filter: none !important;
+}
+/* Standard select remains functional in DOM as the source of truth,
+   but the new visual trigger opens our fully styled menu instead. */
+html.start-desk body .profile-picker.neo-ready {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center;
+  border-radius: 999px;
+}
+html.start-desk body .profile-picker.neo-ready > select.startpage-profile-pill,
+html.start-desk body .profile-picker.neo-ready > .profile-picker-arrows {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+}
+html.start-desk body .profile-picker-trigger {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  min-width: 116px;
+  padding: .50rem .75rem;
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--fg);
+  background: var(--neo-surface);
+  box-shadow: var(--neo-small);
+  cursor: pointer;
+}
+html.start-desk body .profile-picker-trigger::after {
+  content: "";
+  width: 6px; height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+html.start-desk body .profile-picker-trigger[aria-expanded="true"] {
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk body .profile-picker-menu {
+  position: absolute;
+  z-index: 1500;
+  left: 0;
+  bottom: calc(100% + 10px);
+  min-width: 160px;
+  padding: 7px;
+  border-radius: 20px;
+  background: var(--neo-surface);
+  border: 1px solid rgba(255,255,255,.82);
+  box-shadow: 5px 5px 12px #c5cad3, -5px -5px 12px #fff;
+}
+html.start-desk body .profile-picker-menu[hidden] { display: none !important; }
+html.start-desk body .profile-picker-menu button {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  border: 0 !important;
+  text-align: left;
+  background: transparent !important;
+  color: var(--fg) !important;
+  font: inherit;
+  padding: .65rem .85rem;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+html.start-desk body .profile-picker-menu button:is(:hover,:focus-visible,[aria-selected="true"]) {
+  background: var(--neo-surface) !important;
+  box-shadow: var(--neo-pressed) !important;
+}
+html.start-desk body .profile-picker-menu button[aria-selected="true"] {
+  color: #4d7dad !important;
+  font-weight: 700;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-trigger,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu {
+  background: #293849 !important;
+  color: #e9eff7 !important;
+  border-color: rgba(162,185,212,.15) !important;
+  box-shadow: 3px 3px 7px #17232f, -3px -3px 7px #334355 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu button {
+  color: #e9eff7 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu button:is(:hover,:focus-visible,[aria-selected="true"]) {
+  background: #293849 !important;
+  box-shadow: inset 3px 3px 6px #192534, inset -3px -3px 6px #394c60 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .profile-picker-menu button[aria-selected="true"] {
+  color: #9bc4ec !important;
+}
