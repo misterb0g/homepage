@@ -10,6 +10,13 @@ async function getWeather() {
         if (!geoData.results || geoData.results.length === 0) throw new Error(`Ville '${locationName}' non trouvée`);
         
         const { latitude, longitude, name } = geoData.results[0];
+        // Réutilise brièvement ces coordonnées pour l'ouverture des prévisions.
+        try {
+          sessionStorage.setItem('startdesk_weather_geocode_v1', JSON.stringify({
+            location: locationName, latitude, longitude, ts: Date.now()
+          }));
+        } catch (_) {}
+
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,is_day&timezone=auto&forecast_days=1`);
         if (!weatherRes.ok) throw new Error('Erreur Météo');
         
@@ -137,11 +144,22 @@ function weatherForecastIcon(code) {
     }
 
     try {
-      const geoData = await fetchJson(
-        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`,
-        'Géocodage'
-      );
-      const place = geoData?.results?.[0];
+      let place = null;
+      try {
+        const cachedGeo = JSON.parse(sessionStorage.getItem('startdesk_weather_geocode_v1') || 'null');
+        if (cachedGeo?.location === locationName &&
+            Date.now() - cachedGeo.ts < 24 * 60 * 60 * 1000 &&
+            Number.isFinite(cachedGeo.latitude) && Number.isFinite(cachedGeo.longitude)) {
+          place = cachedGeo;
+        }
+      } catch (_) {}
+      if (!place) {
+        const geoData = await fetchJson(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(locationName)}&count=1&language=fr&format=json`,
+          'Géocodage'
+        );
+        place = geoData?.results?.[0];
+      }
       if (!Number.isFinite(place?.latitude) || !Number.isFinite(place?.longitude)) {
         throw new Error(`Ville "${locationName}" introuvable`);
       }
@@ -218,12 +236,4 @@ if (window.StartDesk && typeof window.StartDesk.register === 'function') {
   });
 }
 
-// --- Start Desk 5 : feuille de style du panneau Paramètres ---
-(function loadSettingsPolishStylesheet() {
-  if (document.querySelector('link[data-startdesk-settings-polish]')) return;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'css/settings-polish.css';
-  link.dataset.startdeskSettingsPolish = '1';
-  document.head.appendChild(link);
-})();
+// Styles de paramètres chargés dans index.html avant le thème Neumorphism.

@@ -1939,7 +1939,14 @@ if (window.StartDesk) {
     installPrefixCommands();
     installSpotlightFallback();
     installKeyboardShortcuts();
-    setInterval(syncDockState, 700);
+    // Sync the Dock only when the mode/profile changes, not every 700 ms.
+    const dockObserver = new MutationObserver(syncDockState);
+    dockObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['class', 'data-startpage-profile']
+    });
+    window.addEventListener('startdesk:focus-changed', syncDockState);
+    window.addEventListener('pageshow', syncDockState);
     setInterval(applyTimeBackground, 60 * 1000);
     setTimeout(syncDockState, 300);
   });
