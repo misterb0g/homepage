@@ -1,6 +1,6 @@
 /*
  * START DESK — NEUMORPHISM / CONSOLIDATED DESIGN SYSTEM
- * Preview-only skin. Original application and its stored preferences remain intact.
+ * Production visual theme. Original application behavior and stored preferences remain intact.
  * Visual materials: porcelain-blue light; slate-blue dark.
  * Raised: small exterior relief. Pressed: interior relief. No luminous halos.
  */
@@ -60,7 +60,6 @@
   --neo-inset-soft: inset 2px 2px 5px #182532, inset -2px -2px 5px #35475a;
   --neo-focus: rgba(135,174,210,.50);
   --start-accent-soft: rgba(130,183,237,.13);
-  --neo-control-h: 36px;
 }
 /* Background is a stable plane, not moving Liquid Glass. */
 html.start-desk body,
