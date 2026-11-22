@@ -218,12 +218,4 @@ if (window.StartDesk && typeof window.StartDesk.register === 'function') {
   });
 }
 
-// --- Start Desk 5 : feuille de style du panneau Paramètres ---
-(function loadSettingsPolishStylesheet() {
-  if (document.querySelector('link[data-startdesk-settings-polish]')) return;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'css/settings-polish.css';
-  link.dataset.startdeskSettingsPolish = '1';
-  document.head.appendChild(link);
-})();
+// Styles de paramètres chargés dans index.html avant le thème Neumorphism.
