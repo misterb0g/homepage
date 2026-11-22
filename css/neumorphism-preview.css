@@ -10,15 +10,17 @@
   --neo-surface: #edf0f5;
   --neo-surface-alt: #e7ebf1;
   --neo-text: #293a4a;
-  --neo-subtle: #728194;
-  --neo-accent: #5e91ca;
+  --neo-subtle: #596b80;
+  --neo-accent: #416f9e;
   --neo-edge: rgba(150, 167, 188, .23);
   --neo-raised: 4px 4px 10px rgba(162, 174, 192, .35), -4px -4px 10px rgba(255,255,255,.78);
   --neo-soft: 2px 2px 5px rgba(156,170,188,.32), -2px -2px 5px rgba(255,255,255,.68);
   --neo-inset: inset 4px 4px 8px #cad2dd, inset -4px -4px 8px #fff;
   --neo-inset-soft: inset 2px 2px 5px #ccd4df, inset -2px -2px 5px #fff;
   --neo-focus: rgba(93, 137, 183, .53);
-  --neo-card-radius: 23px;
+  --neo-card-radius: 21px;
+  --neo-control-h: 36px;
+  --neo-control-radius: 999px;
   --bg: var(--neo-bg);
   --fg: var(--neo-text);
   --primaryFg: var(--neo-text);
@@ -58,6 +60,7 @@
   --neo-inset-soft: inset 2px 2px 5px #182532, inset -2px -2px 5px #35475a;
   --neo-focus: rgba(135,174,210,.50);
   --start-accent-soft: rgba(130,183,237,.13);
+  --neo-control-h: 36px;
 }
 /* Background is a stable plane, not moving Liquid Glass. */
 html.start-desk body,
@@ -139,14 +142,15 @@ html.start-desk body :is(button,input,textarea,select,a):focus-visible {
   outline-offset: 3px !important;
 }
 
-/* Spotlight: constant layout; focus deepens the interior shadow. */
+/* Spotlight: one inset surface; no exterior glow or doubled focus ring. */
 html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight,
 html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:hover {
   background: var(--neo-surface) !important;
   background-image: none !important;
   border: 1px solid var(--neo-edge) !important;
-  border-radius: 999px !important;
-  box-shadow: var(--neo-inset-soft) !important;
+  border-radius: var(--neo-control-radius) !important;
+  box-shadow: var(--neo-inset) !important;
+  outline: 0 !important;
   transform: none !important;
   filter: none !important;
   overflow: visible;
@@ -155,25 +159,21 @@ html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotligh
 html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:focus-within {
   border-color: var(--neo-focus) !important;
   box-shadow: var(--neo-inset) !important;
-  outline: 1px solid var(--neo-focus) !important;
+  outline: 2px solid var(--neo-focus) !important;
   outline-offset: 2px !important;
-  transform: none !important;
 }
 html.start-desk body form#search-form.spotlight::before {
-  content: none !important;
-  display: none !important;
+  content: none !important; display: none !important;
 }
 html.start-desk body form#search-form.spotlight input#search-input,
-html.start-desk body form#search-form.spotlight input#search-input:focus,
 html.start-desk body form#search-form.spotlight input#search-input:focus-visible {
-  color: var(--neo-text) !important;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
   outline: 0 !important;
+  color: var(--neo-text) !important;
   min-width: 0;
   appearance: none;
-  -webkit-appearance: none;
 }
 html.start-desk body #search-input::placeholder { color: var(--neo-subtle) !important; }
 
@@ -288,7 +288,7 @@ html.start-desk body #weather-details .weather-day :is(.wd-desc,.min) {
 html.start-desk body #bookmark-container .bookmark-set.card.glass {
   background: var(--neo-surface) !important;
   box-shadow: var(--neo-raised) !important;
-  border-radius: 24px !important;
+  border-radius: 21px !important;
 }
 html.start-desk body #bookmark-container .bookmark-set :is(.bookmark-title,.bookmark,.bookmark a,span,small) {
   color: var(--neo-text) !important;
@@ -342,12 +342,12 @@ html.start-desk body #calendar-widget .calendar-event-item {
   box-shadow: none !important;
 }
 
-/* Settings: pressed rail, active segment lifted, blue-grey switches. */
+/* Inspector segments and soft reference-style switch tracks. */
 html.start-desk body #control-panel .segmented-control {
   background: var(--neo-surface) !important;
   border: 1px solid var(--neo-edge) !important;
   box-shadow: var(--neo-inset-soft) !important;
-  border-radius: 999px !important;
+  border-radius: var(--neo-control-radius) !important;
   padding: 4px !important;
   gap: 4px !important;
 }
@@ -355,7 +355,7 @@ html.start-desk body #control-panel .segmented-control button {
   background: transparent !important;
   color: var(--neo-subtle) !important;
   border: 1px solid transparent !important;
-  border-radius: 999px !important;
+  border-radius: var(--neo-control-radius) !important;
   box-shadow: none !important;
 }
 html.start-desk body #control-panel .segmented-control button:is(.active,[aria-pressed="true"]) {
@@ -365,80 +365,91 @@ html.start-desk body #control-panel .segmented-control button:is(.active,[aria-p
   box-shadow: var(--neo-soft) !important;
 }
 html.start-desk body #control-panel .toggle-switch .slider {
-  background: color-mix(in srgb, var(--neo-accent) 15%, var(--neo-surface)) !important;
+  background: color-mix(in srgb, var(--neo-text) 8%, var(--neo-surface)) !important;
   border: 1px solid var(--neo-edge) !important;
   box-shadow: var(--neo-inset-soft) !important;
-  border-radius: 999px !important;
+  border-radius: var(--neo-control-radius) !important;
+  filter: none !important;
+  transition: background-color .2s ease, box-shadow .2s ease !important;
 }
 html.start-desk body #control-panel .toggle-switch input:checked + .slider {
-  background: color-mix(in srgb, var(--neo-accent) 76%, var(--neo-surface)) !important;
+  background: color-mix(in srgb, var(--neo-accent) 77%, var(--neo-surface)) !important;
   border-color: var(--neo-focus) !important;
+  box-shadow: inset 2px 2px 4px rgba(25,58,95,.22), inset -1px -1px 3px rgba(255,255,255,.18) !important;
 }
 html.start-desk body #control-panel .toggle-switch .slider::before {
-  background: #f8fafc !important;
-  box-shadow: 1px 2px 4px rgba(18,32,50,.23) !important;
+  background: #edf0f3 !important;
+  box-shadow: 2px 2px 5px rgba(27,44,64,.20), -1px -1px 3px rgba(255,255,255,.52) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .toggle-switch .slider::before {
+  background: #dce4ee !important;
+  box-shadow: 1px 2px 4px rgba(8,15,25,.32) !important;
 }
 
-/* Simple controls and Dock: no separate glow behind the shelf. */
-html.start-desk body :is(
-  .btn-icon,.startpage-quick-controls button,.start-desk-panel button,
-  .start-desk-stats-panel .reset-stats
-) {
-  color: var(--neo-text) !important;
+/* Controls and Dock: same raised/inset material, compact dimensions. */
+html.start-desk body :is(.btn-icon,.startpage-quick-controls button,.start-desk-panel button) {
   background: var(--neo-surface) !important;
+  color: var(--neo-text) !important;
   border: 1px solid var(--neo-edge) !important;
+  border-radius: var(--neo-control-radius) !important;
   box-shadow: var(--neo-soft) !important;
-  border-radius: 999px !important;
 }
-html.start-desk body :is(
-  .btn-icon,.startpage-quick-controls button,.start-desk-panel button
-):is(:active,.active,.is-active,[aria-pressed="true"]) {
+html.start-desk body :is(.btn-icon,.startpage-quick-controls button,.start-desk-panel button):is(:active,.active,.is-active,[aria-pressed="true"]) {
   box-shadow: var(--neo-inset-soft) !important;
 }
 html.start-desk body .startpage-quick-controls {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
+  background: transparent !important; border: 0 !important; box-shadow: none !important;
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
 }
-html.start-desk body div.start-desk-dock,
-html.start-desk body div.start-desk-dock:is(:hover,:focus-within) {
-  background: var(--neo-surface) !important;
-  border: 1px solid var(--neo-edge) !important;
-  border-radius: 999px !important;
-  box-shadow: var(--neo-inset-soft) !important;
-  padding: .42rem !important;
-  gap: .35rem !important;
-  filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-html.start-desk body div.start-desk-dock::before,
-html.start-desk body div.start-desk-dock::after {
-  content: none !important;
-  display: none !important;
-  box-shadow: none !important;
-}
-html.start-desk body div.start-desk-dock button,
-html.start-desk body div.start-desk-dock button:hover {
+html.start-desk body .startpage-quick-controls > button.startpage-focus-pill {
+  display: inline-flex !important; align-items: center !important; justify-content: center !important;
+  min-height: var(--neo-control-h) !important;
+  min-width: 104px !important;
+  padding: .43rem .72rem !important;
+  margin: 0 !important;
+  font: inherit !important; font-weight: 600 !important;
+  white-space: nowrap !important;
   background: var(--neo-surface) !important;
   color: var(--neo-text) !important;
-  border: 1px solid var(--neo-edge) !important;
-  border-radius: 999px !important;
   box-shadow: var(--neo-soft) !important;
-  filter: none !important;
+  border-radius: var(--neo-control-radius) !important;
   transform: none !important;
-  text-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
-html.start-desk body div.start-desk-dock button:is(:active,.is-active,[aria-pressed="true"]) {
+html.start-desk body .startpage-quick-controls > button.startpage-focus-pill:is(:hover,.active,[aria-pressed="true"]) {
   box-shadow: var(--neo-inset-soft) !important;
-  color: var(--neo-accent) !important;
+}
+html.start-desk body div.start-desk-dock {
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  flex-wrap: nowrap !important; gap: 7px !important;
+  width: max-content; max-width: calc(100vw - 24px) !important;
+  padding: 6px 9px !important; overflow: visible !important;
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: var(--neo-control-radius) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+}
+html.start-desk body div.start-desk-dock::before,
+html.start-desk body div.start-desk-dock::after { content: none !important; display: none !important; }
+html.start-desk body div.start-desk-dock > button {
+  position: relative !important; flex: 0 0 auto !important;
+  min-height: var(--neo-control-h) !important; min-width: 0 !important;
+  padding: 7px 12px !important; margin: 0 !important;
+  border-radius: var(--neo-control-radius) !important;
+  background: var(--neo-surface) !important; color: var(--neo-text) !important;
+  border: 1px solid var(--neo-edge) !important; box-shadow: var(--neo-soft) !important;
+  transform: none !important; scale: 1 !important; translate: none !important;
+  filter: none !important; text-shadow: none !important;
+}
+html.start-desk body div.start-desk-dock > button:is(:hover,:active,.is-active,[aria-pressed="true"]) {
+  transform: none !important; scale: 1 !important; translate: none !important;
+  box-shadow: var(--neo-inset-soft) !important;
 }
 html.start-desk body .start-desk-status::before,
 html.start-desk body .start-desk-dock button.is-active::after {
-  background: var(--neo-accent) !important;
-  box-shadow: none !important;
+  background: var(--neo-accent) !important; box-shadow: none !important;
 }
 
 /* Profile picker: existing native select remains the behavior source. */
@@ -460,9 +471,9 @@ html.start-desk body .profile-picker-trigger {
   display: inline-flex;
   align-items: center; justify-content: center;
   gap: .55rem;
-  min-width: 112px;
-  border-radius: 999px;
-  padding: .49rem .75rem;
+  min-width: 104px;
+  border-radius: var(--neo-control-radius);
+  padding: .43rem .72rem;
   background: var(--neo-surface) !important;
   color: var(--neo-text) !important;
   border: 1px solid var(--neo-edge) !important;
@@ -485,12 +496,12 @@ html.start-desk body .profile-picker-menu {
   bottom: calc(100% + 10px);
   display: flex;
   flex-direction: column;
-  gap: 9px !important;
+  gap: 7px !important;
   min-width: 165px;
   padding: 10px !important;
   background: var(--neo-surface) !important;
   border: 1px solid var(--neo-edge) !important;
-  border-radius: 19px !important;
+  border-radius: 18px !important;
   box-shadow: var(--neo-raised) !important;
 }
 html.start-desk body .profile-picker-menu[hidden] { display: none !important; }
@@ -498,8 +509,8 @@ html.start-desk body .profile-picker-menu button {
   display: block;
   flex: 0 0 auto;
   width: 100%;
-  min-height: 39px;
-  padding: .58rem .8rem !important;
+  min-height: 36px;
+  padding: .49rem .72rem !important;
   border-radius: 13px !important;
   margin: 0 !important;
   font: inherit;
@@ -524,11 +535,14 @@ html.start-desk body .profile-picker-menu button[aria-selected="true"] {
   html.start-desk body #search-form.spotlight { min-height: 56px !important; }
   html.start-desk body .profile-picker-menu { max-width: calc(100vw - 24px); }
   html.start-desk body #weather.card.weather-container > .row { gap: 0 .3rem; }
+  html.start-desk body div.start-desk-dock { justify-content: flex-start !important; overflow-x: auto !important; gap: 5px !important; padding: 5px !important; }
+  html.start-desk body div.start-desk-dock > button { min-height: 34px !important; padding: 7px 10px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   html.start-desk body .bookmark,
   html.start-desk body .engine-option,
-  html.start-desk body #search-form.spotlight { transition: none !important; }
+  html.start-desk body #search-form.spotlight,
+  html.start-desk body #control-panel .toggle-switch .slider { transition: none !important; }
 }
 @media (prefers-contrast: more) {
   :root.start-desk {
@@ -547,161 +561,3 @@ html.start-desk body .profile-picker-menu button[aria-selected="true"] {
   }
 }
 
-/* ================= V9 — tactile, quiet interface =================
-   Consolidated extension: preserve all behavior / no JS changes. */
-/* A real Dock tray with individual, evenly spaced buttons.
-   The previous overlapping labels were caused by inherited dock magnification. */
-html.start-desk body div.start-desk-dock {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-wrap: nowrap !important;
-  gap: 8px !important;
-  padding: 7px 10px !important;
-  overflow: visible !important;
-  width: max-content;
-  max-width: calc(100vw - 24px) !important;
-  background: var(--neo-surface) !important;
-  border: 1px solid var(--neo-edge) !important;
-  border-radius: 999px !important;
-  box-shadow: var(--neo-inset-soft) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  filter: none !important;
-}
-html.start-desk body div.start-desk-dock::before,
-html.start-desk body div.start-desk-dock::after {
-  content: none !important;
-  display: none !important;
-}
-html.start-desk body div.start-desk-dock > button {
-  position: relative !important;
-  flex: 0 0 auto !important;
-  min-width: 0 !important;
-  min-height: 38px !important;
-  margin: 0 !important;
-  padding: 8px 14px !important;
-  border-radius: 999px !important;
-  background: var(--neo-surface) !important;
-  box-shadow: var(--neo-soft) !important;
-  color: var(--neo-text) !important;
-  transform: none !important;
-  scale: 1 !important;
-  translate: none !important;
-  filter: none !important;
-  transition: box-shadow .16s ease, color .16s ease !important;
-}
-html.start-desk body div.start-desk-dock > button:is(:hover,:active,.is-active,[aria-pressed="true"]) {
-  transform: none !important;
-  scale: 1 !important;
-  translate: none !important;
-  box-shadow: var(--neo-inset-soft) !important;
-}
-html.start-desk body div.start-desk-dock > button.is-active::after {
-  box-shadow: none !important;
-}
-/* Spotlight is recessed even at rest, with no double focus ring.
-   Remove the search-specific glossy bevel and preserve focus visibility. */
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight,
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:hover {
-  background: var(--neo-surface) !important;
-  background-image: none !important;
-  border: 1px solid color-mix(in srgb, var(--neo-text) 12%, var(--neo-surface)) !important;
-  border-radius: 999px !important;
-  box-shadow: var(--neo-inset) !important;
-  outline: none !important;
-  transform: none !important;
-}
-html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:focus-within {
-  border-color: color-mix(in srgb, var(--neo-accent) 36%, var(--neo-edge)) !important;
-  box-shadow: var(--neo-inset) !important;
-  outline: 1px solid var(--neo-focus) !important;
-  outline-offset: 2px !important;
-}
-html.start-desk body form#search-form.spotlight::before {
-  content: none !important;
-  opacity: 0 !important;
-  display: none !important;
-}
-html.start-desk body form#search-form.spotlight #engine-button,
-html.start-desk body form#search-form.spotlight #engine-button:hover {
-  background: var(--neo-surface) !important;
-  box-shadow: var(--neo-soft) !important;
-  border-color: var(--neo-edge) !important;
-  filter: none !important;
-}
-/* Reference toggle: subtle raised ivory thumb, blue-grey active track,
-   lightly inset off track, no vivid glow or pronounced borders. */
-html.start-desk body #control-panel .toggle-switch .slider {
-  background: color-mix(in srgb, var(--neo-text) 8%, var(--neo-surface)) !important;
-  border: 1px solid color-mix(in srgb, var(--neo-text) 7%, transparent) !important;
-  box-shadow: var(--neo-inset-soft) !important;
-  border-radius: 999px !important;
-  filter: none !important;
-  transition: background-color .2s ease, box-shadow .2s ease !important;
-}
-html.start-desk body #control-panel .toggle-switch input:checked + .slider {
-  background: color-mix(in srgb, var(--neo-accent) 77%, var(--neo-surface)) !important;
-  border-color: color-mix(in srgb, var(--neo-accent) 30%, transparent) !important;
-  box-shadow: inset 2px 2px 4px rgba(25,58,95,.22), inset -1px -1px 3px rgba(255,255,255,.18) !important;
-}
-html.start-desk body #control-panel .toggle-switch .slider::before {
-  background: #edf0f3 !important;
-  border: 0 !important;
-  box-shadow: 2px 2px 5px rgba(27,44,64,.20), -1px -1px 3px rgba(255,255,255,.52) !important;
-}
-html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .toggle-switch .slider::before {
-  background: #dce4ee !important;
-  box-shadow: 1px 2px 4px rgba(8,15,25,.32) !important;
-}
-@media (max-width: 760px) {
-  html.start-desk body div.start-desk-dock {
-    justify-content: flex-start !important;
-    overflow-x: auto !important;
-    max-width: calc(100vw - 20px) !important;
-    gap: 5px !important;
-    padding: 5px !important;
-  }
-  html.start-desk body div.start-desk-dock > button {
-    min-height: 34px !important;
-    padding: 7px 10px !important;
-  }
-}
-
-/* Focus control — same tactile pill as the Boulot / Perso / Complet picker.
-   Its original click handler, label and aria-pressed state stay unchanged. */
-html.start-desk body .startpage-quick-controls > button.startpage-focus-pill {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-sizing: border-box !important;
-  min-height: 38px !important;
-  min-width: 112px !important;
-  padding: .49rem .75rem !important;
-  margin: 0 !important;
-  border-radius: 999px !important;
-  border: 1px solid var(--neo-edge) !important;
-  background: var(--neo-surface) !important;
-  background-image: none !important;
-  box-shadow: var(--neo-soft) !important;
-  color: var(--neo-text) !important;
-  font: inherit !important;
-  font-weight: 600 !important;
-  white-space: nowrap !important;
-  text-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  filter: none !important;
-  transform: none !important;
-  transition: box-shadow .16s ease, color .16s ease !important;
-}
-html.start-desk body .startpage-quick-controls > button.startpage-focus-pill:is(:hover,:active,.active,[aria-pressed="true"]) {
-  border-color: var(--neo-edge) !important;
-  background: var(--neo-surface) !important;
-  box-shadow: var(--neo-inset-soft) !important;
-  transform: none !important;
-}
-html.start-desk body .startpage-quick-controls > button.startpage-focus-pill:focus-visible {
-  outline: 2px solid var(--neo-focus) !important;
-  outline-offset: 3px !important;
-}
