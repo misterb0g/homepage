@@ -857,3 +857,51 @@ html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body .start-de
 html.start-desk body .start-desk-dock button:is(:active,.is-active,[aria-pressed="true"]) {
   box-shadow: var(--neo-pressed) !important;
 }
+
+/* V7 — center current weather and make Spotlight feel pressed on focus.
+   Only CSS: preserves search behavior, menu layering and weather toggles. */
+html.start-desk body #weather.card.weather-container {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+}
+html.start-desk body #weather.card.weather-container > .row {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100%;
+  gap: 0 .45rem;
+  margin: 0 !important;
+  line-height: 1.4;
+  text-align: center !important;
+}
+html.start-desk body #weather.card.weather-container > .row > .inline {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center;
+  margin: 0 !important;
+  line-height: inherit;
+}
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight:focus-within {
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  box-shadow: inset 6px 6px 12px #c3cad5, inset -6px -6px 12px #fff !important;
+  border-color: rgba(125,153,184,.31) !important;
+  outline: 1px solid rgba(119,149,182,.30) !important;
+  outline-offset: 2px !important;
+  transform: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body:is(.focus-mode,:not(.focus-mode)) #search-form.spotlight:focus-within {
+  background: #263241 !important;
+  background-image: none !important;
+  box-shadow: inset 6px 6px 12px #172330, inset -6px -6px 12px #35485b !important;
+  border-color: rgba(141,172,204,.24) !important;
+  outline: 1px solid rgba(137,167,197,.23) !important;
+}
+@media (max-width: 560px) {
+  html.start-desk body #weather.card.weather-container > .row { gap: 0 .30rem; }
+}
