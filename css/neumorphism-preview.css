@@ -546,3 +546,124 @@ html.start-desk body .profile-picker-menu button[aria-selected="true"] {
     box-shadow: none !important;
   }
 }
+
+/* ================= V9 — tactile, quiet interface =================
+   Consolidated extension: preserve all behavior / no JS changes. */
+/* A real Dock tray with individual, evenly spaced buttons.
+   The previous overlapping labels were caused by inherited dock magnification. */
+html.start-desk body div.start-desk-dock {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+  padding: 7px 10px !important;
+  overflow: visible !important;
+  width: max-content;
+  max-width: calc(100vw - 24px) !important;
+  background: var(--neo-surface) !important;
+  border: 1px solid var(--neo-edge) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+html.start-desk body div.start-desk-dock::before,
+html.start-desk body div.start-desk-dock::after {
+  content: none !important;
+  display: none !important;
+}
+html.start-desk body div.start-desk-dock > button {
+  position: relative !important;
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  min-height: 38px !important;
+  margin: 0 !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  background: var(--neo-surface) !important;
+  box-shadow: var(--neo-soft) !important;
+  color: var(--neo-text) !important;
+  transform: none !important;
+  scale: 1 !important;
+  translate: none !important;
+  filter: none !important;
+  transition: box-shadow .16s ease, color .16s ease !important;
+}
+html.start-desk body div.start-desk-dock > button:is(:hover,:active,.is-active,[aria-pressed="true"]) {
+  transform: none !important;
+  scale: 1 !important;
+  translate: none !important;
+  box-shadow: var(--neo-inset-soft) !important;
+}
+html.start-desk body div.start-desk-dock > button.is-active::after {
+  box-shadow: none !important;
+}
+/* Spotlight is recessed even at rest, with no double focus ring.
+   Remove the search-specific glossy bevel and preserve focus visibility. */
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight,
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:hover {
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  border: 1px solid color-mix(in srgb, var(--neo-text) 12%, var(--neo-surface)) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--neo-inset) !important;
+  outline: none !important;
+  transform: none !important;
+}
+html.start-desk body:is(.focus-mode,:not(.focus-mode)) form#search-form.spotlight:focus-within {
+  border-color: color-mix(in srgb, var(--neo-accent) 36%, var(--neo-edge)) !important;
+  box-shadow: var(--neo-inset) !important;
+  outline: 1px solid var(--neo-focus) !important;
+  outline-offset: 2px !important;
+}
+html.start-desk body form#search-form.spotlight::before {
+  content: none !important;
+  opacity: 0 !important;
+  display: none !important;
+}
+html.start-desk body form#search-form.spotlight #engine-button,
+html.start-desk body form#search-form.spotlight #engine-button:hover {
+  background: var(--neo-surface) !important;
+  box-shadow: var(--neo-soft) !important;
+  border-color: var(--neo-edge) !important;
+  filter: none !important;
+}
+/* Reference toggle: subtle raised ivory thumb, blue-grey active track,
+   lightly inset off track, no vivid glow or pronounced borders. */
+html.start-desk body #control-panel .toggle-switch .slider {
+  background: color-mix(in srgb, var(--neo-text) 8%, var(--neo-surface)) !important;
+  border: 1px solid color-mix(in srgb, var(--neo-text) 7%, transparent) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  border-radius: 999px !important;
+  filter: none !important;
+  transition: background-color .2s ease, box-shadow .2s ease !important;
+}
+html.start-desk body #control-panel .toggle-switch input:checked + .slider {
+  background: color-mix(in srgb, var(--neo-accent) 77%, var(--neo-surface)) !important;
+  border-color: color-mix(in srgb, var(--neo-accent) 30%, transparent) !important;
+  box-shadow: inset 2px 2px 4px rgba(25,58,95,.22), inset -1px -1px 3px rgba(255,255,255,.18) !important;
+}
+html.start-desk body #control-panel .toggle-switch .slider::before {
+  background: #edf0f3 !important;
+  border: 0 !important;
+  box-shadow: 2px 2px 5px rgba(27,44,64,.20), -1px -1px 3px rgba(255,255,255,.52) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-panel .toggle-switch .slider::before {
+  background: #dce4ee !important;
+  box-shadow: 1px 2px 4px rgba(8,15,25,.32) !important;
+}
+@media (max-width: 760px) {
+  html.start-desk body div.start-desk-dock {
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    max-width: calc(100vw - 20px) !important;
+    gap: 5px !important;
+    padding: 5px !important;
+  }
+  html.start-desk body div.start-desk-dock > button {
+    min-height: 34px !important;
+    padding: 7px 10px !important;
+  }
+}
