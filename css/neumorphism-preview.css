@@ -905,3 +905,82 @@ html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body:is(.focus
 @media (max-width: 560px) {
   html.start-desk body #weather.card.weather-container > .row { gap: 0 .30rem; }
 }
+
+/* V8 — precise engine selector materials and flat dark dock */
+/* Scoped to the actual search menu ID to outrank the legacy engine styles. */
+html.start-desk body form#search-form.spotlight div#engine-menu.engine-menu {
+  background: #edf0f5 !important;
+  background-image: none !important;
+  border: 1px solid rgba(153,170,189,.28) !important;
+  border-radius: 20px !important;
+  box-shadow: 4px 4px 9px rgba(153,165,181,.24), -3px -3px 7px rgba(255,255,255,.8) !important;
+  color: #293a4a !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+html.start-desk body form#search-form.spotlight div#engine-menu.engine-menu .engine-option {
+  background: transparent !important;
+  background-image: none !important;
+  color: #293a4a !important;
+  border: 1px solid transparent !important;
+  border-radius: 13px !important;
+  box-shadow: none !important;
+  margin: 2px 0 !important;
+  transform: none !important;
+  filter: none !important;
+}
+html.start-desk body form#search-form.spotlight div#engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
+  background: #e3e9f0 !important;
+  box-shadow: inset 3px 3px 6px #c6ced8, inset -3px -3px 6px #fff !important;
+  border-color: transparent !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu {
+  background: #293849 !important;
+  border-color: rgba(161,185,210,.14) !important;
+  box-shadow: 4px 4px 9px rgba(13,22,32,.26), -2px -2px 5px rgba(70,93,117,.12) !important;
+  color: #e9eff7 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu .engine-option {
+  color: #e9eff7 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu .engine-option:is(:hover,:focus-visible,[aria-selected="true"],.active) {
+  background: #304255 !important;
+  border-color: transparent !important;
+  box-shadow: inset 3px 3px 6px #1a2a3b, inset -3px -3px 6px #3d5167 !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body form#search-form.spotlight div#engine-menu.engine-menu .engine-option :is(svg,span) {
+  color: inherit !important;
+}
+/* Dock surface should be near-flat, not an illuminated floating shelf. */
+html.start-desk body div.start-desk-dock {
+  background: #eaf0f5 !important;
+  box-shadow: inset 1px 1px 3px rgba(162,174,188,.25), inset -1px -1px 3px rgba(255,255,255,.5) !important;
+  border: 1px solid rgba(132,151,174,.18) !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html.start-desk body div.start-desk-dock::before,
+html.start-desk body div.start-desk-dock::after {
+  display: none !important;
+  content: none !important;
+  box-shadow: none !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body div.start-desk-dock {
+  background: #263241 !important;
+  box-shadow: inset 1px 1px 3px rgba(11,19,28,.32), inset -1px -1px 3px rgba(76,94,115,.12) !important;
+  border: 1px solid rgba(155,176,199,.10) !important;
+}
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body div.start-desk-dock button,
+html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body div.start-desk-dock button:hover {
+  box-shadow: 1px 2px 3px rgba(14,23,34,.35), -1px -1px 2px rgba(78,99,120,.13) !important;
+  filter: none !important;
+}
+html.start-desk body div.start-desk-dock button,
+html.start-desk body div.start-desk-dock button:hover {
+  transform: none !important;
+}
