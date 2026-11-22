@@ -667,3 +667,41 @@ html.start-desk:is([data-theme="dark"],[data-theme="macos-dark"]) body #control-
     padding: 7px 10px !important;
   }
 }
+
+/* Focus control — same tactile pill as the Boulot / Perso / Complet picker.
+   Its original click handler, label and aria-pressed state stay unchanged. */
+html.start-desk body .startpage-quick-controls > button.startpage-focus-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  min-height: 38px !important;
+  min-width: 112px !important;
+  padding: .49rem .75rem !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--neo-edge) !important;
+  background: var(--neo-surface) !important;
+  background-image: none !important;
+  box-shadow: var(--neo-soft) !important;
+  color: var(--neo-text) !important;
+  font: inherit !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  text-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  transform: none !important;
+  transition: box-shadow .16s ease, color .16s ease !important;
+}
+html.start-desk body .startpage-quick-controls > button.startpage-focus-pill:is(:hover,:active,.active,[aria-pressed="true"]) {
+  border-color: var(--neo-edge) !important;
+  background: var(--neo-surface) !important;
+  box-shadow: var(--neo-inset-soft) !important;
+  transform: none !important;
+}
+html.start-desk body .startpage-quick-controls > button.startpage-focus-pill:focus-visible {
+  outline: 2px solid var(--neo-focus) !important;
+  outline-offset: 3px !important;
+}
